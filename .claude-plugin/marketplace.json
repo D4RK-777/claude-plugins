@@ -1,0 +1,22 @@
+{
+  "name": "chatinc-plugins",
+  "description": "Internal Claude plugins for ChatInc and portfolio brands. Multi-brand marketing pipeline + future tooling.",
+  "owner": {
+    "name": "ChatInc",
+    "email": "marketing@chatinc.com"
+  },
+  "plugins": [
+    {
+      "name": "marketing-pipeline",
+      "source": "./plugins/marketing-pipeline",
+      "description": "Brand-agnostic closed-loop marketing pipeline. Eight phases. One dashboard. Multi-brand. Operated through the Marketing Command Center.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Chris Vlok",
+        "email": "chris@chatinc.com"
+      },
+      "category": "marketing",
+      "keywords": ["marketing", "campaign", "pipeline", "icp", "persona", "voc", "creative", "paid-ads", "ai-first", "multi-brand"]
+    }
+  ]
+}
