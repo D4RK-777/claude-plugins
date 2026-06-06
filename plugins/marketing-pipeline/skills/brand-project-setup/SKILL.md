@@ -389,7 +389,7 @@ Every skill that follows should open with:
 - `apify-pain-research` — uses ICP profile + competitor names to direct scraping
 - `icp-persona-engine` — uses Customer Truth as a starting seed, not a blank slate
 - `hook-creative-generator` — uses ICP vocabulary + ad pillars + awareness levels
-- `campaign-pipeline-orchestrator` — uses full brief to sequence the pipeline
+- `phase-doc-setup` (Block 1) — uses the Brand Brief as the seed for internal-truths + AI-filled fields. **Note:** the prior reference to `campaign-pipeline-orchestrator` is deprecated and archived; the 8-block flywheel is the current pipeline.
 - `fb-paid-media-expert` — uses budget, channels, and campaign context
 - `content-writer` — uses brand voice rules (never violate hard NOs)
 - `cinematic-prompt-architect` — uses visual identity and brand aesthetic

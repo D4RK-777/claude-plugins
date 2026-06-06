@@ -189,7 +189,7 @@ The dashboard parses this file and renders:
    - Content rendered as markdown
    - **[ ✓ Accept ]** **[ ✗ Override ]** tick-row
    - Override note textarea (visible when ✗ ticked)
-   - **[ ↻ Change just this section ]** button (sendPrompts a focused regen)
+   - **[ ↻ Change just this section ]** button (copies a focused regen prompt to clipboard; operator pastes into Claude Code)
 4. **Open questions** — answerable form fields with text inputs; submissions write back into the file
 5. **Approval gate** — big button at bottom. Disabled until every section has a tick OR an override note, and every open question has an answer. When clicked, sets `status: approved`, fills `approved_at` + `approved_by`, and emits a `Seeds for next phase` summary to the next block.
 

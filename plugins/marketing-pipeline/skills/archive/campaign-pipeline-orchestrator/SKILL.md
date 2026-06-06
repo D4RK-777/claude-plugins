@@ -1,7 +1,10 @@
 ---
 name: campaign-pipeline-orchestrator
 description: >
-  The master marketing pipeline. Accept any input — a product URL, a brief sentence, an idea, a competitor URL, uploaded assets — and run the full 3-phase connected research-to-ad pipeline. Every phase uses the output of the previous phase as its input, so the research informs the hooks, the hooks inform the copy, and the copy informs the creative. Outputs a complete Campaign Packet: Research Brief + Persona Doc + Hook & Creative Brief + Ad Copy Package. Trigger on: "run the pipeline", "build a campaign", "I have a new product/idea", "start from scratch", "full marketing build", "research this and make ads", "take this URL and build the campaign", "end-to-end campaign", "marketing pipeline", "build out the full funnel", or any request to go from a raw idea or product all the way to production-ready ad creative. This is the entry point — it calls all other skills in sequence.
+  DEPRECATED — superseded by the 8-block flywheel (phase-doc-setup → research → ideation → creation → implementation → reporting → learning → updating). This 3-phase pipeline is preserved in archive/ for reference. Do not invoke. The current entry point is `/start-campaign` in the terminal, which walks the operator through the intake inline and dispatches `phase-doc-setup`.
+
+  --- ORIGINAL DESCRIPTION BELOW (for historical reference) ---
+  The master marketing pipeline. Accept any input — a product URL, a brief sentence, an idea, a competitor URL, uploaded assets — and run the full 3-phase connected research-to-ad pipeline. Every phase uses the output of the previous phase as its input, so the research informs the hooks, the hooks inform the copy, and the copy informs the creative. Outputs a complete Campaign Packet: Research Brief + Persona Doc + Hook & Creative Brief + Ad Copy Package.
 ---
 
 # Campaign Pipeline Orchestrator

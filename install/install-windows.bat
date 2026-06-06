@@ -50,9 +50,9 @@ echo   ============================================================
 echo.
 echo   Next:
 echo   1. Open Claude Code (Start Menu - search "Claude")
-echo   2. Type: install marketing command center
-echo   3. Click the dashboard link
-echo   4. Click "+ New campaign" to start
+echo   2. Type: /install-marketing-command-center
+echo   3. Then: /start-campaign
+echo   4. (Optional) /open-command-center to see the dashboard
 echo.
 echo   Updates: when admin sends a new version, run this installer again.
 echo.

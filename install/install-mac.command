@@ -59,9 +59,9 @@ cat << 'DONE'
 
   Next:
   1. Open Claude Code (Cmd+Space — search "Claude")
-  2. Type: install marketing command center
-  3. Click the dashboard link
-  4. Click "+ New campaign" to start
+  2. Type: /install-marketing-command-center
+  3. Then: /start-campaign
+  4. (Optional) /open-command-center to see the dashboard
 
   Updates: when admin sends a new version, run this installer again.
 

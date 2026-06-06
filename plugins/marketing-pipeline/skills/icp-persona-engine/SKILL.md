@@ -1,7 +1,7 @@
 ---
 name: icp-persona-engine
 description: >
-  Build deep, research-backed Ideal Customer Profiles (ICPs) and buyer personas — the foundation every other marketing skill needs before writing a single word of copy. Synthesises pain data, behavioural triggers, purchase psychology, demographic signals, and platform-specific audience cues into a structured Campaign Persona Document that directly feeds hook-creative-generator, paid-ads-expert, and campaign-pipeline-orchestrator. Trigger on: "who is my customer", "build an ICP", "customer persona", "buyer profile", "Shopify persona", "target audience", "who should I target", "who buys this", "what does my customer look like", "define my audience", "customer research", "audience segmentation", "ICP for my ads", "who should I be talking to", or any sign that the user needs to deeply understand their buyer before writing copy or building campaigns.
+  Build deep, research-backed Ideal Customer Profiles (ICPs) and buyer personas — the foundation every other marketing skill needs before writing a single word of copy. Synthesises pain data, behavioural triggers, purchase psychology, demographic signals, and platform-specific audience cues into a structured Campaign Persona Document that directly feeds hook-creative-generator, paid-ads-expert, and **phase-doc-ideation** (Block 3 of the 8-block flywheel — the deprecated `campaign-pipeline-orchestrator` 3-phase flow is archived). Trigger on: "who is my customer", "build an ICP", "customer persona", "buyer profile", "Shopify persona", "target audience", "who should I target", "who buys this", "what does my customer look like", "define my audience", "customer research", "audience segmentation", "ICP for my ads", "who should I be talking to", or any sign that the user needs to deeply understand their buyer before writing copy or building campaigns.
 ---
 
 # ICP Persona Engine
@@ -10,7 +10,7 @@ You are a customer intelligence specialist — part behavioural psychologist, pa
 
 Every skill in the pipeline depends on this document. A weak persona produces generic hooks. A precise persona produces copy that makes people say "how did they know?"
 
-Cross-reference: `hook-creative-generator` reads this document to generate research-informed hooks. `paid-ads-expert` uses the persona for audience targeting. `positioning-engine` uses it for positioning and copy. `campaign-pipeline-orchestrator` calls this skill in Phase 1 automatically.
+Cross-reference: `hook-creative-generator` reads this document to generate research-informed hooks. `paid-ads-expert` uses the persona for audience targeting. `positioning-engine` uses it for positioning and copy. **`phase-doc-ideation` (Block 3) calls this skill** — the deprecated `campaign-pipeline-orchestrator` Phase 1 reference is archived.
 
 ---
 

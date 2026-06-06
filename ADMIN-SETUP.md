@@ -1,4 +1,4 @@
-# Admin Setup — Distribute Without GitHub
+# Admin Setup — Distribute the Marketing Pipeline
 
 > Three steps. Done in 5 minutes.
 
@@ -21,7 +21,7 @@ Pick whichever you prefer:
 | **Dropbox / OneDrive / Google Drive** | Upload, get a share link, send the link |
 | **Shared network drive** | Drop the file in a folder everyone has access to |
 
-(Note: Slack has a 1 GB file size limit. This zip is 375 KB — well under.)
+(Note: Slack has a 1 GB file size limit. This zip is well under.)
 
 ---
 
@@ -37,7 +37,11 @@ Hey team — new marketing tool, one-click install.
    • Mac: install-mac.command
    • Windows: install-windows.bat
 5. Wait 20 seconds. Press Enter when prompted.
-6. Open Claude Code and type: install marketing command center
+6. Open Claude Code and type:
+     /install-marketing-command-center
+7. Then:
+     /start-campaign
+   to begin your first campaign.
 
 Full instructions in TEAM-INSTALL.md (inside the zip).
 Questions: ping me.
@@ -50,7 +54,7 @@ That's it. No GitHub. No git. No credentials. No internet account needed for the
 ## When you ship an updated version
 
 1. Update the files inside `chatinc-plugins/plugins/marketing-pipeline/`
-2. Bump the version in `chatinc-plugins/plugins/marketing-pipeline/.claude-plugin/plugin.json` (e.g. `1.0.0` → `1.0.1`)
+2. Bump the version in `chatinc-plugins/plugins/marketing-pipeline/.claude-plugin/plugin.json` (e.g. `1.0.0` → `1.1.0`)
 3. Re-zip the `chatinc-plugins/` folder
 4. Share again the same way
 

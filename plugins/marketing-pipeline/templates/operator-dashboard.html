@@ -234,20 +234,131 @@ function saveState() {
 }
 
 // ============================================================
-// FILE I/O via MCP
+// FILE I/O via File System Access API (Claude Code mode)
 // ============================================================
-async function execCmd(cmd) {
-  if (!window.cowork || !window.cowork.callMcpTool) {
-    console.warn('Cowork callMcpTool unavailable — running in preview mode.');
-    return { stdout: '', stderr: 'no-mcp', code: -1 };
+// The operator grants access to the marketing folder once via
+// showDirectoryPicker(). We hold the directory handle and use
+// it for all reads/writes. On non-Chromium browsers the dashboard
+// runs in snapshot mode only (operator re-runs /open-command-center
+// in Claude Code to refresh).
+// ============================================================
+
+async function ensureFsHandle() {
+  if (window.fsHandle) return window.fsHandle;
+  if (typeof window.showDirectoryPicker !== 'function') {
+    return null;  // non-Chromium browser
   }
   try {
-    const out = await window.cowork.callMcpTool('mcp__9242615b__exec', { command: cmd });
-    return out || { stdout: '', stderr: 'empty', code: 0 };
+    window.fsHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    return window.fsHandle;
   } catch (e) {
-    console.error('exec failed:', e);
-    return { stdout: '', stderr: e.message, code: -1 };
+    if (e.name !== 'AbortError') console.warn('Folder access denied:', e);
+    return null;
   }
+}
+
+async function resolveDir(pathStr, create) {
+  const segments = pathStr.split('/').filter(Boolean);
+  let dir = window.fsHandle;
+  for (const seg of segments) {
+    if (!dir) return null;
+    try { dir = await dir.getDirectoryHandle(seg, { create: !!create }); }
+    catch (e) { return null; }
+  }
+  return dir;
+}
+
+async function readTextFile(pathStr) {
+  const segments = pathStr.split('/').filter(Boolean);
+  const fileName = segments.pop();
+  const dir = await resolveDir(segments.join('/'), false);
+  if (!dir) return null;
+  try {
+    const fh = await dir.getFileHandle(fileName);
+    const file = await fh.getFile();
+    return await file.text();
+  } catch (e) {
+    if (e.name === 'NotFoundError') return null;
+    throw e;
+  }
+}
+
+async function writeTextFile(pathStr, content) {
+  const segments = pathStr.split('/').filter(Boolean);
+  const fileName = segments.pop();
+  const dir = await resolveDir(segments.join('/'), true);
+  if (!dir) return false;
+  const fh = await dir.getFileHandle(fileName, { create: true });
+  const w = await fh.createWritable();
+  await w.write(content);
+  await w.close();
+  return true;
+}
+
+async function ensureDir(pathStr) {
+  return await resolveDir(pathStr, true);
+}
+
+async function listDirNames(pathStr, depth) {
+  const dir = await resolveDir(pathStr, false);
+  if (!dir) return [];
+  const out = [];
+  for await (const [name, h] of dir.entries()) {
+    if (h.kind !== 'directory') continue;
+    if (name.startsWith('.') || name.startsWith('_')) continue;
+    if (depth >= 2) {
+      for await (const [n2, h2] of h.entries()) {
+        if (h2.kind === 'directory' && !n2.startsWith('.') && !n2.startsWith('_')) {
+          out.push(name + '/' + n2);
+        }
+      }
+    } else {
+      out.push(name);
+    }
+  }
+  return out;
+}
+
+// Backwards-compat shim for the older execCmd(cmd) callers.
+// New code should use the named helpers above (readTextFile, writeTextFile, etc.)
+async function execCmd(cmd) {
+  if (!window.fsHandle) {
+    const granted = await ensureFsHandle();
+    if (!granted) return { stdout: '', stderr: 'no-fs-handle', code: -1 };
+  }
+  cmd = cmd.trim();
+  let m;
+  if ((m = cmd.match(/^cat\s+"([^"]+)"\s*2>\/dev\/null\s*\|\|\s*echo\s+"__MISSING__"$/))) {
+    const content = await readTextFile(m[1]);
+    return { stdout: content === null ? '__MISSING__\n' : content, stderr: '', code: 0 };
+  }
+  if ((m = cmd.match(/^mkdir\s+-p\s+"([^"]+)"$/))) {
+    await ensureDir(m[1]);
+    return { stdout: '', stderr: '', code: 0 };
+  }
+  if ((m = cmd.match(/^find\s+"([^"]+)"\s+-mindepth\s+2\s+-maxdepth\s+2\s+-type\s+d/))) {
+    const names = await listDirNames(m[1], 2);
+    return { stdout: names.join('\n') + '\n', stderr: '', code: 0 };
+  }
+  if ((m = cmd.match(/^find\s+"([^"]+)"\s+-mindepth\s+1\s+-maxdepth\s+1\s+-type\s+d/))) {
+    const names = await listDirNames(m[1], 1);
+    return { stdout: names.join('\n') + '\n', stderr: '', code: 0 };
+  }
+  if ((m = cmd.match(/^\[\s+-d\s+"([^"]+)"\s+\]\s+&&\s+echo\s+exists\s+\|\|\s+echo\s+no$/))) {
+    const dir = await resolveDir(m[1], false);
+    return { stdout: dir ? 'exists\n' : 'no\n', stderr: '', code: 0 };
+  }
+  if ((m = cmd.match(/^ls\s+-1\s+"([^"]+)"\s*2>\/dev\/null/))) {
+    const names = await listDirNames(m[1], 1);
+    return { stdout: names.join('\n') + '\n', stderr: '', code: 0 };
+  }
+  if (cmd.match(/^echo\s+\$HOME\s*2>\/dev\/null$/)) {
+    return { stdout: '', stderr: '', code: 0 };
+  }
+  if (cmd.match(/^pwd\s*2>\/dev\/null$/)) {
+    return { stdout: '', stderr: '', code: 0 };
+  }
+  return { stdout: '', stderr: 'unsupported-command: ' + cmd.slice(0, 80), code: -1 };
 }
 
 // Helper to split composite key into brand/slug
@@ -271,10 +382,12 @@ async function writePhaseDoc(compositeKey, blockNum, text) {
   const { brand_slug, slug } = splitKey(compositeKey);
   const dir = `${state.marketing_root}/${brand_slug}/${slug}`;
   const path = `${dir}/${blockNum}-${BLOCK_IDS[blockNum]}.md`;
-  await execCmd(`mkdir -p "${dir}"`);
-  await execCmd(`cat > "${path}" << 'PHASEDOC_END'
-${text}
-PHASEDOC_END`);
+  if (!window.fsHandle) {
+    const granted = await ensureFsHandle();
+    if (!granted) return null;
+  }
+  await ensureDir(dir);
+  await writeTextFile(path, text);
   return path;
 }
 
@@ -519,162 +632,100 @@ function renderBanners() {
 }
 
 // ============================================================
-// VIEW: BOOT (first-run setup) — with folder browser
+// VIEW: BOOT (first-run setup) — File System Access API
+// ============================================================
+// The operator grants access to the marketing folder once via
+// showDirectoryPicker(). On non-Chromium browsers the boot
+// screen shows a "use Chrome/Edge" banner — the dashboard
+// will run in snapshot mode (operator refreshes via Claude Code).
 // ============================================================
 async function renderBoot() {
-  // First call — detect quick picks + default browse path
-  if (!state.ui.boot_browse_path) {
-    await detectQuickPicks();
-  } else {
-    await refreshBrowseList();
-  }
   rerenderBoot();
-  return '';   // render() will set innerHTML directly via rerenderBoot
+  return '';
 }
 
 function rerenderBoot() {
   const main = document.getElementById('main');
-  const qp = state.ui.boot_quick_picks || [];
-  const subs = state.ui.boot_subdirs || [];
-  const curPath = state.ui.boot_browse_path || '';
+  const isChromium = typeof window.showDirectoryPicker === 'function';
+  const folderName = window.fsHandle ? window.fsHandle.name : '';
 
-  const qpHtml = qp.length === 0 ? '<p class="help" style="margin:0;">(No suggested folders found — use the browser below)</p>'
-    : qp.map(q => `<button class="quick-pick" onclick="useQuickPick('${esc(q).replace(/'/g, "\'")}')">📁 ${esc(q)}</button>`).join('');
-
-  const subsHtml = subs.length === 0
-    ? '<p class="help" style="padding:14px;text-align:center;">No subfolders here.</p>'
-    : subs.map(s => `<div class="browse-row" onclick="browseTo('${esc(curPath + '/' + s).replace(/'/g, "\'")}')">
-        <span>📁 ${esc(s)}</span>
-        <span class="browse-arrow">→</span>
-      </div>`).join('');
+  if (!isChromium) {
+    main.innerHTML = `
+      <div class="boot">
+        <h1>Marketing Command Center</h1>
+        <div class="banner banner-amber" style="margin:0 0 24px 0;">
+          <span class="banner-icon">⚠️</span>
+          <div class="banner-content">
+            <strong>Chrome or Edge required for live mode</strong>
+            This dashboard uses the File System Access API to read and write your campaign files. That's supported in Chrome 86+ and Edge 86+ but not in Firefox or Safari.
+          </div>
+        </div>
+        <p>You can still use the <strong>terminal commands</strong> in Claude Code (<code>/start-campaign</code>, <code>/run-phase</code>, <code>/open-command-center</code>, <code>/list-campaigns</code>) — they work without a browser.</p>
+        <p style="margin-top:24px;color:var(--text-muted);font-size:12px;">If this file was regenerated by Claude Code (<code>/open-command-center</code>), the campaign data is embedded in it for review.</p>
+      </div>`;
+    return;
+  }
 
   main.innerHTML = `
     <div class="boot">
       <h1>Welcome to the Marketing Command Center</h1>
-      <p>One dashboard. Eight phases. Per-brand projects. Before we start, pick the folder where Claude will keep your campaign files.</p>
+      <p>One dashboard. Eight phases. Per-brand projects. Click below to grant Claude Code access to your marketing folder — the dashboard reads and writes phase docs there directly.</p>
 
-      <h3 style="margin-top:24px;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);">Quick pick</h3>
-      <div class="quick-pick-grid">${qpHtml}</div>
-
-      <h3 style="margin-top:28px;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);">Or browse</h3>
-      <div class="browser">
-        <div class="browser-toolbar">
-          <button class="btn btn-sm" onclick="browseUp()" ${curPath === '/' || !curPath ? 'disabled' : ''}>⬆ Up</button>
-          <input type="text" id="browsePath" value="${esc(curPath)}" onchange="browseTo(this.value)" style="flex:1;padding:6px 10px;border:1px solid var(--border-strong);border-radius:6px;font-family:var(--mono);font-size:12px;">
-          <button class="btn btn-sm" onclick="browseTo(document.getElementById('browsePath').value)">Go</button>
+      ${folderName ? `
+        <div class="banner banner-green" style="margin:24px 0;">
+          <span class="banner-icon">✓</span>
+          <div class="banner-content">
+            <strong>Folder access granted: ${esc(folderName)}</strong>
+            You can change this anytime by clicking "Switch folder" below.
+          </div>
         </div>
-        <div class="browse-list">${subsHtml}</div>
-        <div class="browser-footer">
-          <button class="btn btn-sm" onclick="createFolderHere()">+ New folder here</button>
-          <button class="btn btn-primary btn-sm" onclick="selectCurrentFolder()" ${curPath ? '' : 'disabled'}>✓ Use this folder</button>
+      ` : `
+        <div style="margin:32px 0;">
+          <button class="btn btn-primary" style="padding:14px 24px;font-size:15px;" onclick="grantFolderAccess()">
+            📁 Grant access to marketing folder
+          </button>
+          <p class="help" style="margin-top:8px;">Pick a folder like <code>~/Documents/ChatInc-Marketing/</code>. The dashboard will read and write files inside it.</p>
         </div>
-        <p class="help" style="margin-top:8px;">Selected: <code id="bootSelected">${esc(state.marketing_root || '(none yet)')}</code></p>
-      </div>
+      `}
 
-      <h3 style="margin-top:28px;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);">Your name</h3>
+      <h3 style="margin-top:24px;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);">Your name</h3>
       <div class="form-field">
         <p class="help">Stamped into the <code>approved_by</code> field whenever you lock a phase doc.</p>
         <input type="text" id="bootOperator" placeholder="e.g. Chris" value="${esc(state.operator_name)}">
       </div>
 
-      <div style="margin-top:24px;display:flex;gap:8px;">
-        <button class="btn btn-success" onclick="completeBoot()" ${state.marketing_root ? '' : 'disabled'}>Set up + open dashboard →</button>
+      <div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-success" onclick="completeBoot()" ${window.fsHandle ? '' : 'disabled'}>
+          Set up + open dashboard →
+        </button>
+        ${window.fsHandle ? `<button class="btn" onclick="switchFolder()">Switch folder</button>` : ''}
       </div>
     </div>`;
 }
 
-async function detectQuickPicks() {
-  // Common locations to suggest. Test each via ls.
-  const candidates = [
-    '/sessions/' + (window.location.pathname.match(/sessions\/([^\/]+)/) || [])[1] + '/mnt/Marketing',
-    '~/Marketing',
-    '~/Documents/Marketing',
-    '~/Desktop/Marketing',
-  ].filter(p => p && !p.includes('undefined'));
-
-  // Also detect mount-style by listing what pwd returns
-  const pwd = await execCmd('pwd 2>/dev/null');
-  const cwd = (pwd.stdout || '').trim();
-  if (cwd) {
-    candidates.push(cwd);
-    candidates.push(cwd + '/Marketing');
+async function grantFolderAccess() {
+  const handle = await ensureFsHandle();
+  if (handle) {
+    state.marketing_root = handle.name;
+    saveState();
+    rerenderBoot();
   }
-  // Also detect home + Documents
-  const homeRes = await execCmd('echo $HOME 2>/dev/null');
-  const home = (homeRes.stdout || '').trim();
-  if (home) {
-    candidates.push(home + '/Marketing');
-    candidates.push(home + '/Documents/Marketing');
-  }
-
-  const found = [];
-  for (const p of [...new Set(candidates)]) {
-    const r = await execCmd(`[ -d "${p}" ] && echo exists || echo no`);
-    if ((r.stdout || '').trim() === 'exists' && !found.includes(p)) found.push(p);
-  }
-  state.ui.boot_quick_picks = found.slice(0, 6);
-  // Default browse path = first quick pick, else cwd, else /
-  state.ui.boot_browse_path = found[0] || cwd || '/';
-  await refreshBrowseList();
 }
 
-async function refreshBrowseList() {
-  const path = state.ui.boot_browse_path;
-  if (!path) { state.ui.boot_subdirs = []; return; }
-  const r = await execCmd(`ls -1 "${path}" 2>/dev/null | head -100`);
-  const lines = (r.stdout || '').split('\n').map(l => l.trim()).filter(l => l);
-  // Filter to directories only
-  const dirs = [];
-  for (const name of lines) {
-    if (name.startsWith('.')) continue;
-    const test = await execCmd(`[ -d "${path}/${name}" ] && echo y || echo n`);
-    if ((test.stdout || '').trim() === 'y') dirs.push(name);
-  }
-  state.ui.boot_subdirs = dirs;
-}
-
-async function browseTo(path) {
-  state.ui.boot_browse_path = (path || '').trim() || '/';
-  await refreshBrowseList();
-  rerenderBoot();
-}
-
-async function browseUp() {
-  const cur = state.ui.boot_browse_path || '/';
-  if (cur === '/' || !cur.includes('/')) return;
-  const parent = cur.replace(/\/[^\/]+\/?$/, '') || '/';
-  await browseTo(parent);
-}
-
-async function useQuickPick(path) {
-  state.marketing_root = path;
-  state.ui.boot_browse_path = path;
-  await refreshBrowseList();
-  rerenderBoot();
-}
-
-async function selectCurrentFolder() {
-  state.marketing_root = state.ui.boot_browse_path;
+async function switchFolder() {
+  window.fsHandle = null;
+  state.marketing_root = '';
   saveState();
   rerenderBoot();
 }
 
-async function createFolderHere() {
-  const name = prompt('New folder name (e.g. "Marketing" or "Campaigns")');
-  if (!name) return;
-  const safe = name.replace(/[<>|:"\\?*]/g, '').trim();
-  if (!safe) return;
-  const newPath = state.ui.boot_browse_path + '/' + safe;
-  await execCmd(`mkdir -p "${newPath}"`);
-  await browseTo(newPath);
-}
-
 async function completeBoot() {
-  if (!state.marketing_root) { alert('Pick a folder first — click "Use this folder" on the path you want.'); return; }
+  if (!window.fsHandle) { alert('Click "Grant access to marketing folder" first.'); return; }
   const op = (document.getElementById('bootOperator').value || '').trim();
   state.operator_name = op || 'Operator';
-  // Initialise root + a default "_libraries" subfolder for brand-agnostic library overrides
-  await execCmd(`mkdir -p "${state.marketing_root}/_libraries"`);
+  saveState();
+  // Initialise _libraries subfolder for brand-agnostic library overrides
+  try { await ensureDir(`${window.fsHandle.name}/_libraries`); } catch (e) {}
   state.current_view = 'projects';
   await refreshProjects();
   render();
@@ -940,8 +991,23 @@ function setAnswer(key, v) {
 function renderGateOnly() { /* light re-render to update gate state */ render(); }
 
 // ============================================================
-// PHASE DISPATCH (sendPrompt) + APPROVAL + REGEN
+// PHASE DISPATCH (clipboard) + APPROVAL + REGEN
 // ============================================================
+// Claude Code mode: the dashboard does NOT talk back to the
+// terminal. Instead, "Run Phase" copies a structured prompt
+// to the operator's clipboard, they paste it into Claude Code,
+// and Claude Code invokes the phase-doc skill directly.
+// ============================================================
+
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 function dispatchPhase(num) {
   const compositeKey = state.current_project;
   const { brand_slug, slug } = splitKey(compositeKey);
@@ -986,34 +1052,38 @@ Phase 2 Research is where the heavy external research happens — this is the ph
   }
   prompt += `\n\nDO NOT set status to approved — that's the dashboard's job at the approval gate. End your response with: "✓ Phase ${num} doc ready: [path]."`;
 
-  if (typeof sendPrompt === 'function') {
-    try { sendPrompt(prompt); flashToast(`Phase ${num} dispatched. Watch the chat panel.`); }
-    catch (e) { alert('sendPrompt failed: ' + e.message); }
-  } else {
-    alert('Chat not connected. Copy this and paste into chat:\n\n' + prompt);
-  }
+  copyToClipboard(prompt).then(ok => {
+    if (ok) {
+      flashToast(`✓ Phase ${num} prompt copied. Paste into Claude Code to run.`);
+    } else {
+      // Clipboard API failed (insecure context, permissions blocked, etc.)
+      promptForManualCopy(prompt);
+    }
+  });
   // Mark as running locally
   if (!p.blocks) p.blocks = {};
   p.blocks[num] = { status: 'running' };
   state.projects[slug] = p;
   saveState();
   render();
-  // Poll for the file appearing
-  pollForPhaseDoc(slug, num);
 }
 
-async function pollForPhaseDoc(slug, num, attempt) {
-  attempt = attempt || 0;
-  if (attempt > 60) return;  // give up after ~5 minutes
-  await new Promise(r => setTimeout(r, 5000));
-  const doc = await readPhaseDoc(slug, num);
-  if (doc) {
-    await refreshProjects();
-    flashToast(`Phase ${num} doc landed — open it to review.`);
-    render();
-    return;
-  }
-  pollForPhaseDoc(slug, num, attempt + 1);
+function promptForManualCopy(prompt) {
+  // Fallback: open a modal with a textbox + select-all for manual copy
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2000;';
+  modal.innerHTML = `<div style="background:white;max-width:720px;width:90%;max-height:80vh;padding:24px;border-radius:12px;display:flex;flex-direction:column;">
+    <h3 style="margin:0 0 12px;">Copy this prompt and paste into Claude Code</h3>
+    <p style="margin:0 0 12px;color:var(--text-muted);font-size:13px;">Clipboard API unavailable. Select all (Ctrl/Cmd+A), copy (Ctrl/Cmd+C), then paste in Claude Code.</p>
+    <textarea readonly style="flex:1;min-height:300px;font-family:var(--mono);font-size:12px;padding:12px;border:1px solid var(--border-strong);border-radius:6px;">${esc(prompt)}</textarea>
+    <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn" onclick="this.closest('[role-modal]')?.remove(); document.body.querySelectorAll('div[style*=fixed]').forEach(el => el.remove());">Close</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  const ta = modal.querySelector('textarea');
+  ta.focus();
+  ta.select();
 }
 
 function regenSection(slug, num, sectionId) {
@@ -1025,19 +1095,21 @@ function regenSection(slug, num, sectionId) {
   setOverrideNote(accKey, note);
 
   const blockId = BLOCK_IDS[num];
-  const path = `${state.marketing_root}/phases/${slug}/${num}-${blockId}.md`;
+  const { brand_slug, project_slug } = splitKey(slug);
+  const path = `${state.marketing_root}/${brand_slug}/${project_slug}/${num}-${blockId}.md`;
   const promptText = `# Regenerate section "${sectionId}" in Phase ${num} for project ${slug}
 
 Read the current phase doc at: ${path}
 Operator's override note for section:${sectionId}: ${note}
 
 Regenerate ONLY this section's content block per the phase-doc-schema. Keep all other sections untouched. Update last_updated in frontmatter. Save to the same path.`;
-  if (typeof sendPrompt === 'function') {
-    sendPrompt(promptText);
-    flashToast(`Regen dispatched for section ${sectionId}. Re-open block when chat finishes.`);
-  } else {
-    alert('Chat not connected. Copy and paste:\n\n' + promptText);
-  }
+  copyToClipboard(promptText).then(ok => {
+    if (ok) {
+      flashToast(`✓ Regen prompt copied. Paste into Claude Code to regenerate.`);
+    } else {
+      promptForManualCopy(promptText);
+    }
+  });
 }
 
 async function approvePhase(num) {
@@ -1315,10 +1387,13 @@ async function submitIntake() {
     ...intakeData
   }, null, 2);
   const dir = `${state.marketing_root}/${brandSlug}/${slug}`;
-  await execCmd(`mkdir -p "${dir}" "${state.marketing_root}/${brandSlug}/_libraries"`);
-  await execCmd(`cat > "${dir}/intake.json" << 'INTAKE_END'
-${intakeJson}
-INTAKE_END`);
+  if (!window.fsHandle) {
+    const granted = await ensureFsHandle();
+    if (!granted) { alert('Folder access required to save the campaign. Click "Grant access" first.'); return; }
+  }
+  await ensureDir(dir);
+  await ensureDir(`${state.marketing_root}/${brandSlug}/_libraries`);
+  await writeTextFile(`${dir}/intake.json`, intakeJson);
   // Initialise project in state
   if (!state.projects[compositeKey]) {
     state.projects[compositeKey] = { brand: brand, brand_slug: brandSlug, display_name: display, slug: slug, created_at: new Date().toISOString(), blocks: {} };
@@ -1504,22 +1579,20 @@ function md(text) {
 // BOOT
 // ============================================================
 (function init() {
-  // Auto-bootstrap on first run if the setup skill injected marketing_root via localStorage
-  // (it writes a meta key 'mcc-autoboot' with the defaults to use)
+  // If a folder handle was saved in localStorage, restore it.
+  // (Browsers persist showDirectoryPicker handles across page loads
+  // when re-requested with the same permissions check.)
   try {
-    const autoboot = localStorage.getItem('mcc-autoboot');
-    if (autoboot && !state.marketing_root) {
-      const cfg = JSON.parse(autoboot);
-      state.marketing_root = cfg.marketing_root || '';
-      state.operator_name = cfg.operator_name || 'Operator';
-      saveState();
-      // One-time consumed
-      localStorage.removeItem('mcc-autoboot');
+    const savedHandle = localStorage.getItem('mcc-fs-handle-name');
+    if (savedHandle && !window.fsHandle) {
+      // Note: real handle restoration requires IndexedDB; we just
+      // remember the folder name so the boot screen shows "previously: X"
+      state.ui.last_folder_name = savedHandle;
     }
   } catch (e) {}
 
-  // First-time setup if STILL no marketing_root (manual install path)
-  if (!state.marketing_root) {
+  // Show boot view if no folder access granted yet
+  if (!window.fsHandle) {
     state.current_view = 'boot';
   } else if (state.current_view === 'boot') {
     state.current_view = 'projects';

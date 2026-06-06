@@ -1,7 +1,7 @@
 ---
 name: hook-creative-generator
 description: >
-  The bridge between research and creative. Takes a Campaign Research Brief and/or Campaign Persona Document and generates research-informed hooks, creative strategy selection, scroll-stop scoring, and full creative briefs. Every hook it produces is derived from actual pain language, trigger events, and competitor gaps — not from generic templates. Outputs a Hook + Creative Brief that feeds directly into paid-ads-expert and cinematic-prompt-architect. Trigger on: "generate hooks", "write me hooks", "hook ideas", "scroll-stopping hooks", "what should my hook be", "create hooks from research", "hook + creative brief", "creative strategy", "what type of creative should I use", "pick a creative format", "scroll stop score", "will this stop the scroll", "rate my hook", "score this creative", or any request that sits between research and ad copy — the ideation layer. Works standalone (give it a product + pain) or as part of campaign-pipeline-orchestrator (Phase 2).
+  The bridge between research and creative. Takes a Campaign Research Brief and/or Campaign Persona Document and generates research-informed hooks, creative strategy selection, scroll-stop scoring, and full creative briefs. Every hook it produces is derived from actual pain language, trigger events, and competitor gaps — not from generic templates. Outputs a Hook + Creative Brief that feeds directly into paid-ads-expert and cinematic-prompt-architect. Trigger on: "generate hooks", "write me hooks", "hook ideas", "scroll-stopping hooks", "what should my hook be", "create hooks from research", "hook + creative brief", "creative strategy", "what type of creative should I use", "pick a creative format", "scroll stop score", "will this stop the scroll", "rate my hook", "score this creative", or any request that sits between research and ad copy — the ideation layer. Works standalone (give it a product + pain) or as part of `phase-doc-creation` (Block 4 of the 8-block flywheel — the deprecated `campaign-pipeline-orchestrator` Phase 2 reference is archived).
 ---
 
 # Hook + Creative Generator
@@ -10,7 +10,7 @@ You are the creative director and scroll-science expert sitting between the rese
 
 You do not write generic hooks from a template library. Every hook you generate is traceable back to a specific research finding: a pain phrase, a trigger event, a competitor gap, or an awareness level. If a hook can't be traced back to the research, it doesn't ship.
 
-Cross-reference: `icp-persona-engine` builds the persona this skill reads. `paid-ads-expert` receives the Hook + Creative Brief to write full ad copy. `cinematic-prompt-architect` receives the visual direction to generate AI video/image prompts. `campaign-pipeline-orchestrator` calls this skill as Phase 2.
+Cross-reference: `icp-persona-engine` builds the persona this skill reads. `paid-ads-expert` receives the Hook + Creative Brief to write full ad copy. `cinematic-prompt-architect` receives the visual direction to generate AI video/image prompts. **`phase-doc-creation` (Block 4) calls this skill** — the deprecated `campaign-pipeline-orchestrator` Phase 2 reference is archived.
 
 ---
 
@@ -233,7 +233,7 @@ Compile everything into a single `hook-creative-brief.md` file structured as:
 ## Hand-Off Instructions
 → Pass to paid-ads-expert with this brief for full copy
 → Pass cinematic direction to cinematic-prompt-architect for visual prompts
-→ Pass hook #1 to campaign-pipeline-orchestrator as Phase 2 completion signal
+→ Pass hook #1 to `phase-doc-creation` as Block 4 completion signal (the deprecated `campaign-pipeline-orchestrator` Phase 2 reference is archived)
 ```
 
 ---

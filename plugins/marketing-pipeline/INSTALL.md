@@ -1,81 +1,123 @@
-# Installation Guide
+# Installation Guide — Marketing Pipeline (Claude Code)
 
 ## Prerequisites
 
-- Claude Code or Cowork mode
-- A folder Claude can read/write (your "marketing root")
-- An MCP server with shell exec capability (for the dashboard to read/write phase doc files)
+- **Claude Code** installed (https://docs.claude.com/en/docs/claude-code/quickstart)
+- The plugin installed via the marketplace (run `install-windows.bat` or `install-mac.command`, OR run `/plugin install marketing-pipeline@chatinc-plugins` directly)
+- A modern browser for the dashboard (Chrome 86+ or Edge 86+ for live mode; any browser for snapshot mode)
 
 ## Steps
 
-### 1. Install the plugin
+### 1. Install the Command Center
 
-If installing from a `.plugin` zip:
+In Claude Code, type:
 ```
-/plugin install /path/to/chatinc-marketing-pipeline.plugin
-```
-
-Or from a marketplace:
-```
-/plugin install chatinc-marketing-pipeline
+/install-marketing-command-center
 ```
 
-### 2. Verify install
+This:
+- Creates the marketing folder at `~/Documents/ChatInc-Marketing/` (or platform equivalent)
+- Drops `dashboard.html` into that folder
+- Detects your operator name from the OS username
 
-In a Cowork session, type:
+You'll see:
 ```
-/skill list
-```
-You should see ~42 skills prefixed with `chatinc-marketing-pipeline:` including `setup-marketing-command-center`, `phase-doc-setup`, etc.
-
-### 3. Set up the Command Center
-
-Type:
-```
-install marketing command center
+✓ Marketing Command Center installed.
+  Folder: ~/Documents/ChatInc-Marketing/
+  Dashboard: ~/Documents/ChatInc-Marketing/dashboard.html
+  Operator name: Chris (detected from $USERNAME)
 ```
 
-You'll be asked:
-1. **Marketing folder path** — e.g. `C:\Users\you\Marketing` (must exist + Claude must have access)
-2. **Operator name** — your name; stamped into approved phase docs
+### 2. Open the dashboard (optional but recommended)
 
-The dashboard launches as a Cowork artifact. Bookmark it.
+Either:
+- Type `/open-command-center` in Claude Code — it regenerates the snapshot and opens it in your browser.
+- Or open `~/Documents/ChatInc-Marketing/dashboard.html` directly.
 
-### 4. Start a campaign
+**First time you open it:** Click "Grant access to marketing folder" and pick the folder you created in step 1. This is the File System Access API permission grant — it's stored per-browser. You only do it once per browser.
 
-In the dashboard:
-1. Click **+ New campaign**
-2. Fill the intake form (slugified project name + ~20 fields)
-3. Click **▶ Start Phase 1 — Setup**
-4. Watch the chat panel — Claude runs the `phase-doc-setup` skill
-5. The dashboard polls for `1-setup.md` to appear
-6. When it does, the block goes amber: **🚦 HUMAN REVIEW NEEDED**
-7. Open the block, tick / override each section, answer open questions, hit **Approve**
+### 3. Start a campaign
+
+In Claude Code, type:
+```
+/start-campaign
+```
+
+Claude walks you through 9 essentials, one at a time:
+1. **Brand** — which brand is this for
+2. **Project name** — what to call this campaign
+3. **Website URL** — the site AI should research
+4. **Goal** — awareness / leadgen / trial / purchase / retarget / retention / brand
+5. **Channels** — Meta, Google, Email, etc.
+6. **Budget** — total + structure
+7. **KPI + target** — what "it worked" looks like
+8. **Timeline** — launch date + hard deadlines
+9. **Hard NOs** — topics/claims absolutely off-limits
+
+Then Claude runs Phase 1 (Setup) automatically.
+
+### 4. Review Phase 1 in the dashboard
+
+Open the dashboard (`/open-command-center` or directly). You'll see Phase 1 in amber — needs your review.
+
+For each section:
+- **✓ Accept** the AI's work as-is
+- **✗ Override** with your correction (type what it should say)
+- **↻ Change just this** — copies a focused regen prompt; paste in Claude Code
+
+Open questions get text inputs in the dashboard. Type your answers directly.
+
+When every section is decided, the **Approve** button enables. Click it → `status: approved` is written to `1-setup.md` → Phase 2 unlocks.
 
 ### 5. Continue through phases
 
-After approving, the dashboard offers to auto-run the next phase. Say yes — or approve manually, then click **▶ Run Phase N** when ready.
+For each subsequent phase, in Claude Code:
+```
+/run-phase {project-name} {N}
+```
 
-By Phase 5 (Implementation) you'll have a launch-ready GTM doc as a companion HTML in `{marketing_root}/gtm/{slug}/`.
+Examples:
+- `/run-phase flex-shopify 2` — Research
+- `/run-phase flex-shopify 3` — Ideation
+- `/run-phase flex-shopify 4` — Creation
+- `/run-phase flex-shopify 5` — Implementation (with GTM doc)
+- `/run-phase flex-shopify 6` — Reporting (run weekly)
+- `/run-phase flex-shopify 7` — Learning
+- `/run-phase flex-shopify 8` — Updating
+
+Or list everything: `/list-campaigns`
+
+### 6. Check progress
+
+```
+/list-campaigns
+```
+
+Shows all campaigns with phase progress and what's awaiting your review.
 
 ## Troubleshooting
 
-**"Chat not connected" error when running a phase**
-The dashboard couldn't reach the chat session. Refresh the dashboard, or copy the prompt from the alert and paste manually into chat.
+**"Show directory picker didn't open"**
+You clicked "Grant access" but nothing happened. Check:
+1. Are you in Chrome 86+ or Edge 86+? Firefox / Safari don't support the API.
+2. Is the page in a secure context (https:// or file://)? The API doesn't work over insecure http://.
 
-**Phase doc didn't appear after 5 minutes**
-The poll gives up at ~5 min. Open the chat panel — Claude may have hit a snag. Look for an error or a clarifying question. Resume by typing your answer in chat.
+**"Folder access required" toast appears**
+The dashboard's folder access grant expired or was cleared. Click "Grant access to marketing folder" again.
+
+**Phase doc didn't appear after running `/run-phase`**
+Open the file directly: `cat {marketing_root}/{brand}/{project}/{N}-{block}.md`. If it's empty, Claude Code hit a snag — check the chat for an error or clarifying question.
 
 **Block 1 stuck after intake**
-Open the chat — `phase-doc-setup` may be asking a clarifying question. Once answered, it'll write `1-setup.md` and the dashboard will pick it up.
+Check that `intake.json` was saved: `ls {marketing_root}/{brand}/{project}/`. If it's missing, re-run `/start-campaign`.
 
 **Wrong marketing folder**
-Go to **Settings** in the dashboard, change the path, save. Existing phase docs in the old folder aren't moved — copy them manually if you want to keep them.
+Re-run `/install-marketing-command-center` and it will ask whether to use a different folder. Or set the `MARKETING_ROOT` environment variable before starting Claude Code.
 
 ## Uninstall
 
 ```
-/plugin uninstall chatinc-marketing-pipeline
+/plugin uninstall marketing-pipeline
 ```
 
-Your phase doc files (in `{marketing_root}/phases/`) are NOT deleted by uninstall. Delete them manually if you want a clean slate.
+Your phase doc files in `~/Documents/ChatInc-Marketing/` are NOT deleted. Move/delete them manually if you want a clean slate.

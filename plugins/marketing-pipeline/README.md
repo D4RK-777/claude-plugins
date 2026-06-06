@@ -1,6 +1,6 @@
 # Marketing Pipeline
 
-Brand-agnostic, closed-loop marketing pipeline operated through a single dashboard. Eight phases. Eight phase docs. One review pattern. Multi-brand — every project is scoped to a brand.
+Brand-agnostic, closed-loop marketing pipeline for **Claude Code** (terminal). One dashboard. Eight phases. One review pattern. Multi-brand — every project is scoped to a brand.
 
 ## The flywheel
 
@@ -10,41 +10,56 @@ Brand-agnostic, closed-loop marketing pipeline operated through a single dashboa
 8. Updating ← 7. Learning ← 6. Reporting ←─────────────────────────┘
 ```
 
-**Setup** captures internal truths only (product, brand intent, campaign context) plus optional hypotheses. **Research** does the external work — validates hypotheses, mines VOC, scans competitors. Setup never asks for verbatim quotes or competitive positioning — those require research and live in Phase 2.
+**Setup** captures internal truths (product, brand intent, campaign context) plus optional hypotheses. **Research** does the external work — validates hypotheses, mines VOC, scans competitors. Setup never asks for verbatim quotes or competitive positioning — those require research and live in Phase 2.
+
+## How it works in Claude Code
+
+The plugin is **terminal-first**. You drive it from Claude Code with slash commands:
+
+| Command | What it does |
+|---|---|
+| `/install-marketing-command-center` | One-time setup. Creates the marketing folder + drops the dashboard. |
+| `/start-campaign` | Walks you through the 9 strategic essentials in chat. Saves intake.json, then runs Phase 1. |
+| `/run-phase {project} {N}` | Runs phase N for a project (1-8). |
+| `/list-campaigns` | Shows all campaigns + their phase progress. |
+| `/open-command-center` | Regenerates the dashboard.html snapshot + opens it in your browser. |
+
+The **dashboard** is a self-contained HTML file that lives at `{marketing_root}/dashboard.html`. It uses the File System Access API (Chrome 86+ / Edge 86+) to read and write your phase docs directly. In Firefox / Safari it runs in read-only snapshot mode.
+
+When you click "Run Phase" or "Approve" in the dashboard, it **copies a prompt to your clipboard** — you paste it into Claude Code, which invokes the phase-doc skill and writes the next phase doc. The dashboard then refreshes.
 
 ## What's in the plugin
 
 - **42 skills** — full pipeline (8 phase-doc-emitters + setup-marketing-command-center + 33 underlying pipeline skills)
 - **11 libraries** — art direction, campaign themes, creative strategies, channel specs, conversion framework, design foundations, hook structures, industry benchmarks, paid acquisition playbooks, competitive intelligence, creative types
-- **1 dashboard template** — Marketing Command Center (Cowork artifact)
+- **1 dashboard template** — Marketing Command Center (HTML, works in any browser; live mode in Chrome/Edge)
 - **1 phase doc schema** — universal contract every phase doc obeys
 
 ## Installation
 
-1. `/plugin install marketing-pipeline.plugin`
-2. Type `install marketing command center`
-3. Pick your marketing folder (quick-pick suggestions + file browser)
-4. Give your operator name
-5. Click + New campaign
+1. `/plugin install marketing-pipeline@chatinc-plugins`
+2. `/install-marketing-command-center` — creates the folder + drops the dashboard
+3. `/start-campaign` — begin your first campaign
 
 ## Folder structure
 
 ```
 {marketing_root}/
+├── dashboard.html                  ← the dashboard (open in any browser)
+├── _libraries/                     ← brand-specific library overrides
 ├── {brand_slug}/
-│   ├── _libraries/          (brand-specific library overrides)
 │   ├── {project_slug}/
 │   │   ├── intake.json
-│   │   ├── 1-setup.md       ← internal truths + hypotheses
-│   │   ├── 2-research.md    ← validated truths from external research
-│   │   ├── 3-ideation.md    ← strategic spine
-│   │   ├── 4-creation.md    ← full creative package
-│   │   ├── 5-implementation.md ← gates + forecast + GTM
-│   │   ├── 6-reporting.md   ← rolling weekly performance
-│   │   ├── 7-learning.md    ← cohorts + attribution + character validation
-│   │   ├── 8-updating.md    ← library updates proposed
+│   │   ├── 1-setup.md
+│   │   ├── 2-research.md
+│   │   ├── 3-ideation.md
+│   │   ├── 4-creation.md
+│   │   ├── 5-implementation.md
+│   │   ├── 6-reporting.md
+│   │   ├── 7-learning.md
+│   │   ├── 8-updating.md
 │   │   ├── campaign-state.md
-│   │   └── go-to-market.html  (companion GTM doc)
+│   │   └── go-to-market.html       (companion GTM doc, from Phase 5)
 │   └── {another_project_slug}/
 │       └── ...
 ├── {another_brand_slug}/
@@ -53,16 +68,15 @@ Brand-agnostic, closed-loop marketing pipeline operated through a single dashboa
 
 ## How a campaign flows
 
-1. **Setup** — Pick a brand, name the campaign, fill internal truths (product, brand intent, budget, KPI, channels). Optionally add hypotheses (who you think buys, who you think competes, what you think your edge is).
-2. **Review the Setup doc** — Internal truths are confidence:HIGH; hypotheses are flagged "Phase 2 will validate" at confidence:LOW.
-3. **Research** — AI fetches site + reviews + competitors. Validates/refutes/refines your hypotheses with a delta callout per section. Mines verbatim VOC.
-4. **Review the Research doc** — Look for REFUTED hypotheses; confirm pivots if any.
-5. **Ideation** — Theme + ICP + character + creative strategy + positioning locked.
-6. **Creation** — Hooks + LP + emails + ads + visuals + design system.
-7. **Implementation** — Triple gate (interrogator + stress-test + funnel-audit), forecast, audiences, GTM doc.
-8. **Reporting** — Rolling weekly comparison vs forecast. Scale/watch/kill triggers.
-9. **Learning** — Cohorts, attribution, character validation.
-10. **Updating** — Library update proposals with tick-box approvals → next campaign starts smarter.
+1. **`/start-campaign {brand}`** — Walk through 9 essentials in chat: brand, project name, URL, goal, channels, budget, KPI, timeline, hard NOs. Saved to `intake.json`.
+2. **Phase 1 — Setup** (auto-runs after intake) — Claude fetches your site, extracts product truth + brand intent, generates customer / competitor / edge hypotheses with confidence pills. Review in the dashboard.
+3. **`/run-phase {project} 2`** — Research. Claude validates Setup's hypotheses with real VOC + competitor scans. Mines verbatim customer pain language. You review, override what needs changing, approve.
+4. **`/run-phase {project} 3`** — Ideation. Theme + ICP + character + creative strategy + positioning all locked in one doc.
+5. **`/run-phase {project} 4`** — Creation. Hooks + LP copy + email sequence + ad image prompts + cinematic prompts + design system, channel-scoped by your declared channels.
+6. **`/run-phase {project} 5`** — Implementation. Triple gate (interrogator + stress-test + funnel-audit), forecast, audiences, GTM doc.
+7. **`/run-phase {project} 6`** — Reporting. Rolling weekly comparison vs forecast. Scale/watch/kill triggers.
+8. **`/run-phase {project} 7`** — Learning. Cohorts, attribution, character validation.
+9. **`/run-phase {project} 8`** — Updating. Library update proposals with tick-box approvals → next campaign starts smarter.
 
 Each phase produces ONE doc. Each doc has tick-box approval gates. Operator never sees skill names.
 
@@ -78,6 +92,12 @@ Each phase produces ONE doc. Each doc has tick-box approval gates. Operator neve
 ## Multi-brand notes
 
 Each brand gets its own folder under `{marketing_root}/`. Brand-specific library overrides live at `{marketing_root}/{brand}/_libraries/`. When you create a new campaign, the intake's first field is a brand picker — choose existing or "+ New brand". The dashboard groups projects by brand.
+
+## Browser support
+
+- **Chrome 86+ / Edge 86+** — Full live mode. Dashboard reads/writes files directly via File System Access API.
+- **Firefox / Safari** — Snapshot mode. Re-run `/open-command-center` in Claude Code to refresh.
+- **No browser** — Use the terminal commands only (`/start-campaign`, `/run-phase`, `/list-campaigns`). The dashboard is optional in this mode.
 
 ## Authors
 
