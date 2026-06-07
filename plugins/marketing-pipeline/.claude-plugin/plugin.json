@@ -1,6 +1,6 @@
 {
   "name": "marketing-pipeline",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "Brand-agnostic, closed-loop marketing pipeline operated through a single dashboard. Eight phases (Setup → Research → Ideation → Creation → Implementation → Reporting → Learning → Updating) — each produces one consolidated review doc with tick-box approval gates. Multi-brand: every project is scoped to a brand. No skill names exposed to the operator.",
   "author": {
     "name": "Chris Vlok",

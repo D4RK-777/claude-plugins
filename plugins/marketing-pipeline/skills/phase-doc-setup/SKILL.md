@@ -162,6 +162,30 @@ ONLY surface questions you genuinely couldn't answer from the URL:
 
 DO NOT ask about things the site clearly says. DO NOT ask "what is your product" — read the site.
 
+## Update campaign-state (mandatory final step)
+
+At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. The dashboard, the state file, and any operator reading the campaign state depends on it.
+
+Call `campaign-state` with:
+- **The new phase doc** (`1-setup.md`) — for the artifact registry
+- **The strategic decisions made this phase:**
+  - `intake_essentials = {brand, project, product_url, goal, channels, budget, kpi, timeline, hard_nos}` (the 9 essentials, all now confirmed)
+  - `brand_inference_methodology = [where each brand field came from: operator's brief / URL / brand library]`
+  - `hypothesis_sources = [list of operator's hypotheses that were captured into 1-setup.md]`
+- **A health assessment** for the phase:
+  - `GREEN` if no LOW-confidence sections + no open questions
+  - `AMBER` if some LOW-confidence sections OR some open questions
+  - `RED` if most/all sections are LOW OR critical open questions
+
+`campaign-state` then:
+- Updates `## ARTIFACT REGISTRY` with the new Block 1 entry
+- Adds a row to `## DECISION LOG`: `phase 1 setup = [intake essentials confirmed] | phase-doc-setup | [one-line] | sources cited + brand library references + methodology`
+- Computes `## HEALTH SUMMARY.research_integrity` from the confidence ratings
+- Adds a row to `## CHANGE LOG`
+- Updates `Current phase: 1 (Setup complete, awaiting review)`
+
+This MUST happen on every phase-doc emission. The state file is the only single-source-of-truth that spans all 8 phases — without this call, the state file goes stale and the operator can't answer "where are we."
+
 ## Seeds for Phase 2 (Research)
 
 These are what Phase 1 produces in 1-setup.md (or frontmatter), and what Phase 2 reads + validates.

@@ -388,6 +388,26 @@ for (const t of typoPatterns) {
   if (!found) ok(`no "${t.name}" typos found`);
 }
 
+// ---------- 15. campaign-state call in every phase-doc (v1.7.2) ----------
+console.log('\n15. campaign-state call in every phase-doc (v1.7.2) — mandatory final step of every phase emission');
+for (const b of phaseDocNames) {
+  const f = join(SKILLS_DIR, `phase-doc-${b}`, 'SKILL.md');
+  const c = readFile(f);
+  if (!c) {
+    bad(`phase-doc-${b}/SKILL.md not found`);
+    continue;
+  }
+  if (!c.match(/## Update campaign-state \(mandatory final step/)) {
+    bad(`phase-doc-${b}/SKILL.md missing "## Update campaign-state (mandatory final step)" section`);
+  } else if (!c.match(/At the end of every phase-doc emission, call `?campaign-state`?/)) {
+    bad(`phase-doc-${b}/SKILL.md "Update campaign-state" section missing the universal call intro line`);
+  } else if (!c.match(/`?campaign-state`? then:/)) {
+    bad(`phase-doc-${b}/SKILL.md "Update campaign-state" section missing the state-side-effect list`);
+  } else {
+    ok(`phase-doc-${b}/SKILL.md has mandatory campaign-state call`);
+  }
+}
+
 // ---------- Summary ----------
 console.log('\n=== Summary ===');
 console.log(`  \u2713 Passed:   ${pass}`);

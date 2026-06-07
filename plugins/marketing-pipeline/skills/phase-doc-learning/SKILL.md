@@ -52,6 +52,31 @@ description: "Emits the Phase 7 Learning phase doc — deep analysis after campa
 - Any character profile delta >30%: ask "update the character or write off as campaign-specific?"
 - Any audience finding contradicts Phase 1's customer truth: surface the conflict
 
+## Update campaign-state (mandatory final step)
+
+At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. The dashboard, the state file, and any operator reading the campaign state depends on it.
+
+Call `campaign-state` with:
+- **The new phase doc** (`7-learning.md`) — for the artifact registry
+- **The strategic decisions made this phase:**
+  - `validated_insights` (insights that crossed statistical threshold + should compound)
+  - `refuted_insights` (insights that didn't hold up + should be retired)
+  - `character_deltas` (predicted vs actual ICP behavior, with magnitudes)
+  - `creative_performance_summary` (which creative types worked + which didn't)
+  - `campaign_verdict` (win / break-even / loss with reasoning)
+  - `compounding_actions` (what should be locked into libraries vs queued for next-campaign validation)
+- **A health assessment** for the phase:
+  - `GREEN` if insights are statistically significant + campaign verdict clear
+  - `AMBER` if some insights borderline OR verdict is break-even
+  - `RED` if campaign lost with no clear learnings OR findings contradict operator's prior
+
+`campaign-state` then:
+- Updates `## ARTIFACT REGISTRY` with the new Block 7 entry
+- Adds a row to `## DECISION LOG`: `phase 7 learning = [campaign verdict = X + N insights validated] | phase-doc-learning | [one-line] | insight evidence strength + character delta summary + creative performance breakdown`
+- Computes `## HEALTH SUMMARY.learning_integrity` from insight confidence + campaign verdict clarity
+- Adds a row to `## CHANGE LOG`
+- Updates `Current phase: 7 (Learning complete, awaiting review)`
+
 ## Seeds for Phase 8 (Updating)
 
 - `library_update_proposals[]` → Phase 8 feedback-loop-back as candidate library changes

@@ -70,6 +70,30 @@ Trigger: `# Run Phase 2 — Research`
 - If positioning hypothesis conflicts with brand hard NOs: surface the conflict, ask resolution
 - If Phase 1 hypotheses were heavily refuted: confirm the operator is OK with the pivot
 
+## Update campaign-state (mandatory final step)
+
+At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. The dashboard, the state file, and any operator reading the campaign state depends on it.
+
+Call `campaign-state` with:
+- **The new phase doc** (`2-research.md`) — for the artifact registry
+- **The strategic decisions made this phase:**
+  - `customer_truth = {pain, desire, sophistication, awareness_level, buying_modes}` (the section:customer-truth fields, with confidence levels)
+  - `competitive_landscape_summary` (top 3-5 competitors + positioning vector)
+  - `phase1_hypotheses_confirmed` (which were validated by research)
+  - `phase1_hypotheses_refuted` (which were refuted — operator sign-off recorded)
+  - `pain_evidence_sources` (where pain signals came from: reviews / forums / search trends)
+- **A health assessment** for the phase:
+  - `GREEN` if all customer-truth sections HIGH confidence + zero open questions
+  - `AMBER` if some MEDIUM confidence OR some open questions
+  - `RED` if most sections LOW OR critical hypothesis conflicts unresolved
+
+`campaign-state` then:
+- Updates `## ARTIFACT REGISTRY` with the new Block 2 entry
+- Adds a row to `## DECISION LOG`: `phase 2 research = [customer truth + competitive landscape confirmed] | phase-doc-research | [one-line] | sources cited + review mining count + search volume data + confidence ratings`
+- Computes `## HEALTH SUMMARY.customer_truth_integrity` from the confidence ratings + hypothesis validation count
+- Adds a row to `## CHANGE LOG`
+- Updates `Current phase: 2 (Research complete, awaiting review)`
+
 ## Seeds for Phase 3 (Ideation)
 
 These are what Phase 2 produces in 2-research.md (or frontmatter), and what Phase 3 reads + builds on.

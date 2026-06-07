@@ -38,6 +38,54 @@ For updates: the artifact that just completed (campaign-persona, character-profi
 
 ---
 
+## OUTPUT CONTRACT (for phase-doc callers)
+
+Every phase-doc skill MUST call `campaign-state` at the end of its emission with this exact API. The state file is the only single-source-of-truth that spans all 8 phases — without this call, the state file goes stale.
+
+**The call payload (universal — every phase-doc sends the same shape):**
+
+```yaml
+# The just-emitted phase doc (for the artifact registry)
+phase_doc: { project_root }/{N}-{phase-slug}.md
+
+# Strategic decisions made this phase (content varies by phase — see per-phase contract)
+decisions:
+  # Phase 1 example
+  intake_essentials: { brand, project, product_url, goal, channels, budget, kpi, timeline, hard_nos }
+  brand_inference_methodology: [...]
+  hypothesis_sources: [...]
+  # Phase 2 example
+  customer_truth: { pain, desire, sophistication, awareness_level, buying_modes }
+  competitive_landscape_summary: "..."
+  phase1_hypotheses_confirmed: [...]
+  phase1_hypotheses_refuted: [...]
+  pain_evidence_sources: [...]
+  # ... (see per-phase contracts in each phase-doc SKILL.md)
+
+# A health assessment for the phase (mechanical — compute from confidence + open questions)
+health: GREEN | AMBER | RED
+health_rationale: "one-line reason for the color"
+```
+
+**The state file side-effect (mandatory, every call):**
+
+1. **`## ARTIFACT REGISTRY`** — append a new row to the matching Block (1 through 8) with the phase doc path, status DRAFT, version v1, and last-updated date.
+2. **`## DECISION LOG`** — append a new row at the top: `phase {N} {phase-slug} = [{one-line summary of decisions}] | phase-doc-{slug} | [{rationale}] | [{sources cited + brand/library references + methodology}]`.
+3. **`## HEALTH SUMMARY`** — recompute the relevant dimension from the call's `health` field + the per-phase metrics (e.g. `research_integrity` from Phase 2, `gate_integrity` from Phase 5, `campaign_performance` from Phase 6, `learning_integrity` from Phase 7, `library_health` from Phase 8).
+4. **`## CHANGE LOG`** — append: `[{date}] — phase {N} {phase-slug} complete — {one-line what shipped}`.
+5. **`Current phase:`** — update to `{N} ({Phase name} complete, awaiting review)` (Phase 8 closes the campaign: `Current phase: 8 (CLOSED on {date})`).
+
+**Bootstrap variant (called from `start-campaign`, not a phase-doc):**
+- No `phase_doc` (no artifact yet)
+- `decisions.bootstrap = true` + the brand brief + intake essentials
+- `health` is GREEN if all 9 essentials captured, AMBER if any pending
+
+**Per-phase contracts:** each phase-doc skill's "Update campaign-state" section defines exactly which `decisions` fields to send. The state skill reads those, doesn't infer them.
+
+**The rule that makes this binding:** every phase-doc skill's "What you do" section ends with the campaign-state call as the final step. Pre-emit validation in each phase-doc skill verifies the call was made. The structural test verifies every phase-doc has the call. The state file is always current because the call is the last thing that happens.
+
+---
+
 ## THE STATE FILE TEMPLATE
 
 ```markdown

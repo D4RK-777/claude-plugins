@@ -72,6 +72,34 @@ After the 3 gate skills each emit their verdict for an asset, the FINAL verdict 
 - The 3 votes are aggregated per the table above (3/3 same → that verdict; 2/3 + 1 dissent → majority, with dissent flagged; 3/3 different → KILL)
 - If the character has only 1 named instance (e.g. small campaign), 3 votes means 3 runs of the same character with different reasoning emphasis
 
+## Update campaign-state (mandatory final step)
+
+At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. The dashboard, the state file, and any operator reading the campaign state depends on it.
+
+At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. The dashboard, the state file, and any operator reading the campaign state depends on it.
+
+Call `campaign-state` with:
+- **The new phase doc** (`5-implementation.md`) — for the artifact registry
+- **The strategic decisions made this phase:**
+  - `gate_verdicts = [{asset_id, interrogator, stress, audit, aggregated, dissent}]` (per-asset gate aggregation results, including any KILL verdicts)
+  - `kill_count` (how many assets were KILLED)
+  - `dissents_logged` (any 2/3 + 1 dissent cases for operator review)
+  - `campaign_health` (final aggregated health: GREEN / AMBER / RED)
+  - `launch_ready` (boolean: GREEN+0 KILL = ready; anything else = blocked)
+- **A health assessment** for the phase:
+  - `GREEN` if 0 KILL verdicts + 0 dissents + all assets aggregated to SHIP
+  - `AMBER` if some dissents OR some KILLs (with replacement plan) OR borderline assets
+  - `RED` if multiple KILLs without replacement OR 3/3 different verdicts OR campaign-level fail
+
+`campaign-state` then:
+- Updates `## ARTIFACT REGISTRY` with the new Block 5 entry
+- Adds a row to `## DECISION LOG`: `phase 5 implementation = [N assets gated + M KILLED + campaign health = X] | phase-doc-implementation | [one-line] | gate aggregation summary + Triple Gate verdicts per asset + launch readiness`
+- Computes `## HEALTH SUMMARY.gate_integrity` from KILL count + dissent count + launch readiness
+- Adds a row to `## CHANGE LOG`
+- Updates `Current phase: 5 (Implementation complete, awaiting approval)`
+
+## Seeds for Phase 6 (Reporting)
+
 **Per-asset output format for `section:gate-verdicts`:**
 
 ```

@@ -48,6 +48,31 @@ description: "Emits the Phase 8 Updating phase doc — closes the loop. Triggers
 
 Per proposal: tick to approve / reject / defer. Each rejection should ideally have a one-line reason (optional but useful for the next loop iteration).
 
+## Update campaign-state (mandatory final step + campaign close)
+
+At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. Phase 8 is special: it also CLOSES the campaign.
+
+Call `campaign-state` with:
+- **The new phase doc** (`8-updating.md`) — for the artifact registry
+- **The strategic decisions made this phase:**
+  - `library_updates_approved` (which library updates were approved + their source campaign + confidence)
+  - `library_updates_rejected` (which were rejected + the reason)
+  - `library_updates_deferred` (which were queued for next-campaign validation)
+  - `campaign_close_verdict` (final: WIN / BREAK-EVEN / LOSS + reasoning)
+  - `compounding_summary` (what now lives in libraries that will benefit future campaigns)
+  - `next_campaign_seeds` (the high-value findings staged for next iteration)
+- **A health assessment** for the phase:
+  - `GREEN` if all proposals clear + library updates approved + close verdict confident
+  - `AMBER` if some proposals have low confidence OR operator rejected several updates
+  - `RED` if campaign ended with unclear verdict OR major learning couldn't be captured
+
+`campaign-state` then:
+- Updates `## ARTIFACT REGISTRY` with the new Block 8 entry
+- Adds a row to `## DECISION LOG`: `phase 8 updating = [library updates applied + campaign CLOSED] | phase-doc-updating | [one-line] | update approval list + closure verdict + compounding summary`
+- Computes `## HEALTH SUMMARY.library_health` from update approval rate + confidence of new entries
+- Adds a row to `## CHANGE LOG`
+- **Marks the campaign CLOSED**: `Current phase: 8 (CLOSED on [date])` + writes the closure date
+
 ## Seeds for next campaign
 
 - All approved library updates are now in force for the NEXT campaign's Phase 1+

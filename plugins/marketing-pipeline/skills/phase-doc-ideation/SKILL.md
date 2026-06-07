@@ -43,6 +43,30 @@ Trigger: `# Run Phase 3 — Ideation for project {slug}`
 - If theme + strategy combination has a known weak fit (see library-campaign-themes): surface it
 - If multiple personas were built and they conflict on positioning: ask which to prioritize as primary
 
+## Update campaign-state (mandatory final step)
+
+At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. The dashboard, the state file, and any operator reading the campaign state depends on it.
+
+Call `campaign-state` with:
+- **The new phase doc** (`3-ideation.md`) — for the artifact registry
+- **The strategic decisions made this phase:**
+  - `theme_locked` (which campaign theme, sourced from `library-campaign-themes` if used)
+  - `strategy` (the 2-3 sentence strategic angle, `section:strategy-locked`)
+  - `narrative_arc` (the locked story spine)
+  - `positioning_statement` (final 1-2 sentence positioning)
+  - `big_idea_concept` (one-line creative direction)
+- **A health assessment** for the phase:
+  - `GREEN` if theme + strategy + narrative all lock clean + no OQ
+  - `AMBER` if any are MEDIUM confidence OR any open questions
+  - `RED` if any can't lock or are LOW confidence
+
+`campaign-state` then:
+- Updates `## ARTIFACT REGISTRY` with the new Block 3 entry
+- Adds a row to `## DECISION LOG`: `phase 3 ideation = [theme + strategy + narrative locked] | phase-doc-ideation | [one-line] | library references + positioning rationale + brand alignment check`
+- Computes `## HEALTH SUMMARY.strategic_clarity` from the theme/strategy/narrative lock confidence
+- Adds a row to `## CHANGE LOG`
+- Updates `Current phase: 3 (Ideation complete, awaiting review)`
+
 ## Seeds for Phase 4 (Creation)
 
 These are what Phase 3 produces in 3-ideation.md (or frontmatter), and what Phase 4 reads + builds on.

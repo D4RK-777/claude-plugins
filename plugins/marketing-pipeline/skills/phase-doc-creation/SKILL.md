@@ -94,6 +94,30 @@ Each sub-skill has a label — REQUIRED, CONDITIONAL, or OPTIONAL — and a fixe
 - Any LP section flagged as DRIFT from ad scent: surface the mismatch
 - Any banned-word violation against `brand.hard_nos`: surface + ask for replacement
 
+## Update campaign-state (mandatory final step)
+
+At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. The dashboard, the state file, and any operator reading the campaign state depends on it.
+
+Call `campaign-state` with:
+- **The new phase doc** (`4-creation.md`) — for the artifact registry
+- **The strategic decisions made this phase:**
+  - `creative_assets = [{asset_id, type, hook, format, gate_verdict}]` (all assets produced, with their gate results)
+  - `hooks_library_size` (total hooks generated + how many passed scroll-stop threshold)
+  - `lps_produced` (list of LP variants with their structure)
+  - `email_sequences` (count + step count)
+  - `visual_identity_assets` (logos, images, video refs)
+- **A health assessment** for the phase:
+  - `GREEN` if all assets passed gates + no banned-word violations + no OQ
+  - `AMBER` if some assets are at risk (low scores) OR minor violations flagged
+  - `RED` if any KILL verdicts OR major violations OR critical asset missing
+
+`campaign-state` then:
+- Updates `## ARTIFACT REGISTRY` with the new Block 4 entry (all creative sub-skill captures)
+- Adds a row to `## DECISION LOG`: `phase 4 creation = [N assets produced + M passed gates] | phase-doc-creation | [one-line] | per-sub-skill capture list + gate summary + brand compliance check`
+- Computes `## HEALTH SUMMARY.creative_quality` from gate pass rate + brand compliance + scroll-stop scores
+- Adds a row to `## CHANGE LOG`
+- Updates `Current phase: 4 (Creation complete, awaiting review)`
+
 ## Seeds for Phase 5 (Implementation)
 
 These are what Phase 4 produces in 4-creation.md (or frontmatter), and what Phase 5 reads + gates.

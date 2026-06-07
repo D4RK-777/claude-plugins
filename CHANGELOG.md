@@ -4,6 +4,28 @@ All notable changes to the `marketing-pipeline` plugin are documented here. Read
 
 ---
 
+## v1.7.2 — campaign-state.md auto-update (mandatory final step of every phase)
+
+**Released:** 2026-06-08
+
+### Highlights
+- **The state file is now guaranteed to be current.** Every one of the 8 phase-doc skills (`phase-doc-setup` through `phase-doc-updating`) now ends with a **mandatory** call to `campaign-state` — the call is the FINAL step of emission, not an option, not a SHOULD. This closes the "stale state file" failure mode where operators can't answer "where are we on [campaign]" in under 5 minutes.
+- **Explicit OUTPUT CONTRACT on `campaign-state`.** The state skill now defines the universal call API: every phase-doc sends `phase_doc` + `decisions` (phase-specific) + `health` (GREEN/AMBER/RED), and the state file mechanically updates ARTIFACT REGISTRY + DECISION LOG + HEALTH SUMMARY + CHANGE LOG + Current phase. No more "the state file might be out of date because phase 5 forgot to call."
+- **New structural test category #15** verifies every phase-doc has the mandatory call section. 130 checks total now.
+
+### What's new
+- `phase-doc-{setup,research,ideation,creation,implementation,reporting,learning,updating}/SKILL.md` — new `## Update campaign-state (mandatory final step)` section in each. Each defines the phase-specific `decisions` payload (intake essentials / customer truth / theme+strategy / creative assets / gate verdicts / KPI dashboard / validated insights / library updates) and a mechanical health assessment rule (compute from confidence + open questions, not opinion).
+- `phase-doc-updating/SKILL.md` — also marks the campaign CLOSED on emission (final state, not ongoing).
+- `campaign-state/SKILL.md` — new `## OUTPUT CONTRACT (for phase-doc callers)` section. Defines the universal call shape + the state-file side-effect sequence (5 mechanical updates). No ambiguity about what gets written.
+- `scripts/structural-test.mjs` — new category #15: "campaign-state call in every phase-doc" — verifies the section header + the universal intro line + the side-effect list are all present in every phase-doc SKILL.md.
+- Bump version to 1.7.2 (plugin.json + marketplace.json).
+
+### Migration notes
+- No breaking changes. The state file's expected format is unchanged. The mandatory calls just ensure it gets updated.
+- v1.7.2 is the recommended upgrade from v1.7.1.
+
+---
+
 ## v1.7.1 — seed-list consistency fixes
 
 **Released:** 2026-05-27

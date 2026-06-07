@@ -47,6 +47,31 @@ description: "Emits the Phase 6 Reporting phase doc — the live performance sta
 - Any creative hitting fatigue thresholds: ask "refresh from Phase 4 library or build new?"
 - Any audience exhaustion: ask "expand or pivot?"
 
+## Update campaign-state (mandatory final step)
+
+At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. The dashboard, the state file, and any operator reading the campaign state depends on it.
+
+Call `campaign-state` with:
+- **The new phase doc** (`6-reporting.md`) — for the artifact registry
+- **The strategic decisions made this phase:**
+  - `kpi_dashboard = [{kpi, target, actual, delta_pct, status}]` (per-KPI actual vs forecast)
+  - `creative_fatigue_curves` (when each creative peaked + decayed)
+  - `audience_signals` (early indicators from live data — segment performance, frequency saturation)
+  - `spend_pacing` (daily/weekly spend actual vs planned)
+  - `campaign_health_current` (rolling health: GREEN / AMBER / RED based on KPI deltas)
+  - `scale_watch_kill_signals` (any creative hit fatigue threshold, any audience exhausted)
+- **A health assessment** for the phase:
+  - `GREEN` if all KPIs within ±10% of forecast + no fatigue signals
+  - `AMBER` if some KPIs ±10-30% OR early fatigue signals
+  - `RED` if any KPI off-forecast >30% OR creative hit kill threshold OR audience exhausted
+
+`campaign-state` then:
+- Updates `## ARTIFACT REGISTRY` with the new Block 6 entry
+- Adds a row to `## DECISION LOG`: `phase 6 reporting = [week N complete + KPIs vs forecast] | phase-doc-reporting | [one-line] | KPI dashboard snapshot + creative fatigue state + scale/watch/kill actions taken`
+- Computes `## HEALTH SUMMARY.campaign_performance` from KPI deltas + fatigue state
+- Adds a row to `## CHANGE LOG`
+- Updates `Current phase: 6 (Reporting week N, ongoing)`
+
 ## Seeds for Phase 7 (Learning)
 
 These are what Phase 6 produces in 6-reporting.md (sections + frontmatter), and what Phase 7 reads + analyzes.

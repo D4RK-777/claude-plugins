@@ -10,7 +10,7 @@
       "name": "marketing-pipeline",
       "source": "./plugins/marketing-pipeline",
       "description": "Brand-agnostic closed-loop marketing pipeline. Eight phases. One dashboard. Multi-brand. Operated through the Marketing Command Center. Claude Code terminal-first with browser dashboard (Chrome/Edge live mode).",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "author": {
         "name": "Chris Vlok",
         "email": "chris@chatinc.com"
