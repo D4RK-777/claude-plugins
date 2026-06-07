@@ -323,6 +323,42 @@ if (!existsSync(ARCHIVE_DIR)) {
   }
 }
 
+// ---------- 13. Triple Gate aggregation rule (v1.7.0) ----------
+console.log('\n13. Triple Gate aggregation rule (v1.7.0)');
+const implPath = join(SKILLS_DIR, 'phase-doc-implementation', 'SKILL.md');
+const implContent = readFile(implPath);
+if (!implContent) bad('phase-doc-implementation/SKILL.md missing');
+else {
+  if (!implContent.includes('## Triple Gate aggregation rule')) {
+    bad('phase-doc-implementation missing "## Triple Gate aggregation rule" section');
+  } else {
+    ok('phase-doc-implementation has "## Triple Gate aggregation rule" section');
+  }
+  // Verify the rule defines all 3 critical cases
+  const requiredCases = [
+    { pattern: /3\/3\s+DIFFERENT.*KILL/i, name: '3/3 different → KILL' },
+    { pattern: /2\/3.*dissent|dissent.*flag/i, name: '2/3 + dissent flag' },
+    { pattern: /any KILL.*KILL|any.*KILL.*\u2192.*KILL/i, name: 'any KILL → KILL' },
+    { pattern: /lowest.*wins/i, name: 'lowest-wins fallback' },
+  ];
+  for (const c of requiredCases) {
+    if (!c.pattern.test(implContent)) bad(`aggregation rule missing case: ${c.name}`);
+    else ok(`aggregation rule covers: ${c.name}`);
+  }
+  // Verify the required section:gate-aggregation is added
+  if (!implContent.includes('section:gate-aggregation')) {
+    bad('phase-doc-implementation does not require section:gate-aggregation');
+  } else {
+    ok('phase-doc-implementation requires section:gate-aggregation');
+  }
+  // Verify pre-emit validation #16 mentions the aggregation rule
+  if (!implContent.match(/16\.\s*.*aggregation rule/)) {
+    bad('pre-emit validation does not include aggregation rule check #16');
+  } else {
+    ok('pre-emit validation includes aggregation rule check #16');
+  }
+}
+
 // ---------- Summary ----------
 console.log('\n=== Summary ===');
 console.log(`  \u2713 Passed:   ${pass}`);

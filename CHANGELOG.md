@@ -4,6 +4,33 @@ All notable changes to the `marketing-pipeline` plugin are documented here. Read
 
 ---
 
+## v1.7.0 — Triple Gate aggregation rule
+
+**Released:** 2026-05-27
+
+### Highlights
+- **The Triple Gate aggregation rule is now explicit and binding.** Previously the rule was undefined ("majority vote" was mentioned but not specified — what happens with 3/3 different verdicts? With KILL? With a 2/3 + 1 dissent?).
+- New `## Triple Gate aggregation rule (binding)` section in `phase-doc-implementation/SKILL.md` with the full truth table.
+- New `section:gate-aggregation` required in Phase 5 phase docs — shows the per-asset aggregation trace (3 verdicts + which rule was applied + any dissent flag).
+- New Pre-emit validation check #16 specifically validates the aggregation rule was applied.
+
+### What's new
+- `phase-doc-implementation/SKILL.md` — new "Triple Gate aggregation rule" section with:
+  - Full truth table (interrogator × stress-test × funnel-audit → final verdict)
+  - Rule priority: any KILL → KILL; 3/3 different → KILL; lowest wins; dissents logged but don't override
+  - 3/3 stress-test verdict aggregation: same → that verdict; 2/3 + 1 dissent → majority with dissent flagged; 3/3 different → KILL
+  - Per-asset output format with worked examples
+- `phase-doc-implementation/SKILL.md` — new required section `section:gate-aggregation`
+- `phase-doc-implementation/SKILL.md` — new Pre-emit validation check #16
+- `scripts/structural-test.mjs` — new check verifies phase-doc-implementation has the aggregation rule documented
+- Bump version to 1.7.0
+
+### Migration notes
+- No breaking changes. The new `section:gate-aggregation` is required going forward, but the old "majority vote" pattern would have been ambiguous in 3/3-different cases anyway.
+- Operators running Phase 5 from a previous version may need to re-run Phase 5 to get the new aggregation section in their output.
+
+---
+
 ## v1.6.2 — structural test + skill bug fixes
 
 **Released:** 2026-05-27

@@ -24,9 +24,9 @@ Trigger: `# Run Phase 5 — Implementation for project {slug}`
 
 1. **Triple Gate** — for every creative asset from Phase 4:
    - `creative-interrogator` (all 7 phases incl. channel-fit)
-   - `persona-stress-test` (3-parallel simulation per character × asset, majority vote)
+   - `persona-stress-test` (3-parallel simulation per character × asset — produces 3 verdicts that need aggregation per the rule below)
    - `funnel-audit` (cross-asset handoff coherence)
-   - Aggregate verdicts: GREEN / AMBER / RED / KILL per asset
+   - **Aggregate verdicts per the Triple Gate rule** (see below)
 2. `campaign-forecaster` — produce Best / Likely / Worst forecasts with scale/watch/kill rules
 3. `audience-architect` — produce targeting + budget structure per channel
 4. `paid-ads-expert` — deployment specs (tracking, EMQ, attribution, learning phase strategy)
@@ -37,6 +37,58 @@ Trigger: `# Run Phase 5 — Implementation for project {slug}`
 ## Required sections
 
 - `section:gate-verdicts` — per-asset GREEN/AMBER/RED/KILL with one-line reason
+- `section:gate-aggregation` — per-asset aggregation trace: 3 verdicts + which rule was applied + any dissent flag
+
+## Triple Gate aggregation rule (binding)
+
+After the 3 gate skills each emit their verdict for an asset, the FINAL verdict for that asset is determined by the rule below. This is **not** "majority vote" — there is no majority if 3/3 differ. The rule is explicit and binding.
+
+**For each asset:**
+
+| Interrogator | Stress Test (3 votes) | Funnel Audit | FINAL VERDICT |
+|---|---|---|---|
+| GREEN | All 3 GREEN | GREEN | **GREEN** |
+| GREEN | 2/3 GREEN + 1 dissent | GREEN | **GREEN** (with dissent note in Open Questions) |
+| GREEN | 2/3 GREEN + 1 dissent | AMBER | **AMBER** (dissenter wins, but dissent note still logged) |
+| GREEN | 2/3 GREEN + 1 dissent | RED | **RED** (funnel-audit blocks) |
+| AMBER | All 3 AMBER | GREEN | **AMBER** |
+| AMBER | 2/3 AMBER + 1 dissent | GREEN | **AMBER** (dissent note) |
+| RED | All 3 RED | any | **RED** |
+| RED | All 3 RED | GREEN | **RED** (interrogator RED blocks) |
+| Any | 3/3 DIFFERENT verdicts | any | **KILL** (no consensus — cannot ship) |
+| Any | KILL from any vote | any | **KILL** |
+| AMBER | GREEN/AMBER mix | GREEN | **AMBER** (lowest wins) |
+| RED | GREEN | GREEN | **AMBER** (interrogator is the floor) |
+| AMBER | RED | RED | **RED** (lowest wins) |
+
+**Rule priority (highest first):**
+1. **Any KILL → KILL** (overrides everything; the asset cannot be approved)
+2. **3/3 different stress-test verdicts → KILL** (no consensus)
+3. **Lowest gate verdict wins** (interrogator+stress+audit — worst case is the verdict, conservative shipping)
+4. **Dissents are LOGGED but don't override** (2/3 + 1 dissent = majority verdict, with the dissent surfaced in Open Questions for operator review)
+
+**For the persona-stress-test in particular:**
+- 3 votes means 3 separate simulation runs (different anchor details per `icp-character-builder`'s variance rule)
+- The 3 votes are aggregated per the table above (3/3 same → that verdict; 2/3 + 1 dissent → majority, with dissent flagged; 3/3 different → KILL)
+- If the character has only 1 named instance (e.g. small campaign), 3 votes means 3 runs of the same character with different reasoning emphasis
+
+**Per-asset output format for `section:gate-verdicts`:**
+
+```
+| Asset | Interrogator | Stress Test (3 votes) | Funnel Audit | Final | Reason |
+|-------|--------------|----------------------|--------------|-------|--------|
+| Hook #1 (Meta Feed) | GREEN | 2 GREEN, 1 AMBER (dissenter) | GREEN | GREEN | Score 38/50, persona opens at scroll-depth 80% |
+| LP Hero | RED (cliché test) | All 3 RED | AMBER | RED | Cliché: "Welcome to the future" — replace |
+| Email #2 | AMBER | All 3 AMBER | GREEN | AMBER | Subject too long (>60 chars) |
+| Ad Image #3 | AMBER | 3/3 DIFFERENT | AMBER | KILL | Stress test no consensus — re-run Phase 4 for this asset |
+```
+
+**Hard rules:**
+- KILL assets CANNOT be approved. Operator must re-run Phase 4 for that asset (or all of it — see v1.7.0 roadmap for partial-regen).
+- 3/3-different KILL is non-overridable. The asset must be regenerated.
+- AMBER assets ship but with a flagged risk. Operator can override with explicit note.
+- RED assets require an explicit operator override note in Open Questions, OR are blocked.
+- GREEN assets ship. Dissent notes are informational, not blocking.
 - `section:forecast` — Best / Likely / Worst columns + scale/watch/kill thresholds
 - `section:audience-architecture` — tiered cold/warm cards, exclusions, budget split
 - `section:deployment-specs` — pixel/CAPI/EMQ requirements, attribution window, learning phase guard
@@ -103,6 +155,7 @@ approved_by: null
 13. ✅ `section:forecast` has Best / Likely / Worst columns with specific numbers, not handwaves. Confidence is set from sample-size and benchmark-fidelity, not vibes.
 14. ✅ `section:deployment-specs` covers pixel / CAPI / EMQ / attribution window / learning-phase guard. Any tracking gap is a launch blocker surfaced in Open Questions.
 15. ✅ Companion `go-to-market-{slug}.html` was written alongside the phase doc. The path is captured in the phase doc's "What's next" line.
+16. ✅ **Triple Gate aggregation rule was applied** — `section:gate-verdicts` shows per-asset verdicts with all 3 gate results (interrogator + stress-test votes + funnel-audit) and the final verdict derived per the binding rule (not "majority vote"). Any 3/3-different or any KILL → final KILL. Any 2/3 + 1 dissent → majority verdict with dissent flagged in Open Questions. The rule is **not** "majority vote" — it's the explicit table in `## Triple Gate aggregation rule`.
 
 ## Hard rules
 
