@@ -1,6 +1,6 @@
 ---
 name: brand-project-setup
-description: "Brand intake specialist that runs before research, ICP, hooks, or ad creation. Captures product truth, customer truth, competitive context, brand voice intent, hard NOs, and campaign goals into a Brand Brief that seeds every downstream pipeline phase. Trigger when starting a new project/product/campaign, when the user says 'we're launching X' or 'help me build a campaign for X', or pastes a URL/product description without established brand context. Use when downstream skills are missing critical context."
+description: "DEPRECATED — superseded by the 8-block flywheel (v1.3.0+). The 8-block flywheel uses /start-campaign to capture the 9 essentials inline in the terminal + auto-loads brand libraries. Phase 1 (phase-doc-setup) does brand truth + voice + intent inline. There is no longer a separate 'brand intake' step. Kept in archive for reference. Do NOT invoke."
 ---
 
 # SKILL: Brand & Project Setup

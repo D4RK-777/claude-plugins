@@ -56,14 +56,16 @@ The dashboard (or `/start-campaign`) saves `{marketing_root}/{brand_slug}/{proje
 
 The `_materials/` folder next to intake.json contains copies of every file/folder the operator dropped in. Read those, plus the brand libraries at `{marketing_root}/{brand_slug}/_libraries/`, plus the inherited campaign's phase docs (if any) at `{marketing_root}/{any-brand}/{inherited_campaign}/`.
 
+**Path resolution:** every path in `intake.json.materials[].path` is relative to the project root, starting with `_materials/`. To read a file, use `{project_root}/{path}` — NOT `_materials/{path}`. The /start-campaign command and the dashboard's intake form both write `path: "_materials/chatinc-q3.pdf"` (already prefixed). Phase 1 must read the file as-is, not double-prefix it.
+
 ## What you do (in order)
 
 ### 1. Read the materials bundle (FIRST, before fetching URLs)
 
 Before fetching any URLs, read everything in the operator's materials. These are higher-fidelity than a site scrape.
 
-- For each file in `intake.json.materials[]`, read the file from `_materials/{path}`.
-- For each folder, read the key files (`.md`, `.txt`, `.pdf`).
+- For each file in `intake.json.materials[]`, read the file from `{project_root}/{path}` (where `path` is the `_materials/...` path already in the JSON).
+- For each folder, recurse into `{project_root}/{path}` and read the key files (`.md`, `.txt`, `.pdf`).
 - Read every brand library listed in `brand_libraries_loaded` from `{marketing_root}/{brand_slug}/_libraries/`.
 - If `inherited_from` is set, read the inherited campaign's `1-setup.md` and `3-ideation.md`. These give you theme + persona + positioning to build on.
 

@@ -124,7 +124,11 @@ This is the operator's only real work: one confirmation.
 
 If operator says `looks good` (or paste any affirmation):
 - Save `{marketing_root}/{brand_slug}/{project_slug}/intake.json` with all 9 essentials.
-- Save `{marketing_root}/{brand_slug}/{project_slug}/_materials/` with copies of all dropped files (so phase-doc-setup can re-read them later).
+- **Path convention for materials[]:**
+  - For each file, copy to `{project_root}/_materials/{filename_only}` (flatten subdirs; use the original basename). Record in intake.json as `path: "_materials/{filename_only}"` with the operator's original path preserved in `original_path`.
+  - For each folder, copy the contents (recursively) to `{project_root}/_materials/{basename}/`. Record in intake.json as `path: "_materials/{basename}/"` with the operator's original path preserved in `original_path`.
+  - **Always** record the in-project path (`_materials/...`) as the primary `path`, never the operator's original. Phase 1 reads from `{project_root}/{path}`.
+- Generate `{project_root}/_materials/index.md` summarising each file (one bullet per material: name, what it is, what was extracted).
 - Run `phase-doc-setup` (via `/run-phase {project} 1` or directly invoke the skill).
 - Tell the operator the next action.
 
@@ -166,8 +170,8 @@ After Phase 1 lands, tell the operator:
   "composite_key": "chatinc/flex-shopify-launch",
   "materials": [
     { "type": "url", "path": "https://chatinc.com/flex", "fetched_at": "..." },
-    { "type": "file", "path": "./briefs/chatinc-q3.pdf", "size_bytes": 245000, "summary": "..." },
-    { "type": "folder", "path": "./past-campaigns/gloss-q1-2026/", "files_count": 12, "key_files": ["3-ideation.md", "..."] }
+    { "type": "file", "path": "_materials/chatinc-q3-brief.pdf", "original_path": "./briefs/chatinc-q3.pdf", "size_bytes": 245000, "summary": "..." },
+    { "type": "folder", "path": "_materials/past-campaigns/", "original_path": "./past-campaigns/gloss-q1-2026/", "files_count": 12, "key_files": ["gloss-q1-2026/3-ideation.md"] }
   ],
   "inherited_from": "gloss-q1-2026",
   "inherited_artifacts": {
@@ -189,7 +193,9 @@ After Phase 1 lands, tell the operator:
 
 ## What lives in `_materials/`
 
-A copy of every file the operator passed in, plus an `index.md` summarising what each one is and what Claude extracted from it. So Phase 1 (and later phases) can re-read without re-fetching.
+A copy of every file the operator passed in (with subdirs flattened to basename for files, basename-prefixed for folders), plus an `index.md` summarising what each one is and what Claude extracted from it. So Phase 1 (and later phases) can re-read without re-fetching.
+
+**File path resolution rule:** every path in `intake.json.materials[].path` is relative to the project root, starting with `_materials/`. Phase 1 reads `{project_root}/{path}` to find each file. The operator's original path is preserved in `materials[].original_path` for traceability but is NEVER used to read files.
 
 ## What the operator sees (full happy-path)
 

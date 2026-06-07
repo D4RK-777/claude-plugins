@@ -1,6 +1,6 @@
 ---
 name: preflight-research
-description: "Auto-populates the Campaign Intake Wizard from a brand URL + optional competitor URLs + context. Runs deep brand discovery (URL fetch, public review mining, competitive scan, voice analysis) and returns a structured JSON payload mapped 1:1 to wizard field IDs. The wizard renders each suggested value with a tick-box (default ✓ accept) — Chris uncheckes anything he wants to override manually. Use this when the wizard sends a 'Preflight research request' message. NEVER fabricate. Every field is either grounded in fetched content + cited, or marked null with a clear reason."
+description: "DEPRECATED — superseded by the 8-block flywheel (v1.3.0+). The 8-block flywheel uses /start-campaign to capture the 9 essentials inline in the terminal + auto-loads brand libraries. Phase 1 (phase-doc-setup) does URL fetch + brand voice + competitor hunches inline. There is no longer a separate 'preflight' step. Kept in archive for reference. Do NOT invoke."
 ---
 
 # Preflight Research — Wizard Auto-Populate Engine
