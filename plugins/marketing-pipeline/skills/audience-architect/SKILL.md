@@ -327,3 +327,36 @@ The architecture feeds:
 ---
 
 > **First principle:** Most cold acquisition fails not because the creative was bad but because it was shown to the wrong people. Audience architecture is the cheapest thing to get right and the most expensive thing to get wrong. Defend every choice.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:audience-architecture` (Phase 5) AND saves the full architecture file to disk for Phase 6's reporting.
+
+**Target section:** `section:audience-architecture`
+**Saved file:** `{project_root}/audience-architecture-{project_slug}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH (audience mistakes are expensive to fix after launch)
+
+**Required fields in the section content:**
+- Audience tiers (cold / warm / hot — each with specific size estimate)
+- Cold audience 1 (interest stack, estimated size, expected CPM/CPL range with rationale)
+- Cold audience 2 (alternate interest stack, A/B test purpose)
+- LAL 1% / 2% / 5% (lookalike source + size)
+- Retargeting pools (3 pools: video viewers, LP visitors, email engagers)
+- Exclusions (current customers, recent converters, employment-related)
+- Budget split (cold X% / warm Y% / hot Z% with rationale)
+- Channels used (Meta / Google / TikTok / LinkedIn / etc., with which audiences go where)
+
+**Required frontmatter on the saved file:**
+- `campaign`, `channels[]`, `last_updated`
+- `audience_count` (number of distinct audience definitions)
+- `confidence`
+
+**Hard rules:**
+- Write ONLY into `section:audience-architecture` (phase doc) and `audience-architecture-{project_slug}.md` (file). Do NOT touch ad copy or creative.
+- Audience definitions are GROUNDED in the persona's platform behaviour (from `icp-persona-engine` + `icp-character-builder`). Don't invent audiences the persona isn't on.
+- Every audience needs a rationale citing the persona's traits, not "we'll test and see."
+- LAL source matters. LAL of converters is different from LAL of LP visitors. Specify the source event.
+- Retargeting windows matter. 1-day, 7-day, 30-day windows are different audiences. Specify.
+- Exclusions are non-negotiable. Current customers + recent converters MUST be excluded.
+- Append Decision Log: `audience architecture = [N audiences] | audience-architect | [one-line] | budget split rationale + persona platform behaviour`.

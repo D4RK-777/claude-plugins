@@ -370,3 +370,38 @@ When Figma MCP is connected:
 ---
 
 > **First principle:** A great image prompt isn't a description of what you want. It is a structured instruction set with every variable sourced from the campaign's prior decisions. Pipelines that compose prompts this way produce consistent professional-grade work on the first generation, not the tenth — and that's the difference between this system making you money and costing you weekends.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:ad-image-prompts` (Phase 4) AND saves the full image prompt package to disk for Phase 5's creative-interrogator + persona-stress-test.
+
+**Target section:** `section:ad-image-prompts`
+**Saved file:** `{project_root}/image-prompt-package-{asset-name}-{date}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH
+
+**Required fields in the section content (per asset × aspect ratio):**
+- Tool (Midjourney / Flux / Ideogram / DALL-E / Seedream / Canva template / Figma component)
+- Aspect ratio (1:1 / 9:16 / 4:5 / 1.91:1)
+- Full prompt (subject + action + composition + palette + style + lighting)
+- Negative list (always include the brand's hard NOs)
+- Reference image paths (if any)
+- Composition rationale (1 sentence — why this composition for this concept)
+- Tool-fit rationale (1 sentence — why this tool for this concept + strategy)
+
+**Required frontmatter on the saved file:**
+- `campaign`, `asset_name`, `concept_id` (links to creative-expert concept brief)
+- `tool`, `aspect_ratios[]`
+- `palette_source` (design-system-selection file path)
+- `confidence`
+
+**Hard rules:**
+- Write ONLY into `section:ad-image-prompts` (phase doc) and `image-prompt-package-{asset-name}-{date}.md` (package file). Do NOT touch copy, hook, or video sections.
+- ad-image-architect is CONDITIONAL — required only if any visual channel (Meta / Google / TikTok / organic) in `intake.json.campaign_channels`.
+- Pull EVERY variable from the pipeline, NEVER invent. Palette from `design-system-selection-{slug}.md`. Subject from `creative-brief-{slug}-{concept_id}.md`. NEVER write "vibrant neon" if the design system says "muted earth tones."
+- One concept, all aspect ratios. The orchestrator may dispatch this skill multiple times if there are multiple concepts. Each dispatch = one concept, all declared aspect ratios.
+- Negative list is MANDATORY. Every prompt includes what to AVOID. Hard NOs from Brand Brief always appear.
+- The 12 Realism Shield anchors: weave in 5-7 per prompt. Material specificity, imperfect light, atmospheric depth, film texture, physics-grounded motion, skin/body realism, optical imperfections, environmental clutter, motivated imperfection, color restraint, temporal imperfection, specific over generic.
+- Tool-match the strategy. Trust + Authenticity → Midjourney (photorealism). Pattern Interrupter → Ideogram (text-led) or Flux. Meme → templates.
+- Run the quality checklist before ship. Every ✓ required.
+- Append Decision Log: `image prompts = [N] for concept [id] | ad-image-architect | [one-line] | tool + aspect ratios + concept link`.

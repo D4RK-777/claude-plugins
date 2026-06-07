@@ -262,3 +262,24 @@ If the user just needs something quick — skip the framework, go straight to an
 > - 'Think of it as autocomplete for your sales team's follow-ups'"
 
 The goal is always the same: make the complex feel obvious, the technical feel human, and the new feel familiar. Make the audience not just understand — but *believe*. Because belief is the precondition for action.
+
+## OUTPUT CONTRACT
+
+The expert-communicator skill is **OPTIONAL polish** invoked by the phase-doc-creation orchestrator for persuasion-quality refinement. It polishes the copy but does NOT write to a new section.
+
+**Target sections:** INLINE EDITS to `section:ad-copy-units`, `section:lp-copy`, `section:email-sequence`, or `section:hooks` (any copy section)
+**Format:** markdown edits with persuasion audit + revised copy
+**Confidence required:** HIGH
+
+**Required fields in the inline edit:**
+- Persuasion audit (3-point check: ethos, pathos, logos balance)
+- Original phrase (exact)
+- Replacement phrase (exact)
+- Why the new copy is more persuasive (cite a persuasion principle)
+
+**Hard rules:**
+- Edit ONLY within copy sections.
+- Persuasion audit is REQUIRED before any edit. If the audit shows the copy is already strong, say so and exit — don't edit for the sake of it.
+- The persuasion check is the WHY. Never make an edit that violates one of ethos/pathos/logos in service of the other.
+- Use brand libraries' voice + hard NOs as rails. Hard-NO violation = reject the edit.
+- Append Decision Log: `persuasion polish = [N edits] | expert-communicator | [one-line] | audit + voice library reference`.

@@ -249,3 +249,27 @@ Outputs feed:
 ---
 
 > **First principle:** Most funnels don't fail because the assets are bad. They fail because the assets don't add up to a single conversation. Audit the joins, not just the parts.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:gate-verdicts` (Phase 5) — specifically the per-touchpoint scent-match verdict.
+
+**Target section:** `section:gate-verdicts` (per-touchpoint sub-rows) PLUS `section:retargeting-cascade` if any drift is found
+**No standalone file** (verdicts live inside the phase doc)
+**Format:** markdown table rows or per-touchpoint sub-sections
+**Confidence required:** HIGH
+
+**Required fields per touchpoint pair (ad → LP, LP → email, email → LP, etc.):**
+- Touchpoint A (the source, e.g. "Meta Feed ad #1 hero")
+- Touchpoint B (the destination, e.g. "LP hero")
+- Scent match status: MATCH / DRIFT / BROKEN
+- Specific drift point (which line in A doesn't match which line in B)
+- LP audit score per touchpoint (X/25 from `library-conversion-framework` Part 7)
+
+**Hard rules:**
+- Write ONLY into `section:gate-verdicts` and `section:retargeting-cascade`. Do NOT modify the audited assets.
+- DRIFT is a yellow flag. BROKEN is a hard block (the operator must reconcile before approval).
+- Scent match is the SAME conversation continuing. If A says X and B says Y, the user will leave — not because either is bad, but because the conversation broke.
+- The audit covers ALL cross-asset handoffs: ad → LP, LP → email, email → next LP, etc. Not just one pair.
+- Use `library-conversion-framework` Part 7 (25-point LP checklist) and Part 4 (friction chain).
+- Append Decision Log: `scent match = [A→B] = [status] | funnel-audit | [one-line] | drift point`.

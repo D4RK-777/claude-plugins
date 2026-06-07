@@ -401,3 +401,32 @@ For different stages of campaign maturity, run different depth:
 ---
 
 > **First principle:** Data without diagnosis is reporting; data with diagnosis but without action is academia. This skill produces data + diagnosis + action — the only output worth a stakeholder's time. Every finding answers the question "and so what do we do about it?"
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:cohort-analysis` + `section:attribution-decomposition` + `section:audience-cpl-distribution` + `section:creative-fatigue-curves` + `section:character-validation` + `section:lp-friction` + `section:campaign-verdict` (Phase 7) AND emits the structured insights JSON for Phase 8.
+
+**Target sections:** 7 sections in Phase 7 phase doc (see column above)
+**Saved file:** `{project_root}/7-learning.md` + `{project_root}/learning-insights.json` (schema pinned in `phase-doc-learning`)
+**Format:** markdown + JSON
+**Confidence required:** HIGH (with sample size + statistical confidence cited)
+
+**Required fields per section:**
+- **cohort-analysis:** cohort size, M1/M3/M6 retention, with sample size
+- **attribution-decomposition:** multi-touch paths with attribution window, top 3 conversion paths
+- **audience-cpl-distribution:** CPL per audience tier, with depth vs breadth analysis
+- **creative-fatigue-curves:** peak day + decay rate per creative, with sample size
+- **character-validation:** predicted vs actual for the primary character (≥ 1 delta, even "no divergence")
+- **lp-friction:** drop-off per LP section, paired with `library-conversion-framework` Part 7 friction patterns
+- **campaign-verdict:** WIN / BREAK_EVEN / LOSS with specific reasoning tied to KPI target
+
+**Required fields in `learning-insights.json`:** see `phase-doc-learning` SKILL.md for the full schema. Required: `insights[]` (with library_target, section_anchor, current/proposed value, evidence_campaign, confidence, rationale, linked_phase_section, sample_size, statistical_confidence), `character_refinements[]`, `watch_list_entries[]`.
+
+**Hard rules:**
+- Write ONLY into the 7 Phase 7 sections + the JSON file. Do NOT touch the campaign's other artifacts.
+- Statistical claims must include `sample_size: N` + `confidence: 0.X`. No false precision.
+- Pair every finding with `library-industry-benchmarks` context. "Our CPL is $82" is meaningless without "industry median is $X, top quartile is $Y".
+- Character validation is MANDATORY. Even if hard to quantify, surface qualitative deltas (predicted scroll-stop signals vs actual click-through, predicted objections vs actual abandonment points, predicted decision style vs actual decision velocity).
+- Insight proposals for library updates go in `section:proposed-library-updates` in Phase 8. This skill produces the CANDIDATES with rationale; Phase 8 surfaces them as tick-box approvals.
+- The JSON schema is the contract. Phase 8 reads exactly this structure. Don't write a different shape.
+- Append Decision Log: `data analysis = [findings count] | data-analyst | [one-line] | sample sizes + library references + campaign verdict`.

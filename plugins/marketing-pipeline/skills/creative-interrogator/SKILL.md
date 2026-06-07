@@ -356,3 +356,27 @@ These are specific patterns that indicate the pipeline has failed somewhere upst
 ---
 
 > **"Good enough is the enemy of necessary. And only necessary creative earns a stop."**
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:gate-verdicts` (Phase 5) — specifically the per-asset interrogator verdict.
+
+**Target section:** `section:gate-verdicts` (per-asset rows)
+**No standalone file** (verdicts live inside the phase doc)
+**Format:** markdown table rows or per-asset sub-sections
+**Confidence required:** HIGH for each verdict (KILL is irreversible)
+
+**Required fields per asset:**
+- Asset name (hook, LP hero, email #N, etc.)
+- Verdict: GREEN / AMBER / RED / KILL
+- Principle violated (cite specific principle from `library-art-direction` or `library-channel-specs`)
+- Specific fix needed (one sentence — what to change to move RED → AMBER, or unblock KILL)
+- File path (the asset being audited)
+
+**Hard rules:**
+- Write ONLY verdicts into `section:gate-verdicts`. Do NOT modify the audited assets.
+- KILL is a hard block — assets with KILL verdict cannot be approved. The asset must be regenerated.
+- Every verdict cites a SPECIFIC principle from `library-art-direction` (8 principles) or `library-channel-specs`. Verdicts without a cited principle are not verdicts.
+- Use brand libraries' voice + hard NOs as rails. A hard-NO violation is automatic KILL.
+- The interrogator runs the all-7-phases audit (clarity, persuasion, voice, art direction, channel fit, scent match, hard NOs). All 7 must be addressed. A verdict that only checks 2 of 7 is incomplete.
+- Append Decision Log: `interrogator verdict = [asset] = [verdict] | creative-interrogator | [one-line] | principle violated`.

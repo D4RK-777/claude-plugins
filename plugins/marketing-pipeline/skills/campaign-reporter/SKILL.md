@@ -272,3 +272,38 @@ The markdown report is the source-of-truth content. The rendered docx/pptx/pdf i
 ---
 
 > **First principle:** A report is a decision-support document, not an archive. Every report should make the next decision easier — what to fund, what to kill, what to learn from. Reports that document but don't recommend are accounting, not marketing.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:weekly-snapshot` AND `section:rolling-history` (Phase 6 weekly).
+
+**Target sections:** `section:weekly-snapshot`, `section:rolling-history`
+**No standalone file** (snapshots live inside the phase doc)
+**Format:** markdown table rows appended each week
+**Confidence required:** HIGH (the numbers come from raw data exports — no inference)
+
+**Required fields in `section:weekly-snapshot`:**
+- Week number + date
+- Spend (total, by channel)
+- CPL (actual vs forecast Likely)
+- ROAS / MER (true north metric)
+- CTR (creative-level)
+- LP CVR
+- Top performing creative (the one with lowest CPL or highest ROAS)
+- Worst performing creative (the one flagged for kill)
+- Audience saturation (if any audience is shrinking)
+- Creative fatigue (if any creative is above 2.5x frequency)
+- 3-5 line narrative: what happened this week, what it means, what's next
+
+**Required fields in `section:rolling-history`:**
+- One row per week (append-only)
+- Columns: Week | Spend | CPL | ROAS | MER | Top creative | Worst creative | Verdict (SCALE / WATCH / KILL)
+
+**Hard rules:**
+- Write ONLY into `section:weekly-snapshot` and `section:rolling-history`. Do NOT touch acquisition, audience, or creative sections.
+- Numbers come from raw data exports, NOT inference. If data is missing, mark the section as `(awaiting data)` rather than estimating.
+- MER (Marketing Efficiency Ratio = Total Revenue / Total Ad Spend) is the true north metric. ROAS is platform-reported and inflated by view-through attribution. Report both, optimise to MER.
+- Verdicts (SCALE / WATCH / KILL) must cite the specific forecast threshold from Phase 5 that triggered them. Don't trigger an action without showing the math.
+- The decision log delta (`section:decision-log-delta`) is appended every week. New operator decisions, new scale/kill calls, new budget shifts.
+- Append-only for `section:rolling-history`. NEVER delete prior weeks. The time series matters.
+- Append Decision Log: `weekly report = week [N] | campaign-reporter | [one-line] | top + worst creative + scale/watch/kill verdict`.

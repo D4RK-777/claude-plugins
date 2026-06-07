@@ -257,3 +257,33 @@ The cascade feeds:
 ---
 
 > **First principle:** Retargeting fails when it treats "didn't buy" as one audience. It works when it treats each objection as its own funnel. Build the cascade around the chain, not around the platform's default audience templates.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:retargeting-cascade` (Phase 5) AND saves the full cascade file to disk.
+
+**Target section:** `section:retargeting-cascade`
+**Saved file:** `{project_root}/retargeting-cascade-{project_slug}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH (retargeting is where conversion happens; bad cascade = wasted spend)
+
+**Required fields in the section content:**
+- 5 stages (Stage 1 cold-aware, Stage 2 problem-aware, Stage 3 solution-aware, Stage 4 objection-handlers, Stage 5 last-call / cart-abandoners)
+- For each stage: audience definition, creative direction, frequency cap, budget %, exit criteria
+- Objection mapping (which stage addresses which persona objection from `character-profile-{name}.md`)
+- Cross-stage scent (each stage's ad creative references the next stage's destination for continuity)
+- Proof-type mapping per decision style (from `library-conversion-framework` Part 2)
+
+**Required frontmatter on the saved file:**
+- `campaign`, `stages_count`, `last_updated`
+- `total_budget_pct` (should sum to ~50-60% of total; cold acquisition is 40-50%)
+- `confidence`
+
+**Hard rules:**
+- Write ONLY into `section:retargeting-cascade` (phase doc) and `retargeting-cascade-{project_slug}.md` (file). Do NOT touch cold audience, ad copy, or creative.
+- Retargeting cascade is CONDITIONAL — required only if `paid` in `intake.json.campaign_channels` scope.
+- 5 stages, not 3. Stage 2 (problem-aware) is where most campaigns get lazy — they go straight from awareness to last-call. Don't.
+- Frequency caps prevent fatigue. Stage 5 (last-call) needs a hard cap so it doesn't burn out the most-qualified audience.
+- Each stage addresses a SPECIFIC objection from the character's chain. If a stage doesn't map to an objection, it's a wasted stage.
+- Use `library-conversion-framework` Part 2 (proof-type by decision style) for the proof-type mapping.
+- Append Decision Log: `retargeting cascade = [5 stages] | retargeting-cascade | [one-line] | objection mapping + budget split`.

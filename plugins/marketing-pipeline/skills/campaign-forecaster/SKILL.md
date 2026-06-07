@@ -326,3 +326,38 @@ The forecast feeds:
 ---
 
 > **First principle:** A forecast is a hypothesis you commit to in writing so you can be honest about whether the campaign is working. Pipelines without forecasts run on hope. Pipelines with forecasts learn faster, defend budgets cleaner, and catch failure earlier.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:forecast` (Phase 5) AND re-runs weekly for `section:weekly-snapshot` (Phase 6).
+
+**Target section:** `section:forecast` (Phase 5) + `section:weekly-snapshot` (Phase 6 weekly refresh)
+**Saved file:** `{project_root}/forecast-{project_slug}.md` (initial + weekly snapshots appended)
+**Format:** markdown with YAML frontmatter
+**Confidence required:** MEDIUM (forecast is a hypothesis; the weekly refresh updates it)
+
+**Required fields in the section content:**
+- Forecast horizon (campaign duration)
+- Best case (specific numbers: CPL, ROAS, leads, revenue)
+- Likely case (specific numbers — the realistic midpoint)
+- Worst case (specific numbers — the floor)
+- Assumptions (the 3-5 inputs that drove the forecast: budget, audience size, persona quality, theme/strategy alignment, historical benchmarks)
+- Scale threshold (CPL below X → scale 20% / watch / kill)
+- Watch threshold (CPL between X and Y → hold, do not scale)
+- Kill threshold (CPL above Z → kill and reallocate)
+- Sample size thresholds (CPL-optimised: 30 events; purchase-optimised: 15-20 purchases; time minimum: 5 days)
+
+**Required frontmatter on the saved file:**
+- `campaign`, `forecast_date`, `horizon_days`
+- `best_cpl`, `likely_cpl`, `worst_cpl`
+- `scale_threshold`, `watch_threshold`, `kill_threshold`
+- `confidence` (HIGH / MEDIUM / LOW based on input quality)
+- `forecast_inputs` (the 3-5 assumptions)
+
+**Hard rules:**
+- Write ONLY into `section:forecast` and `section:weekly-snapshot`. Do NOT modify campaign channels, budget, or KPI.
+- Forecast is a HYPOTHESIS. State the numbers in writing so Phase 6 can compare actuals vs forecast.
+- Triangulate three evidence sources: (1) industry benchmarks from `library-industry-benchmarks`, (2) ChatInc historical data if available, (3) campaign-specific inputs.
+- Best/Likely/Worst must all be SPECIFIC NUMBERS, not "high/medium/low" handwaves. Confidence is set from input quality, not from the spread.
+- Re-runs WEEKLY post-launch. Each weekly run appends to `section:weekly-snapshot`, doesn't overwrite the initial forecast.
+- Append Decision Log: `forecast = best/likely/worst CPL | campaign-forecaster | [one-line] | assumptions + confidence`.

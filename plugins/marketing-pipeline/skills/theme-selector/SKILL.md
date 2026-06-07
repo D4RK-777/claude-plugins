@@ -189,4 +189,27 @@ The theme declaration feeds:
 
 ---
 
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:theme-locked` (Phase 3).
+
+**Target section:** `section:theme-locked`
+**Format:** markdown content block
+**Confidence required:** HIGH (the theme is a LOCK; LOW confidence = use provisional flag in TL;DR)
+
+**Required fields in the section content:**
+- The chosen theme name
+- Core belief (one-sentence thesis)
+- Defended rationale (3+ sentences, tied to Phase 2 pain themes / brand permission / channel context)
+- `* Provenance: RESEARCH LOCK verbatim quote, Phase 2 section:pain-language reference, brand permission reference`
+- Provisional flag (only if not enough info — declare provisional, don't block)
+
+**Hard rules:**
+- Write ONLY into `section:theme-locked`. Do NOT touch persona, character, strategy, or positioning sections — those have their own skills.
+- ONE theme per campaign. If two themes fit, declare a primary + flag a secondary for warmer stages.
+- Cite the RESEARCH LOCK verbatim quote that anchors the theme — this is the "why" the operator approves against.
+- Append a Decision Log entry to `campaign-state.md`: `theme = [name] | theme-selector | [one-line rationale] | brand permission + pain themes + channel context`.
+
+---
+
 > **First principle:** A theme is the campaign's emotional thesis statement. Pick one. Defend it on paper. Honour it everywhere. Pipelines without declared themes produce inconsistent creative; pipelines with declared themes produce campaigns that compound.

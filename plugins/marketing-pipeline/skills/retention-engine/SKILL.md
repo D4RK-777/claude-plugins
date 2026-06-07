@@ -254,3 +254,38 @@ INSIGHT QUESTIONS DATA SHOULD ANSWER:
 ---
 
 > **First principle:** Most pipelines obsess over acquisition CPL and ignore the next 365 days. Retention compounds: every percentage point of Day 365 retention you raise widens LTV / CAC by 10-20%. The retention engine is the silent multiplier.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:retention-pulse` (Phase 6 weekly) AND saves the full retention analysis to disk.
+
+**Target section:** `section:retention-pulse`
+**Saved file:** `{project_root}/retention-pulse-{project_slug}-{week-N}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH for the activation definition + cohort definitions; MEDIUM-LOW for the actual numbers in early weeks (you don't have data yet)
+
+**Required fields in the section content:**
+- **Activation event definition** — the single specific action that signals "customer got value" (e.g. "first report generated", "first invite sent"). This is the most important pre-work in retention. Without it, you can't measure retention.
+- **Cohort retention curve** — week-by-week % retained for the cohort acquired in each prior week
+- **Activation rate** — % of new customers who reached activation event within the activation window (default 7 days)
+- **Churn signals detected** — list of customers showing churn signals (login drop, feature abandonment, support ticket patterns)
+- **LTV vs CAC** — current LTV estimate vs the campaign's CAC, with trend
+- **4 pillars status** — Activation / Lifecycle nurture / Churn prevention / Expansion (each with one-sentence status)
+- **Open retention issues** — things that need operator attention
+
+**Required frontmatter on the saved file:**
+- `campaign`, `week_number`, `date`
+- `activation_event` (the one-line definition)
+- `cohort_size` (number of customers in the cohort)
+- `activation_rate`, `m1_retention`, `m3_retention`, `ltv_estimate`
+- `churn_signals_count`
+- `confidence`
+
+**Hard rules:**
+- Write ONLY into `section:retention-pulse` (phase doc) and `retention-pulse-{project_slug}-{week-N}.md` (file). Do NOT touch acquisition, audience, or creative sections.
+- The retention pulse is MANDATORY. Skipping it (because the campaign "isn't long enough yet") is a real failure mode — even in week 1, log zero customers activated and zero churn as the baseline. The time series matters.
+- Define activation FIRST. Without a clear activation event, retention is unmeasurable. The activation event is the GATE — if it's not defined, the rest of the section is ungrounded.
+- Use `library-conversion-framework` Part 7 (friction patterns) when interpreting drop-off. Drop-off is friction — explain it via the framework.
+- Pair retention numbers with acquisition numbers. LTV/CAC trend is the real signal — acquisition CPL alone is half the equation.
+- The retention pulse is rolling. Each weekly run APPENDS to the time series, doesn't overwrite. Phase 7 reads the full series.
+- Append Decision Log: `retention pulse = week [N] = activation [event] | retention-engine | [one-line] | activation rate + M1 + churn signals`.

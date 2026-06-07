@@ -294,3 +294,28 @@ Outputs from this skill feed:
 ---
 
 > **First principle:** A stress test that doesn't get a clean verdict is information. A stress test with 3/3 convergence is evidence. The point of the 3-agent vote is to separate the two cheaply and unambiguously — so spend decisions are made on signal, not affection for the work.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:gate-verdicts` (Phase 5) — specifically the per-character-per-asset stress test verdict.
+
+**Target section:** `section:gate-verdicts` (per-asset stress-test sub-rows)
+**No standalone file** (verdicts live inside the phase doc)
+**Format:** markdown table rows or per-asset sub-sections
+**Confidence required:** HIGH (KILL is irreversible)
+
+**Required fields per asset × character:**
+- Asset name
+- Character name (from `character-profile-{name}.md`)
+- 3 verdicts (3-parallel simulation, majority vote)
+- Verdict aggregation: 3/3 same → that verdict. 2/3 same + 1 different → majority + flag dissent. 3/3 different → KILL.
+- Divergence point (where the character's predicted behavior diverged from the asset's intent)
+
+**Hard rules:**
+- Write ONLY verdicts into `section:gate-verdicts`. Do NOT modify the audited assets.
+- 3-parallel simulation is MANDATORY. One agent's verdict is not a verdict.
+- The character is INHERITED from `icp-character-builder` (Awareness × Sophistication grid + decision style + objection chain). Do NOT re-derive.
+- Use the character's verbatim internal monologue (from `character-profile-{name}.md`) to evaluate the asset. The character's voice is the source of truth.
+- KILL is a hard block. Dissent is a yellow flag (operator reviews).
+- Build each character at least 3 times with different anchor details (different city, last-3-purchases, physical environment) for variance. The persona is the same; the character is a sampled instance.
+- Append Decision Log: `stress test = [asset × character] = [aggregated verdict] | persona-stress-test | [one-line] | majority + dissent flag`.

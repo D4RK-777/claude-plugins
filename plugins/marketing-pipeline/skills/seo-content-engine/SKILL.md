@@ -272,3 +272,39 @@ Cadence guidance:
 ---
 
 > **First principle:** Modern SEO is being the best answer to the searcher's intent — better than competitors, structured for AI extraction, signalled as authoritative. Keywords are the seed; intent + authority + technical compound is the harvest.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:seo-briefs` (Phase 4) AND saves the full briefs to disk for content production.
+
+**Target section:** `section:seo-briefs`
+**Saved file:** `{project_root}/seo-content-briefs-{project_slug}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** MEDIUM (SEO is more probabilistic than conversion copy; flag LOW confidence honestly)
+
+**Required fields in the section content (per brief):**
+- Target keyword + search intent (informational / commercial / transactional)
+- Title tag (≤ 60 chars, includes keyword)
+- Meta description (≤ 160 chars, includes keyword + value prop)
+- H1 (must include keyword)
+- H2/H3 outline (3-7 H2s, with target keyword variants in 1-2 of them)
+- Word count target (based on top-ranking competitor average + 20%)
+- Internal links (3-5 from existing site content)
+- External authority links (1-2 from high-DR sources)
+- Schema markup type (Article / Product / FAQ / HowTo)
+- Featured snippet target (paragraph, list, or table — and which to win)
+- CTA (relevant to the search intent — informational ≠ "buy now")
+
+**Required frontmatter on the saved file:**
+- `campaign`, `briefs_count`, `last_updated`
+- `top_keyword`, `search_intent`
+- `confidence` (MEDIUM typical, LOW if keyword data is thin)
+
+**Hard rules:**
+- Write ONLY into `section:seo-briefs` (phase doc) and `seo-content-briefs-{project_slug}.md` (briefs file). Do NOT touch copy, hook, or LP sections.
+- seo-content-engine is CONDITIONAL — required only if `SEO/Content` in `intake.json.campaign_channels`.
+- Match search intent to the keyword. Don't promise "the best [product]" in a title if the searcher is researching.
+- Word count: top-ranking competitor average + 20% buffer. If competitors are at 1,500 words, target 1,800. NOT 5,000.
+- Schema markup is required, not optional. Modern SEO requires structured data to win featured snippets.
+- Use brand libraries' voice. The brief's example copy should match the voice library.
+- Append Decision Log: `SEO briefs = [N] | seo-content-engine | [one-line] | top keyword + intent + confidence`.

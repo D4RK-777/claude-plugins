@@ -222,3 +222,36 @@ Concept 2 — [Format Type B]: [Most likely to win on warm/retargeting]
 Concept 3 — [Format Type C]: [Wildcard / test angle]
 
 After presenting all 3, recommend which to produce first and why.
+
+## OUTPUT CONTRACT
+
+The creative-expert skill is the **bridge** between hook and execution. It does NOT write its own phase-doc section — it produces Creative Concept Briefs that the orchestrator inlines into the parent sections of steps 6 (ad-image-architect), 7 (cinematic-prompt-architect), and 8 (paid-ads-expert).
+
+**Target sections:** NONE OWNED. Concept brief content is inlined by the orchestrator into:
+- `section:ad-image-prompts` (the concept feeds the visual)
+- `section:cinematic-prompts` (the concept feeds the video direction)
+- `section:ad-copy-units` (the concept feeds the copy stack)
+
+**Saved file:** `{project_root}/creative-brief-{project_slug}-{concept_id}.md` (one file per concept)
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH
+
+**Required fields in each concept brief:**
+- Concept logline (one-sentence summary)
+- Hook (inherited from hook-creative-brief.md, exact text)
+- Awareness level
+- Format type
+- Opening frame description (frame 1, 0-3s — visual + audio)
+- Scene breakdown (beats 1-N: visual | audio | emotional purpose)
+- Sound-on direction
+- Sound-off text overlays
+- Talent direction
+- Offer moment (when + how + risk reversal + CTA)
+- Scent match note (for caption-expert + paid-ads-expert alignment)
+
+**Hard rules:**
+- Do NOT write to any `section:` directly. The orchestrator inlines the concept into the right parent sections.
+- 3 concepts, 3 different format types. Concept 1 = cold traffic. Concept 2 = warm/retargeting. Concept 3 = wildcard.
+- Each concept reads a SPECIFIC hook from `hook-creative-brief.md`. Don't invent new hooks.
+- Scent match note is required: "this creative should feel like X" — a one-sentence anchor for caption-expert and paid-ads-expert to align against.
+- Append Decision Log: `creative concept = [name] | creative-expert | [one-line] | format type + hook source`.

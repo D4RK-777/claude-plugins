@@ -318,3 +318,30 @@ Deliver a single structured markdown file: `campaign-persona.md`. This document 
 7. **Pass to icp-character-builder next.** The persona is the strategic profile. icp-character-builder turns it into a simulatable named character for stress-testing.
 8. **Shopify/DTC check.** If it's ecommerce, add the purchase psychology layer.
 9. **Save as file.** Always deliver as `campaign-persona-[persona-name].md` using present_files.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:icp-persona` (Phase 3).
+
+**Target section:** `section:icp-persona`
+**Format:** markdown content block
+**Confidence required:** HIGH (the grid position is a LOCK; LOW confidence on either axis → use provisional flag)
+
+**Required fields in the section content:**
+- Role + industry + company stage + job title
+- Primary pain (verbatim from RESEARCH LOCK or `paraphrased — no verbatim source`)
+- Trigger event (the headline — always becomes at least one hook downstream)
+- Alternatives tried (what they used before your product)
+- Main objection (verbatim preferred)
+- Platforms & communities
+- **Awareness × Sophistication grid** — both axes declared, with reasoning (2-3 sentences each)
+- Identity frame ("A person who buys X is the kind of person who Y")
+- Anti-persona (who this is NOT for — ad exclusions + copy clarity)
+- Top 3 hook angles mapped to Trigger Event / Nightmare / Identity
+
+**Hard rules:**
+- Write ONLY into `section:icp-persona`. Do NOT touch character, strategy, theme, or positioning sections.
+- One persona per campaign by default. If operator wants more, build them in parallel as separate files (`campaign-persona-[name1].md`, `campaign-persona-[name2].md`) and Phase 3's `section:icp-persona` lists all of them by reference.
+- The Awareness × Sophistication grid is GATED — both axes must be declared. If you can't, mark `LOW_CONFIDENCE` and recommend running `persona-stress-test` before the campaign ships.
+- Use verbatim Phase 2 pain language. Do NOT paraphrase. If a phrase doesn't exist in Phase 2, flag as `[INTERPRETATION]` and add an open question.
+- Append Decision Log: `persona = [name + grid position] | icp-persona-engine | [rationale] | RESEARCH LOCK + competitor scan`.

@@ -177,4 +177,26 @@ VARIANT C — Long-form / Retargeting
 Why this works: [1 sentence]
 
 RECOMMENDED START: Variant [X] because [reason]
+
+## OUTPUT CONTRACT
+
+The caption-expert skill is **OPTIONAL polish** invoked by the phase-doc-creation orchestrator for caption quality. It polishes captions but does NOT write to a new section — its output is inlined into the parent ad-copy section.
+
+**Target sections:** INLINE EDITS to `section:ad-copy-units` (captions live within the ad unit)
+**Format:** markdown edits with caption variants
+**Confidence required:** HIGH
+
+**Required fields in the inline edit:**
+- Original caption (exact)
+- Replacement caption (exact)
+- Awareness level match (the caption's hook line is calibrated to where the buyer is)
+- Why this caption variant wins (1 sentence)
+
+**Hard rules:**
+- Edit ONLY within `section:ad-copy-units`. Captions are part of the ad unit, not a separate section.
+- The first line of every caption IS the hook. Don't waste the first line on greetings, branding, or context — the hook is the entire reason the user stops scrolling.
+- Awareness level match: the first line's specificity level must match the persona's awareness. Unaware → emotion-led. Most-Aware → name-the-product-led.
+- Caption length varies by placement: short (1-3 lines) for in-feed stopping power, medium (5-8 lines) for engagement, long (10+) for story sequences. Match the placement.
+- Use brand libraries' voice + hard NOs as rails. Hard-NO violation = reject the edit.
+- Append Decision Log: `caption polish = [N variants] | caption-expert | [one-line] | awareness level match + voice library`.
 ```

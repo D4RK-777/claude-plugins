@@ -274,4 +274,25 @@ COPY NOTES:
 - Primary objection handled: [objection]
 - Mechanism named: [mechanism]
 - Recommended A/B test: [what to test first]
+
+## OUTPUT CONTRACT
+
+The copywriter skill is **OPTIONAL polish** invoked by the phase-doc-creation orchestrator AFTER `paid-ads-expert` has produced initial ad copy. It polishes the copy but does NOT write to a new section — its edits are inlined into `section:ad-copy-units`.
+
+**Target sections:** INLINE EDITS to `section:ad-copy-units` (the parent section, not a new one)
+**No standalone file** unless the orchestrator requests a diff
+**Format:** markdown edits (rewrite specific lines, don't restructure)
+**Confidence required:** HIGH
+
+**Required fields in the inline edit:**
+- Diff showing what was changed and why
+- Each edit must cite a Phase 2 verbatim quote or persona trait that justifies the change
+- Scent match check: the polish doesn't drift from the LP hero
+
+**Hard rules:**
+- Edit ONLY within `section:ad-copy-units`. Do NOT create new sections.
+- Don't add copy that wasn't requested. If `paid-ads-expert` produced 5 headlines, polish those 5, don't add a 6th.
+- Every polish edit must have a reason ("this headline is more on-voice", "this CTA is more action-specific"). No edits-for-the-sake-of-edits.
+- Use brand libraries' voice + hard NOs as rails. Hard-NO violation = reject the edit, don't apply.
+- Append Decision Log: `copy polish = [N edits] | copywriter | [one-line] | voice library reference`.
 ```

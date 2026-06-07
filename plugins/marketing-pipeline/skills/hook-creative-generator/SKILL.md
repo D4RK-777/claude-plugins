@@ -262,3 +262,37 @@ Format: tight, specific, actionable. Not a lecture — a score and a fix.
 7. **Visual before verbal.** Describe the first frame before the first word.
 8. **Pass the brief forward.** Output is always `hook-creative-brief.md` ready for paid-ads-expert.
 9. **Anti-patterns are required.** Always include "What NOT to Do" — it prevents repeating bad decisions.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:hooks` (Phase 4) AND saves the full brief to disk for creative-expert and paid-ads-expert to read.
+
+**Target section:** `section:hooks`
+**Saved file:** `{project_root}/hook-creative-brief-{project_slug}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH (the hooks drive Phase 4-5; LOW confidence hooks = LOW confidence downstream)
+
+**Required fields in the section content (per hook):**
+- Hook text (exact words)
+- Creative type (Before/After / Pattern Interrupt / Curiosity / Trust / Narrative / Meme)
+- Research source (Trigger Event / Pain Stack / Power Phrase / Competitor Gap / VOC)
+- Scroll-Stop Score (X/50, with sub-scores for: Specificity, Relevance, Curiosity Gap, Pattern Interrupt, Identity Resonance)
+- Awareness match
+- Platform
+- Visual direction (format + opening frame + sound-on/off)
+- Caption structure
+- Cinematic prompt direction
+- "Why this will work" (1-2 sentences anchored in research)
+
+**Required frontmatter on the saved file:**
+- `campaign`, `platform`, `awareness_level`, `last_updated`
+- `hooks_count`, `top_score` (highest Scroll-Stop Score)
+- `confidence`
+
+**Hard rules:**
+- Write ONLY into `section:hooks` (phase doc) and `hook-creative-brief-{project_slug}.md` (brief). Do NOT touch copy, image, or video sections.
+- EVERY hook needs a `[Research Source]` tag pointing to a specific Phase 2 finding. Hooks without a source are ungrounded — drop them.
+- Deliver 3 full Creative Concept Cards minimum, not 1. The operator picks.
+- "What NOT to Do" section is REQUIRED. Without it, downstream skills may repeat anti-patterns.
+- Sound-off hook variant is REQUIRED for every video concept — 85% of Meta video is watched muted.
+- Append Decision Log: `top hook = "[text]" | hook-creative-generator | [score] | research source: [what]`.

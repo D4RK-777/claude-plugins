@@ -470,3 +470,42 @@ For platforms that support negative prompts, always include these unless the use
 - Never include copyrighted character names, celebrity likenesses, or branded IP in prompts — describe visual characteristics instead
 - Remind users that AI generation is iterative — the first output rarely nails it, and prompt refinement is part of the process
 - For multi-shot projects, help build a "Style Bible" — a reusable block of text defining the visual language (color grade, lighting style, camera behavior) that gets appended to every prompt in the series
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:cinematic-prompts` (Phase 4) AND saves the full prompt package to disk for Phase 5's creative-interrogator.
+
+**Target section:** `section:cinematic-prompts`
+**Saved file:** `{project_root}/cinematic-prompt-package-{asset-name}-{date}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH
+
+**Required fields in the section content (per asset × platform):**
+- Platform (Veo / Kling / Runway / Sora / Seedream / Pika / Hailuo)
+- Clip duration (4-8s Veo / up to 15s Kling / up to 16s Runway / up to 25s Sora)
+- Aspect ratio (1:1 / 9:16 / 16:9)
+- First-and-last-frame description (if applicable)
+- Full prompt (subject + action + camera + lighting + atmosphere)
+- Negative list (morphing, distortion, plastic skin, etc.)
+- Platform-specific syntax (e.g. `--ar 9:16 --style raw` for Midjourney, frame references for Kling)
+- Realism Shield (5-7 of the 12 anchors woven in)
+- Audio direction (if platform supports native audio)
+- Reference frames / image-to-video source (if applicable)
+
+**Required frontmatter on the saved file:**
+- `campaign`, `asset_name`, `concept_id`
+- `platform`, `duration_seconds`, `aspect_ratios[]`
+- `palette_source` (design-system-selection file path)
+- `confidence`
+
+**Hard rules:**
+- Write ONLY into `section:cinematic-prompts` (phase doc) and `cinematic-prompt-package-{asset-name}-{date}.md` (package file). Do NOT touch image, copy, or hook sections.
+- cinematic-prompt-architect is CONDITIONAL — required only if any video channel (TikTok / YouTube / Reels) in `intake.json.campaign_channels`.
+- Pull EVERY variable from the pipeline. NEVER invent camera, lighting, or atmosphere. They come from `design-system-selection-{slug}.md` + `creative-brief-{slug}-{concept_id}.md`.
+- For products that need to look real: 180° ping-pong loops over full 360° orbits. Less morphing.
+- For non-product cinematic: first-and-last-frame for loops. Static camera + ambient motion for web backgrounds.
+- The 12 Realism Shield anchors: 5-7 minimum per prompt. Pick the most relevant to the shot.
+- Platform-specific syntax: read `references/platforms.md` (referenced in this skill) before generating. Different platforms use different syntax patterns.
+- 360° orbit caveat: true 360° orbits suffer mid-orbit morphing. Default to 180° ping-pong unless the operator explicitly demands full rotation AND provides multi-angle reference images.
+- Anti-AI-look negative prompts: include unless the operator specifically wants a stylized/non-realistic look.
+- Append Decision Log: `cinematic prompts = [N] for concept [id] | cinematic-prompt-architect | [one-line] | platform + durations + concept link`.

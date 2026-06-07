@@ -170,3 +170,23 @@ If the user just wants to riff and explore language together without the full fr
 - Don't force the framework — let the right word emerge from conversation
 
 The goal is always the same: find the word that makes the buyer's mental image match the product.
+
+## OUTPUT CONTRACT
+
+The master-wordsmith skill is **OPTIONAL polish** invoked by the phase-doc-creation orchestrator for final word-level refinement. It polishes the copy but does NOT write to a new section.
+
+**Target sections:** INLINE EDITS to `section:ad-copy-units`, `section:lp-copy`, `section:email-sequence`, or `section:hooks` (any copy section — depending on which one needs polish)
+**Format:** markdown edits with before/after diff
+**Confidence required:** HIGH
+
+**Required fields in the inline edit:**
+- Original phrase (exact)
+- Replacement phrase (exact)
+- Why the new word is better (one sentence, anchored in voice library or character traits)
+
+**Hard rules:**
+- Edit ONLY within copy sections. Do NOT touch design, image, or video sections.
+- Change the FEWEST words possible to get the effect. Master-wordsmith is a scalpel, not a hammer.
+- Every edit must improve specificity, voice match, or emotional resonance. NEVER edit just to be different.
+- Use brand libraries' voice as the rails. Voice is the constraint that prevents drift.
+- Append Decision Log: `wordsmith polish = [N edits] | master-wordsmith | [one-line] | voice library reference`.

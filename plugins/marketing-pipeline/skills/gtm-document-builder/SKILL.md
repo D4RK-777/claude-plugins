@@ -323,3 +323,39 @@ After the GTM doc is built and the operator ships:
 ---
 
 > **First principle:** A pipeline that doesn't terminate in a single ready-to-execute document is just expensive note-taking. The GTM doc is the difference between "we built a marketing strategy" and "we shipped a campaign." Everything else exists to make THIS document accurate and complete.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:gtm-document` (Phase 5) AND emits a standalone executable HTML document.
+
+**Target section:** `section:gtm-document`
+**Saved file:** `{project_root}/go-to-market-{project_slug}.html` (standalone, executable HTML)
+**Format:** HTML with embedded CSS — must open in any browser
+**Confidence required:** HIGH (this is the operator's execution surface)
+
+**Required sections in the HTML (in order):**
+1. **Executive snapshot** — product, audience, goal, budget, KPI, timeline, status pills
+2. **Audience architecture** — from `audience-architecture-{slug}.md` (inlined)
+3. **Creative package** — hooks → concepts → ad units (from `creative-brief-{slug}-*` + `ad-copy-stack-{slug}.md` + `image-prompt-package-*` + `cinematic-prompt-package-*`)
+4. **LP + email** — from `lp-copy-v1.md` + `email-sequence-v1.md` (inlined)
+5. **Retargeting cascade** — 5 stages from `retargeting-cascade-{slug}.md`
+6. **Forecast** — Best / Likely / Worst + scale/watch/kill thresholds
+7. **Triple-gate results** — verdicts table from Phase 5 gate
+8. **Deployment checklist** — pixel / CAPI / EMQ / UTMs / kill threshold
+9. **Character cards** (sticky) — the named characters for reference
+10. **Prompts copy-to-clipboard** — every AI prompt with a "Copy" button
+
+**Required CSS tokens:**
+- Sticky character cards (top of page, always visible)
+- Monospace font for all prompts (so the operator can read them clearly)
+- Color-coded status pills (green / amber / red)
+- Print-friendly (the operator may print this for a meeting)
+
+**Hard rules:**
+- Write ONLY to `section:gtm-document` (phase doc) and `go-to-market-{project_slug}.html` (HTML).
+- The HTML is the operator's primary execution surface. Every section must be readable WITHOUT a Claude session. No "[run /phase-X to populate]"-style placeholders.
+- Prompts must have a working copy-to-clipboard button. The operator pastes them into their AI tool of choice.
+- Status pills reflect the most-recent state. If a gate verdict was RED, the pill is RED.
+- Use `library-art-direction` 8 principles + `library-design-foundations` 8 foundations as the visual rules.
+- The HTML must open and render correctly in Chrome, Edge, and Firefox (no Chrome-only APIs).
+- Append Decision Log: `GTM doc = [sections] | gtm-document-builder | [one-line] | sections count + status pills + last updated`.

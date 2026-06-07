@@ -333,3 +333,29 @@ Future-state integration points:
 ---
 
 > **First principle:** A design system isn't a style sheet. It is a constraint set that makes coherent work possible at scale. Pick one. Defend the choice. Honour it across every asset. Pipelines that select design vocabulary deliberately produce campaigns that compound visually — buyers see one asset and recognise the brand on the next.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:design-system` (Phase 4) AND saves the full selection file to disk for downstream visual skills to read.
+
+**Target section:** `section:design-system`
+**Saved file:** `{project_root}/design-system-selection-{project_slug}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH (every visual downstream depends on locked tokens)
+
+**Required fields in the section content:**
+- Selected system name (or composition with named spine)
+- Design tokens (type scale, color palette, spacing scale, grid, components) — all the orchestrator needs
+- Aesthetic register (photography, illustration, motion, mood)
+- Constraints (hard NOs, max colors per asset, banned fonts)
+- Reference paths
+- Rationale (2-3 sentences)
+
+**Required frontmatter on the saved file:**
+- `system_name`, `mode` (SINGLE or COMPOSED), `status` (LOCKED), `confidence`, `last_updated`
+
+**Hard rules:**
+- Write ONLY into `section:design-system` (phase doc) and `design-system-selection-{project_slug}.md` (selection file). Do NOT touch hook, copy, or visual prompt sections.
+- This is the FIRST step in Phase 4. Steps 6 (ad-image-architect) and 7 (cinematic-prompt-architect) literally cannot run without locked tokens. Do NOT skip.
+- Treat `library-design-foundations` as the floor. Any system that violates accessibility, hierarchy, or type rules fails regardless of trendiness.
+- Append Decision Log: `design system = [name] | design-system-architect | [one-line] | brand × theme × strategy × persona`.

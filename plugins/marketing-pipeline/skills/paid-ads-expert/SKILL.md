@@ -301,3 +301,34 @@ Before going live on any new campaign:
 - [ ] Learning phase expectation set — 7 days before optimization decisions
 - [ ] Reporting dashboard live (GA4 + platform + MER tracking)
 - [ ] Kill threshold agreed — "we kill if CPL is above $X after day 5"
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:ad-copy-units` (Phase 4) AND saves a copy stack file to disk for the implementation phase.
+
+**Target section:** `section:ad-copy-units`
+**Saved file:** `{project_root}/ad-copy-stack-{project_slug}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH (copy is what's tested directly; LOW confidence copy = wasted spend)
+
+**Required fields in the section content (per creative concept from creative-expert):**
+- Primary text (3 length variants: short ≤25 words, medium 80 words, long 150+ words)
+- Headlines (5 variants: pain-led, outcome-led, curiosity-led, social proof, contrarian)
+- Description line (for Google/Meta)
+- CTA button text (3 options)
+- Hook anchor (inherited from the concept brief, exact text)
+- Google Ads RSA (15 headlines × 30 chars, 4 descriptions × 90 chars) — if Google in scope
+
+**Required frontmatter on the saved file:**
+- `campaign`, `channels`, `last_updated`
+- `unit_count` (number of ad units produced)
+- `confidence`
+
+**Hard rules:**
+- Write ONLY into `section:ad-copy-units` (phase doc) and `ad-copy-stack-{project_slug}.md` (stack file). Do NOT touch hook, design, or image sections.
+- All copy traceable to research. No generic claims. Every headline/source pairing has a `**Source:**` line.
+- Scent match check: every ad headline aligns with the LP hero (drift = Open Question).
+- Use brand libraries' voice + hard NOs as rails. Any banned-word violation → surface in Open Questions with the specific phrase flagged. NEVER silently edit out.
+- The 5 testing levels (hook → format → offer → audience → LP) inform what to test FIRST. Pick the highest-leverage test for the campaign.
+- Statistical significance rule: don't kill ads before 30 events (CPL-optimised) or 15-20 purchases (purchase-optimised) or 5 days, whichever is later.
+- Append Decision Log: `copy units = [N] | paid-ads-expert | [one-line] | test level 1 priority + variant strategy`.

@@ -250,6 +250,33 @@ This becomes the conversion north star. It's what library-conversion-framework w
 
 8. **Save as `character-profile-[name].md`** using present_files.
 
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:character-profile` (Phase 3).
+
+**Target section:** `section:character-profile`
+**Format:** markdown content block (orchestrator can also save the full file `{project_root}/character-profile-[name].md` for persona-stress-test)
+**Confidence required:** HIGH (the character drives Phase 4-5; LOW confidence on decision style → Phase 5's triple gate is unreliable)
+
+**Required fields in the section content:**
+- Character name + role + age + location
+- Internal monologue (verbatim Phase 2 pain language — DO NOT paraphrase)
+- Top 3 daily frustrations (ranked, with verbatim quotes)
+- Decision style (one-word label from library: e.g. "analytical", "social", "convenience-driven")
+- Objection chain (linear sequence: Objection 1 → Handle 1 → Objection 2 → Handle 2 → ...)
+- Trigger event → response arc
+- Identity frame (consistent with icp-persona-engine's identity frame)
+- Anchoring details (city, last 3 purchases, physical environment) — for stress-test variance
+- **Awareness × Sophistication grid (inherited verbatim from icp-persona-engine, NOT re-derived)**
+
+**Hard rules:**
+- Write ONLY into `section:character-profile`. Do NOT touch persona, strategy, theme, or positioning sections.
+- One character per persona, minimum. If 5 personas → 5 characters, each in their own file. The orchestrator inlines references to all of them in `section:character-profile`.
+- Voice is the customer's voice. Use Phase 2's `section:pain-language` VERBATIM quotes. If a needed phrase isn't there, mark `[INTERPRETATION]` + flag open question, don't invent.
+- Carry the grid position VERBATIM from icp-persona-engine. Do NOT re-derive. The character inherits it.
+- For stress-testing variance, build each character AT LEAST 3 times with different anchor details (different city, different last-3-purchases, different physical environment). The persona is the same; the character is a sampled instance. Saves as `character-profile-[name]-sample-[1|2|3].md`.
+- Append Decision Log: `character = [name] | icp-character-builder | [one-line] | RESEARCH LOCK + grid from persona`.
+
 ---
 
 ## DOWNSTREAM SKILL INTEGRATION

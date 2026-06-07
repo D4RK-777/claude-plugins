@@ -1,0 +1,150 @@
+# Marketing Pipeline — Changelog
+
+All notable changes to the `marketing-pipeline` plugin are documented here. Read with `/what-changed` in Claude Code.
+
+---
+
+## v1.6.0 — sub-skill contracts + operator UX
+
+**Released:** 2026-05-27
+
+### Highlights
+- **Sub-skill output contracts.** Every wrapped skill now declares its output contract — which file it writes, which `section:` it feeds, what fields it must include, what hard rules it follows. The phase-doc orchestrator no longer has to guess where each sub-skill's output goes.
+- **Three new terminal commands.** `/pending-review`, `/phase-status`, `/what-changed` give operators terminal-side visibility without opening the dashboard.
+
+### What's new
+- Output contracts on: theme-selector, icp-persona-engine, icp-character-builder, creative-strategy-selector, positioning-engine, design-system-architect, hook-creative-generator, creative-expert, paid-ads-expert, lp-copy-generator, email-sequence-from-character, ad-image-architect, cinematic-prompt-architect, copywriter, master-wordsmith, expert-communicator, caption-expert, seo-content-engine, apify-pain-research, creative-interrogator, persona-stress-test, funnel-audit, campaign-forecaster, audience-architect, retargeting-cascade, gtm-document-builder, retention-engine, campaign-reporter, data-analyst, feedback-loop-back (20+ skills total).
+- New `commands/pending-review.md` — shows top 10 awaiting_review phases across all projects, sorted by urgency.
+- New `commands/phase-status.md` — shows 8-block status of one project (Setup → Research → ... → Updating).
+- New `commands/what-changed.md` + this `CHANGELOG.md` — operator runs `/what-changed` to see what's new since their last install.
+- Bump version to 1.6.0.
+
+### Migration notes
+- No breaking changes. The output contracts are documentation; existing skills already followed these patterns informally.
+- The new commands are additive. Existing commands (`/start-campaign`, `/run-phase`, `/approve-phase`, `/list-campaigns`, `/open-command-center`) work unchanged.
+- `CHANGELOG.md` is a new file at the plugin root. The `/what-changed` command reads it.
+
+---
+
+## v1.5.0 — phase contracts + integrity
+
+**Released:** 2026-05-27
+
+### Highlights
+- **Phase 4 per-sub-skill capture spec.** The "What you do" section is now a table with REQUIRED / CONDITIONAL / OPTIONAL labels, fixed destination sections, and a dependency graph. No agent can skip step 1 (design tokens) or step 3 (creative concept) without violating the spec.
+- **Pre-emit validation in all 8 phase docs.** Every phase doc now has a "Pre-emit validation" section with 6-8 common checks + 2-5 phase-specific checks. Agents must run them all before writing the file. Catches malformed phase docs before they reach the dashboard.
+- **Standardised frontmatter across all 8 phase docs.** `brand_libraries_loaded`, `sources_consumed`, `inherited_from`, `created_at`, `last_updated`, `approved_at`, `approved_by` are now always present. Dashboards, operators, and downstream phases can rely on a uniform contract.
+- **`learning-insights.json` schema.** Phase 7's output to Phase 8 now has an explicit JSON contract. `insights[]`, `character_refinements[]`, `watch_list_entries[]` — each with required fields. No more "parse whatever JSON."
+- **Phase 8 anchor-point rules per library format.** Table-format libraries (4): append footnote to row. Section-format libraries (7): append footnote to section. Footnote format: `<!-- Updated YYYY-MM-DD via feedback-loop-back from {slug} — reason: {short} -->`. Audit trail is consistent.
+
+### What's new
+- Phase 4 "What you do" rewritten as a per-skill capture spec table.
+- All 8 phase docs have a "Pre-emit validation" section.
+- All 8 phase docs use the canonical frontmatter template.
+- `phase-doc-learning/SKILL.md` documents the `learning-insights.json` schema.
+- `phase-doc-updating/SKILL.md` documents the anchor-point rules per library format.
+- Bump version to 1.5.0.
+
+---
+
+## v1.4.0 — materials path fix + apify-pain-research skill + archive legacy skills
+
+**Released:** 2026-05-27
+
+### Highlights
+- **Bug fix:** `intake.json.materials[].path` now correctly records the `_materials/...` path (where files are saved), not the operator's original path. Phase 1 was reading the wrong path.
+- **New skill:** `apify-pain-research` — review mining + VOC across G2/Trustpilot/Reddit/app stores. WebSearch-based stub today, Apify-ready (swappable to real Apify API when `APIFY_API_TOKEN` is configured).
+- **Archived legacy skills:** `preflight-research` + `brand-project-setup` moved to `skills/archive/` with deprecation banners. They were the pre-flywheel entry points, superseded by `/start-campaign` + `phase-doc-setup`.
+- **Bump version to 1.4.0.**
+
+### What's new
+- `/start-campaign` now records the in-project path (`_materials/...`) as the primary `path` in `intake.json.materials[]`, with the operator's original path preserved in `original_path` for traceability.
+- `phase-doc-setup` reads from `{project_root}/{path}` (single prefix, not double).
+- New `skills/apify-pain-research/SKILL.md` — full WebSearch process + VERBATIM format + sources ranked + Apify swap path documented.
+- `skills/preflight-research/` and `skills/brand-project-setup/` moved to `skills/archive/`. Deprecation banners added.
+- `phase-doc-research` Wraps updated to remove the now-archived `preflight-research` reference.
+
+---
+
+## v1.3.0 — pipeline integration fixes from end-to-end simulation
+
+**Released:** 2026-05-27
+
+### Highlights
+- **Terminal approval flow.** `/approve-phase {project} {N}` writes `status: approved` to the phase doc's frontmatter. Pure-terminal operators can now run a full campaign without ever opening the dashboard.
+- **Retention engine wired into Phase 6.** The LTV side of the acquisition × LTV equation is no longer neglected. `section:retention-pulse` is mandatory every week, with explicit hard-rule that week-1 logs zero baseline values.
+- **Brand libraries propagate to all 8 phases.** Earlier, only Phase 1 read `{brand}/_libraries/`. Now every phase re-reads the libraries and enforces the voice + hard NOs as rails.
+- **v1.2.0 inheritance actually works.** `phase-doc-ideation` now reads `intake.json.inherited_artifacts` directly, so theme/persona/positioning from a past campaign actually carry into the new one.
+- **Cleaned up dead references.** `media-buying-tactics` (skill didn't exist) removed from Phase 5 Wraps. `creative-expert` (existed but orphaned) wired into Phase 4 between hooks and image/copy execution. `brand-project-setup` + `preflight-research` removed from Phase 1 Wraps (legacy).
+- **Bump version to 1.3.0.**
+
+### What's new
+- New `commands/approve-phase.md` — terminal approval flow.
+- `phase-doc-reporting` now wraps `retention-engine` (LTV pulse) and has the `section:retention-pulse` section.
+- All 6 other phase docs (research, ideation, creation, implementation, learning, updating) have brand-library re-load in their Inputs.
+- `phase-doc-ideation` reads `intake.json.inherited_artifacts`.
+- `phase-doc-creation` now has 12 wrapped skills (added `creative-expert` between hooks and image/copy).
+- `phase-doc-implementation` Wraps cleaned up (removed `media-buying-tactics`).
+- Bump version to 1.3.0.
+
+---
+
+## v1.2.0 — materials-first intake
+
+**Released:** 2026-05-27
+
+### Highlights
+- **The intake stopped being a 9-question form.** `/start-campaign` now accepts materials as arguments: URLs, files, folders, plus `--brand` and `--from-campaign` flags. AI reads the materials, auto-loads the brand's libraries, optionally inherits from past campaigns, and proposes the 9 essentials in one block. Operator confirms with `looks good` — 1 confirmation replaces 9 questions.
+- **Sources of truth, ranked:** `intake.json` > brand libraries > operator's brief > URL scrape. Operator's materials win over the AI's URL fetch.
+- **Campaign inheritance from past campaigns.** `--from-campaign {slug}` carries theme, persona, and positioning from a past campaign's phase docs into the new one's intake.
+- **Dashboard drag-and-drop workflow.** The dashboard's intake form stages uploaded files to `{project}/_materials/` on disk so Claude Code can re-read them later. New "Copy /start-campaign command" button bridges the browser drag-drop to the terminal flow.
+- **Bump version to 1.2.0.**
+
+### What's new
+- `/start-campaign` accepts materials as args: `/start-campaign <url> <file1> <folder1> --brand <slug> --from-campaign <slug>`.
+- `/start-campaign` auto-loads brand libraries from `{brand}/_libraries/` (voice.md, hard-nos.md, audiences.md, etc.).
+- `/start-campaign` writes uploaded materials to `{project}/_materials/` with an `index.md`.
+- `phase-doc-setup` updated to consume the materials bundle BEFORE fetching URLs.
+- Dashboard's drag-drop form now stages files to disk; new "📋 Copy /start-campaign command" button bridges to terminal.
+
+---
+
+## v1.1.0 — Claude Code dispatch layer + pipeline cleanup
+
+**Released:** 2026-05-27
+
+### Highlights
+- **The plugin is no longer Cowork-bound.** v1.0.0 was a Cowork-shaped product shipped in a Claude Code wrapper — its dashboard depended on `mcp__cowork__*` MCPs that don't exist in Claude Code. v1.1.0 fixes the entire dispatch layer for Claude Code terminal mode.
+- **5 commands work in pure terminal.** `/start-campaign`, `/run-phase`, `/approve-phase` (added v1.3.0), `/list-campaigns`, `/open-command-center`. No dashboard required for a full campaign.
+- **Dashboard works in Chrome/Edge.** File System Access API for live mode. `navigator.clipboard.writeText()` for "Run Phase" dispatch. Firefox/Safari get a "use Chrome" banner.
+- **The orphan 3-phase pipeline was archived.** `campaign-pipeline-orchestrator` moved to `skills/archive/` with a deprecation banner. The 8-block flywheel is the only pipeline.
+- **Bump version to 1.1.0.**
+
+### What's new
+- `commands/start-campaign.md` rewritten (was 9 lines saying "open dashboard"; now 200+ lines doing the actual intake).
+- `commands/open-command-center.md` rewritten to regenerate + open the dashboard.
+- `commands/run-phase.md` NEW.
+- `commands/list-campaigns.md` NEW.
+- `skills/setup-marketing-command-center/SKILL.md` rewritten to drop the `mcp__cowork__create_artifact` dependency.
+- `skills/campaign-pipeline-orchestrator/SKILL.md` moved to `skills/archive/`.
+- `templates/operator-dashboard.html` I/O layer rewritten to use File System Access API. `mcp__cowork__*` calls removed. `sendPrompt()` replaced with clipboard copy.
+- 4 skills updated for stale cross-references to the orchestrator.
+- All 4 user-facing docs (README, INSTALL, ADMIN-SETUP, TEAM-INSTALL) rewritten.
+- Bump version to 1.1.0.
+
+---
+
+## v1.0.0 — initial release
+
+**Released:** 2026-05-27
+
+The original `chatinc-plugins.zip` with the 8-block flywheel, dashboard, and 42 underlying skills. Worked in Cowork (artifact + chat panel) but had no working Claude Code path — the dashboard's "click Run Phase" button was hard-wired to `sendPrompt()` which didn't exist outside Cowork. This is what the v1.1.0 → v1.6.0 series fixed.
+
+Known issues at v1.0.0 (now resolved in later versions):
+- Wizard never connected to anything in Claude Code (no MCPs, no `sendPrompt`).
+- Two pipelines co-existed (8-block + 3-phase) with conflicting vocabulary.
+- Approval gate was dashboard-only; terminal operators couldn't advance.
+- 9-question manual intake; no materials ingestion.
+- Brand libraries existed but only Phase 1 read them.
+- learning-insights.json format undefined (Phase 7 → 8 was ad-hoc).
+- Frontmatter schemas inconsistent across phases.

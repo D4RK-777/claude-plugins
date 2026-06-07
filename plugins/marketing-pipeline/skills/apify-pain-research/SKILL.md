@@ -234,3 +234,36 @@ Until that env var is set, this skill runs in WebSearch-stub mode. The output st
 - WebSearch tool (MCP or built-in)
 - WebFetch tool (MCP or built-in)
 - (Future) Apify API client
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:pain-language` (Phase 2) AND saves the full output file to disk.
+
+**Target section:** `section:pain-language`
+**Saved file:** `{project_root}/pain-research-{project_slug}-{date}.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH (15+ verbatim quotes across 4+ sources) / MEDIUM (10-14 quotes or 3 sources) / LOW (fewer)
+
+**Required fields in the section content:**
+- Pain Cluster Map (3-5 clusters, each with intensity: HIGH/MEDIUM/LOW and 3-5 VERBATIM quotes)
+- Nightmare scenario (the worst case each cluster leads to)
+- Verbatim Quote Bank (every quote with full attribution)
+- Phase 1 Hypothesis Verdict (VALIDATED / REFINED / REFUTED with delta callout)
+- Emotional Intensity Distribution (HIGH/MEDIUM/LOW counts)
+- Open Questions (sources that were thin, gaps in coverage)
+
+**Required frontmatter on the saved file:**
+- `campaign`, `product_or_category`, `date`
+- `sources_searched` (list)
+- `quotes_found` (count)
+- `sources_with_quotes` (count)
+- `confidence` (HIGH / MEDIUM / LOW)
+- `phase1_hypothesis_verdict` (VALIDATED / REFINED / REFUTED)
+
+**Hard rules:**
+- Write ONLY into `section:pain-language` (phase doc) and `pain-research-{project_slug}-{date}.md` (research file). Do NOT touch any other section.
+- NO fabrication. Every `[VERBATIM: "..." — url, date]` tag must have a real, fetchable URL and a date. If you can't attribute it, mark `source-unattributed` and don't use as primary evidence.
+- 15+ verbatim quotes across 4+ sources is the floor for HIGH confidence. Below that, mark MEDIUM or LOW and surface what you couldn't find in Open Questions.
+- Date matters: recent quotes (2024-2026) weight higher than old ones (pre-2023). For fast-changing categories, prefer last 12 months.
+- Operator's own quotes (from support tickets, sales calls, DMs) take priority over public web. If materials bundle contains them, use those FIRST.
+- Append Decision Log: `VOC = [N quotes across M sources] | apify-pain-research | [one-line] | phase1 verdict + confidence + source breakdown`.

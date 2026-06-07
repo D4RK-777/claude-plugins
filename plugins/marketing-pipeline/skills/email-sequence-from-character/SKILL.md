@@ -247,3 +247,36 @@ The sequence feeds:
 ---
 
 > **First principle:** An email sequence isn't a content calendar. It's a structured argument that handles objections in the order they fire — written in the buyer's own voice. Most "nurture sequences" are actually "broadcast schedules." This skill writes the former, not the latter.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:email-sequence` (Phase 4) AND saves the full sequence to disk for Phase 5's triple-gate audit.
+
+**Target section:** `section:email-sequence`
+**Saved file:** `{project_root}/email-sequence-v1.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH (the sequence is the long-tail conversion driver; LOW confidence = low post-launch revenue)
+
+**Required fields in the section content (per email):**
+- Email number + trigger event ("Day 0 — Welcome", "Day 2 — Objection: price", etc.)
+- Subject line (≤ 60 chars, action-specific)
+- Preview text (≤ 90 chars)
+- Body (3-5 short paragraphs, ≤ 200 words total)
+- One specific objection handled (from the character's objection chain)
+- One CTA (action-specific, not "Learn more")
+- Trigger → next-email handoff
+
+**Required frontmatter on the saved file:**
+- `campaign`, `character_name`, `emails_count`, `last_updated`
+- `voice_library_loaded` (the voice.md file used for the character)
+- `confidence`
+
+**Hard rules:**
+- Write ONLY into `section:email-sequence` (phase doc) and `email-sequence-v1.md` (sequence file). Do NOT touch hook, copy, or LP sections.
+- Email sequences are CONDITIONAL — required only if `Email` in `intake.json.campaign_channels`. Skip silently otherwise.
+- One sequence per character. If 3 personas → 3 sequences, each in its own file.
+- Voice comes from `{brand}/_libraries/voice.md` AND from the character's verbatim pain language (Phase 2). Use both — voice library sets register, character pain sets content.
+- Every email handles ONE specific objection. The sequence is a structured argument; the structure is the order of objections. If the order is wrong, the sequence fails.
+- Trigger events: explicit (Day 0, Day 2, etc.) — never "send weekly" or "send monthly." Vague timing = low engagement.
+- Use brand libraries' voice + hard NOs as rails. Hard-NO violation = Open Question.
+- Append Decision Log: `email sequence = [N emails for character] | email-sequence-from-character | [one-line] | objection chain order + voice library reference`.

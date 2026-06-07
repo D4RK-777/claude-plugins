@@ -287,3 +287,49 @@ Each future `feedback-loop-back` run checks the watch list for items that now ha
 ---
 
 > **First principle:** A pipeline without a loop-back is a series of one-off campaigns. With loop-back, each campaign makes the next one easier. The libraries are the institutional memory; this skill writes to that memory honestly, with evidence, and with the user's approval. After 12 months, ChatInc's libraries are unrecognisable from generic — they are wholly your own.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:proposed-library-updates` + `section:character-refinements` + `section:benchmark-updates` + `section:watch-list-additions` + `section:closure-summary` (Phase 8).
+
+**Target sections:** 5 sections in Phase 8 phase doc
+**No standalone file** (proposals live inside the phase doc; only the APPROVED changes get written to library files)
+**Format:** markdown with tick-boxes per proposal
+**Confidence required:** HIGH (only HIGH-confidence Phase 7 insights get proposed as library updates; MEDIUM/LOW go on the watch list)
+
+**Required fields per `section:proposed-library-updates` row:**
+- Library target (file path)
+- Section / row affected
+- Current value
+- Proposed value
+- Evidence (linked to Phase 7 insight ID)
+- Tick-boxes: `[ ] Approve`, `[ ] Reject`, `[ ] Defer to watch list`
+
+**Required fields per `section:character-refinements` row:**
+- Character name
+- Current profile path
+- Predicted-vs-actual summary
+- Proposed update to the character profile
+- Confidence (HIGH / MEDIUM / LOW)
+
+**Required fields per `section:benchmark-updates` row:**
+- Library: `library-industry-benchmarks.md`
+- Metric
+- Current industry range
+- ChatInc-specific range (from this campaign + history)
+- Source campaign(s)
+
+**Required fields per `section:watch-list-additions` row:**
+- Claim
+- Supporting evidence
+- Next-campaign action ("re-check after 2 more campaigns", "needs 3rd source", etc.)
+- Campaigns observed
+
+**Hard rules:**
+- Write ONLY proposals into the 5 sections. Do NOT modify library files. Library writes happen AFTER operator approval.
+- Every proposal must cite a specific Phase 7 insight by ID. Ungrounded proposals = reject.
+- LOW-confidence insights go on the watch list, NOT the proposals table. Don't pollute the proposals.
+- 1 in 5 (or whatever the operator set) watch-list entries that hit 2+ confirmations across campaigns get promoted to library (proposed in NEXT phase 8 run). Track in `library-watch-list.md`.
+- When the operator approves a proposal, the library write uses the anchor-point rules from `phase-doc-updating` (table-format: row; sectioned: section). Footnote format: `<!-- Updated YYYY-MM-DD via feedback-loop-back from {slug} — reason: {short} -->`.
+- NEVER auto-apply. Every change requires explicit operator approval.
+- Append Decision Log: `loop-back = [N proposals + M watch-list] | feedback-loop-back | [one-line] | approved count + library targets`.

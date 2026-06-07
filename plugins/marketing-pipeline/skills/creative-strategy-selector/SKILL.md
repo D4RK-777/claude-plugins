@@ -194,6 +194,32 @@ If a downstream skill needs to deviate, it MUST raise the deviation as a Decisio
 
 7. **Save as `creative-strategy-declaration-[campaign].md`** via present_files. Append to campaign-state Decision Log.
 
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:creative-strategy` (Phase 3).
+
+**Target section:** `section:creative-strategy`
+**Format:** markdown content block
+**Confidence required:** HIGH (the strategy is a LOCK; LOW confidence = surface conflict in Open Questions)
+
+**Required fields in the section content:**
+- Strategy name (one of 6: Before/After, Visual Pattern Interrupter, Curiosity + Cognitive, Trust + Authenticity, Narrative + Format, Meme + Cultural)
+- One-line description of what the strategy does
+- Theme × Strategy compatibility score (✓✓ / ✓ / ⚠ / ✗ from library-creative-strategies)
+- Awareness × Sophistication × Strategy score (with the "when this wins / when this fails" reference)
+- Channel × Strategy fit (binding — TikTok ≠ Google)
+- 2-4 compatible format × style combinations (from library-creative-types)
+- 1-2 aligned hook structures (from library-hook-structures)
+- Predicted fail mode (specific — what makes this strategy bomb)
+- TOLD vs DERIVED mode declared
+
+**Hard rules:**
+- Write ONLY into `section:creative-strategy`. Do NOT touch theme, persona, character, or positioning sections.
+- ONE strategy per campaign. Don't blend.
+- If the theme declared in `section:theme-locked` doesn't fit any of the 6 strategies with at least a ✓ score, surface the conflict in Open Questions. The orchestrator should NOT silently pick the closest strategy — it should ask the operator to revisit the theme.
+- If TOLD mode (operator dictated the strategy), still write the rationale and scorecard. The defensibility layer is the whole point.
+- Append Decision Log: `strategy = [name] | creative-strategy-selector | [one-line] | theme compatibility + awareness/sophistication + channel fit`.
+
 ---
 
 ## DOWNSTREAM SKILL INTEGRATION

@@ -256,3 +256,41 @@ The LP copy file feeds:
 ---
 
 > **First principle:** A landing page is not a separate document from the ad. It is the second sentence of the same sentence. If the ad and the LP read as two different conversations, the visitor will leave — not because either is bad, but because the conversation broke.
+
+## OUTPUT CONTRACT
+
+The phase-doc orchestrator captures this skill's output into the phase doc's `section:lp-copy` (Phase 4) AND saves the full LP scaffold to disk for Phase 5's funnel-audit.
+
+**Target section:** `section:lp-copy`
+**Saved file:** `{project_root}/lp-copy-v1.md`
+**Format:** markdown with YAML frontmatter
+**Confidence required:** HIGH (LP is where conversion happens; LOW confidence LP = wasted traffic)
+
+**Required fields in the section content:**
+- LP type (Unaware / Problem-Aware / Solution-Aware / Product-Aware / Most-Aware — drives the structural choice)
+- Hero (3 headline variants + subhead + CTA, max 12 words for headline)
+- Problem section (from character's Nightmare pain)
+- Solution section (from positioning one-liner)
+- How It Works (3 steps)
+- Differentiation (3 things true here that aren't true elsewhere)
+- Social Proof (specific names, numbers, timelines — never vague)
+- FAQ / Objections (top 3-5 from the persona's objection chain)
+- Final CTA
+- LP architecture rationale (which library-conversion-framework Part 6 structure was used)
+- Scent match note (alignment with the ad headlines)
+
+**Required frontmatter on the saved file:**
+- `campaign`, `lp_type`, `awareness_level`, `last_updated`
+- `scent_match_status` (MATCH / DRIFT / BROKEN — DRIFT/BROKEN are blockers)
+- `audit_score` (X/25 from library-conversion-framework Part 7 self-audit)
+- `confidence`
+
+**Hard rules:**
+- Write ONLY into `section:lp-copy` (phase doc) and `lp-copy-v1.md` (LP file). Do NOT touch hook, copy, or image sections.
+- LPs are CONDITIONAL — required only if Meta or Google in `intake.json.campaign_channels`. Skip silently otherwise.
+- The LP type is GATED by the persona's Awareness Level. Don't write a Most-Aware LP for an Unaware persona, or vice versa.
+- Run the 25-point LP checklist from `library-conversion-framework` Part 7 BEFORE emit. Target 23+/25. Below 20 = revise before handing to `funnel-audit`.
+- Scent match check: the LP hero MUST align with the ad headline that drives traffic to it. Drift = Open Question. Drift over 30% = BLOCKING issue.
+- Use brand libraries' voice + hard NOs as rails. Hard-NO violation = Open Question.
+- Run the self-audit checklist and record `audit_score` in frontmatter. Below 23/25 → revise before emit.
+- Append Decision Log: `LP type = [type] | lp-copy-generator | [one-line] | awareness level + character objection chain + scent match status`.
