@@ -116,32 +116,35 @@ This is the mechanical rule. Apply it for every asset that goes through the Trip
 
 ### Phase 4 — Creation (the big one)
 
-**What to gate:** every creative asset, via the Triple Gate.
+**What to gate:** every creative asset, via the Triple Gate + the research citation check.
 
 **Per-asset gate stack:**
-1. **`creative-interrogator`** — checks hook strength (scroll-stop, specificity, brevity, pattern-interrupt)
-2. **`persona-stress-test`** — runs the asset through 3 character simulations
-3. **The third "audit" gate** — depends on asset type:
+1. **Research citation check** (NEW in v1.9.0) — verify the asset cites ≥ min RT-IDs per asset type, with source-finding lines. (See `phase-doc-creation/SKILL.md` `## Research Citations` for the per-asset-type min table.)
+2. **`creative-interrogator`** — checks hook strength (scroll-stop, specificity, brevity, pattern-interrupt)
+3. **`persona-stress-test`** — runs the asset through 3 character simulations
+4. **The third "audit" gate** — depends on asset type:
    - **Ad copy** → `funnel-audit` (scent match, brand voice, banned words)
    - **LP** → `funnel-audit` (scent match, CTA clarity, friction points) + `creative-strategy-selector` fit check
    - **Email sequence** → `email-sequence-from-character` coherence + `retention-engine` trigger logic
    - **Visual / image** → `design-system-architect` brand alignment + `ad-image-architect` platform fit
    - **Video / cinematic** → `cinematic-prompt-architect` platform fit + brand voice
 
+**Citation KILL rule:** if an asset has `Cites:` empty or fewer than the per-asset-type minimum, the gate verdict is **KILL** with corrective action: `add research citations — cite ≥N RT-IDs from 2-research.md's RESEARCH FINDINGS INDEX, with a source-finding line per RT-ID explaining the choice`.
+
 **For each asset, apply the Triple Gate aggregation rule above. Write to `section:gate-verdicts`:**
 
 ```
-| asset_id | type | interrogator | stress (3-vote) | audit | aggregated | dissent | corrective_action |
-|----------|------|--------------|-----------------|-------|------------|---------|-------------------|
-| ad-v1    | ad   | GREEN        | 3/3 ✓           | GREEN | SHIP       | —       | —                 |
-| ad-v2    | ad   | AMBER        | 2/3 ✓ + 1 ✗     | RED   | KILL       | 2/3 KILL: stress dissent + audit RED = KILL | rewrite hook + audit LP scent match |
-| lp-v1    | lp   | GREEN        | 3/3 ✓           | AMBER | REVISE     | —       | strengthen CTA + reduce friction above fold |
+| asset_id | type | cites_ok | interrogator | stress (3-vote) | audit | aggregated | dissent | corrective_action |
+|----------|------|----------|--------------|-----------------|-------|------------|---------|-------------------|
+| ad-v1    | ad   | ✓ (3)    | GREEN        | 3/3 ✓           | GREEN | SHIP       | —       | —                 |
+| ad-v2    | ad   | ✗ (1)    | AMBER        | 2/3 ✓ + 1 ✗     | RED   | KILL       | 2/3 KILL: stress dissent + audit RED = KILL | add 1+ citation + rewrite hook + audit LP scent match |
+| lp-v1    | lp   | ✓ (4)    | GREEN        | 3/3 ✓           | AMBER | REVISE     | —       | strengthen CTA + reduce friction above fold |
 ```
 
 **Verdict rules for the whole phase:**
-- **SHIP** if 0 KILLs + 0 dissent flags
-- **REVISE** if 0 KILLs + some AMBER assets OR dissents flagged
-- **KILL** if any KILL (block advancement; corrective action list produced)
+- **SHIP** if 0 KILLs + 0 dissent flags + all citations pass
+- **REVISE** if 0 KILLs + some AMBER assets OR dissents flagged OR citation warnings (>5 IDs)
+- **KILL** if any KILL (block advancement; corrective action list produced). Citation-fail counts as KILL.
 
 ### Phase 5 — Implementation
 
@@ -244,6 +247,77 @@ After running gates, the gate-runner writes:
 7. **KILL means block.** A KILL'd asset is a KILL'd asset. The orchestrator will not advance the phase until the asset is fixed or the operator explicitly overrides.
 
 8. **REVISE is operator-decision.** A REVISE means "the system found things that aren't fatal, but they're not great." The operator looks at the corrective action list and decides.
+
+---
+
+## AUTO-CORRECT (v1.9.0) — the self-healing layer
+
+When `--auto-correct` is passed to `/run-phase`, the orchestrator invokes `auto-correct` after a KILL verdict. Auto-correct re-fires the failing wrap skill(s) with the corrective action as guidance. The gate re-runs. If the asset now passes, the verdict flips to SHIP and the phase advances.
+
+### When auto-correct is invoked
+
+- Orchestrator sees KILL in `section:gate-verdicts`
+- `--auto-correct` flag was passed to `/run-phase` or `/run-campaign`
+- The KILL is in the "correctable" set (see below)
+
+### The correctable KILL set (v1.9.0 first cut)
+
+Auto-correct only handles KILLs that have a clear, mechanical fix. It does NOT auto-correct subjective KILLs (e.g. "creative direction is wrong") — those always surface to the operator.
+
+**Correctable in v1.9.0:**
+- **Citation-fail KILL** (missing research citations) — re-fire the wrap skill with the instruction "add ≥N RT-IDs from 2-research.md, with source-finding lines"
+- **Banned-word KILL** (text violates `brand.hard_nos`) — re-fire the wrap skill with the instruction "remove the banned words: {list}"
+- **CTA-clarity KILL** (LP or email CTA is unclear) — re-fire the wrap skill with the instruction "rewrite CTA to be action-specific and outcome-clear"
+- **Hook scroll-stop KILL** (hook scored below 60/100) — re-fire `hook-creative-generator` with the instruction "rewrite hook to lead with outcome / pattern-interrupt / specificity"
+
+**NOT correctable in v1.9.0 (always surface to operator):**
+- Stress-test KILL (character simulation rejected the asset)
+- Funnel-audit KILL (scent mismatch — requires operator judgment on the campaign arc)
+- Brand voice KILL (subjective — could be the brand library is wrong)
+- Competitive-fit KILL (positioning issue, not a copy issue)
+
+### Auto-correct flow
+
+```
+gate-runner fires on phase doc with KILL
+  → orchestrator (with --auto-correct) detects KILL in auto-correctable set
+  → orchestrator invokes auto-correct skill with:
+      - the failing asset_id
+      - the corrective_action
+      - the original wrap skill to re-fire (e.g. copywriter)
+      - the phase doc path
+  → auto-correct:
+      1. Re-fires the wrap skill with the corrective action as a new instruction
+      2. The wrap skill returns a revised asset
+      3. auto-correct updates the phase doc: replaces the failing asset with the revised one
+      4. auto-correct updates the asset's metadata: "REVISED via auto-correct at {timestamp}; original: {KILL reason}; revised: {corrective action applied}"
+  → orchestrator re-invokes gate-runner on the updated phase doc
+  → gate-runner re-runs gates on the revised asset
+  → if SHIP: phase advances (auto-corrected KILL counts as SHIP in the verdicts table)
+  → if still KILL: surface to operator with "auto-correct failed, manual fix required"
+```
+
+### Auto-correct in the verdicts table
+
+When a KILL is auto-corrected, the verdicts table row shows:
+- `aggregated`: SHIP (post-correction)
+- `corrective_action`: "auto-corrected at {timestamp} — original: {KILL reason}; revised: {action taken}"
+- A new `auto_corrected` column: `✓` or `—`
+
+The audit trail is preserved: the original KILL, the corrective action, the revised asset, the re-gate verdict. The state file's DECISION LOG gets a row: "auto-correct applied to {asset_id} at {timestamp} — {original KILL} → {corrective action} → {post-correction SHIP}".
+
+### Auto-correct limits
+
+- **Max 2 auto-correct passes per asset.** After 2 failed attempts, surface to operator. Don't loop forever.
+- **Max 1 auto-correct pass per phase run.** If 2+ assets need correction, fix them in separate runs.
+- **No auto-correct on Phase 5 (Implementation) KILLs.** Phase 5 KILLs are launch-gate issues; they always surface to the operator.
+- **Auto-correct never modifies research IDs or brand constraints.** It only fixes the asset's expression of them.
+
+### What auto-correct is NOT
+
+- Not "ask the AI to try again" — it's mechanical: the wrap skill is re-fired with a specific corrective action.
+- Not "skip the gate" — the gate re-runs after correction. Auto-correct that fails the gate = KILL.
+- Not "override the operator" — the operator can disable auto-correct at any time. `--auto-correct` is opt-in per run.
 
 ---
 

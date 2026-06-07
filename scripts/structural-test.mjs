@@ -498,6 +498,64 @@ if (!campaignStateContent.match(/## GATE-RUNNER WRITES|GATE-RUNNER WRITES/)) {
   ok('campaign-state/SKILL.md has GATE-RUNNER WRITES section');
 }
 
+// ---------- 17. Research lineage + auto-correct (v1.9.0) ----------
+console.log('\n17. Research lineage + auto-correct (v1.9.0) — citations + self-healing');
+
+// phase-doc-research must define RT-ID format
+const phaseDocResearchContent = readFile(join(SKILLS_DIR, 'phase-doc-research', 'SKILL.md'));
+if (!phaseDocResearchContent.match(/Research Findings Index|RT-\d{3}|RT-ID/)) {
+  bad('phase-doc-research/SKILL.md missing Research Findings Index / RT-ID format');
+} else {
+  ok('phase-doc-research/SKILL.md has Research Findings Index with RT-IDs');
+}
+
+// phase-doc-creation must require citations per asset
+const phaseDocCreationContent = readFile(join(SKILLS_DIR, 'phase-doc-creation', 'SKILL.md'));
+if (!phaseDocCreationContent.match(/Research Citations.*mandatory|Cites:.*RT-\d{3}/)) {
+  bad('phase-doc-creation/SKILL.md missing Research Citations / per-asset Cites field');
+} else if (!phaseDocCreationContent.match(/Minimum 2 citations|cite-fail/)) {
+  bad('phase-doc-creation/SKILL.md missing the "min 2 citations" rule');
+} else {
+  ok('phase-doc-creation/SKILL.md requires research citations per asset');
+}
+
+// gate-runner must check citations + have AUTO-CORRECT section
+const gateRunnerV190Content = readFile(join(SKILLS_DIR, 'gate-runner', 'SKILL.md'));
+if (!gateRunnerV190Content.match(/Citation KILL rule|cite-fail/)) {
+  bad('gate-runner/SKILL.md missing Citation KILL rule');
+} else {
+  ok('gate-runner/SKILL.md has Citation KILL rule');
+}
+if (!gateRunnerV190Content.match(/## AUTO-CORRECT|AUTO-CORRECT \(v1\.9\.0\)/)) {
+  bad('gate-runner/SKILL.md missing AUTO-CORRECT section');
+} else {
+  ok('gate-runner/SKILL.md has AUTO-CORRECT section');
+}
+
+// auto-correct skill must exist with the right process
+const autoCorrectContent = readFile(join(SKILLS_DIR, 'auto-correct', 'SKILL.md'));
+if (!autoCorrectContent) {
+  bad('auto-correct/SKILL.md not found');
+} else if (!autoCorrectContent.match(/Max 2 attempts|attempts_used/)) {
+  bad('auto-correct/SKILL.md missing the max-attempts rule');
+} else if (!autoCorrectContent.match(/correctable set|citation-fail|banned-word/)) {
+  bad('auto-correct/SKILL.md missing the correctable-KILL set');
+} else if (!autoCorrectContent.match(/Re-fire the wrap skill|re-fires the wrap skill/)) {
+  bad('auto-correct/SKILL.md missing the re-fire wrap skill process');
+} else {
+  ok('auto-correct/SKILL.md has full self-healing process');
+}
+
+// /run-phase must wire --auto-correct (not the v1.8.0 stub)
+const runPhaseContent = readFile(join(COMMANDS_DIR, 'run-phase.md'));
+if (runPhaseContent.match(/v1\.8\.0 stub/)) {
+  bad('commands/run-phase.md still has the v1.8.0 auto-correct stub — must be updated to v1.9.0 behavior');
+} else if (!runPhaseContent.match(/--auto-correct.*v1\.9\.0|auto-correct.*skill/i)) {
+  bad('commands/run-phase.md does not document the v1.9.0 --auto-correct wiring');
+} else {
+  ok('commands/run-phase.md wires --auto-correct via auto-correct skill');
+}
+
 // ---------- Summary ----------
 console.log('\n=== Summary ===');
 console.log(`  \u2713 Passed:   ${pass}`);

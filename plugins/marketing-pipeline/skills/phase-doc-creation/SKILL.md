@@ -94,6 +94,65 @@ Each sub-skill has a label — REQUIRED, CONDITIONAL, or OPTIONAL — and a fixe
 - Any LP section flagged as DRIFT from ad scent: surface the mismatch
 - Any banned-word violation against `brand.hard_nos`: surface + ask for replacement
 
+## Research Citations (mandatory per asset)
+
+Every creative asset produced in Phase 4 MUST cite the RT-IDs from 2-research.md that justify it. This is the research-lineage system: every creative decision traces back to a research finding. The gate-runner verifies this and flags uncited assets.
+
+**Citation format (per asset, in the asset's metadata block):**
+
+```markdown
+### Asset: {asset_id}
+- Type: {ad | lp | email | image-prompt | video-prompt | hook}
+- Hook / concept: {one-line}
+- Cites: RT-001, RT-003, RT-020
+- Source findings: {why these IDs — one line each}
+  - RT-001: "Setup takes 2+ hours" — drives the "in minutes, not months" hook angle
+  - RT-003: "Launch in a day" — reinforces the time-to-value promise
+  - RT-020: Solution-aware — justifies leading with mechanism, not education
+```
+
+**Rules:**
+- **Minimum 2 citations per asset.** A hook citing zero findings is rejected by the gate-runner.
+- **Maximum 5 citations per asset.** More than 5 = the asset is trying to do too much; narrow scope.
+- **Cited RT-IDs must exist in 2-research.md's `## RESEARCH FINDINGS INDEX`.** The gate-runner cross-references.
+- **The "Source findings" line is mandatory** — it explains WHY each RT-ID is cited. This is the audit trail.
+- **Banned words / brand hard NOs are checked at the gate** — not here. (The gate-runner enforces.)
+
+**Per-asset-type citation requirements:**
+
+| Asset type | Required citations |
+|------------|---------------------|
+| Hook | 1+ Pain (RT-001..009) + 1+ Desire (RT-010..019) |
+| Ad copy | 1+ Pain + 1+ Desire + 1+ Awareness/Sophistication |
+| LP | 1+ Pain + 1+ Desire + 1+ Trust (RT-070..079) + 1+ Competitive (RT-050..059) |
+| Email subject | 1+ Pain OR Desire |
+| Email body | 1+ Pain + 1+ Desire + 1+ Objection (RT-080..089) |
+| Image prompt | 1+ Desire (visual representation) + 1+ Trust signal (if customer/logo) |
+| Video prompt | 1+ Pain + 1+ Desire |
+| Cinematic | 1+ Pain (the tension) + 1+ Desire (the resolution) |
+
+**The `## RESEARCH CITATIONS` section in 4-creation.md (after the per-asset blocks, before the verdict table):**
+
+```markdown
+## RESEARCH CITATIONS
+
+| Asset | Cites RT-IDs | Has source-finding line | Min-citations met |
+|-------|--------------|------------------------|--------------------|
+| ad-v1 | RT-001, RT-003, RT-020 | ✓ | ✓ (3 ≥ 2) |
+| ad-v2 | RT-001, RT-020 | ✓ | ✓ |
+| ad-v3 | RT-001, RT-030, RT-040 | ✓ | ✓ |
+| lp-v1 | RT-001, RT-003, RT-070, RT-050 | ✓ | ✓ (4 ≥ 2) |
+| hook-1 | (none) | ✗ | ✗ — KILL by gate |
+```
+
+**Gate-runner behavior (Phase 4):**
+- Every asset with `Cites:` field empty or fewer than the per-asset-type minimum → **KILL** (cite-fail)
+- Every asset with citations but no "Source findings" line → **KILL** (lineage-fail)
+- Soft warning (not KILL) for assets citing >5 RT-IDs (focus issue)
+- The verdict table includes a new column: `| cites_ok |` (✓ / ✗)
+
+**This is what makes the marketing "based on research and findings" mechanically.** An asset that doesn't trace to a research finding is a creative decision unsupported by evidence. The gate blocks it.
+
 ## Update campaign-state (mandatory final step)
 
 At the end of every phase-doc emission, call `campaign-state` to update the registry + decision log. This is **mandatory** — not optional, not a SHOULD. The dashboard, the state file, and any operator reading the campaign state depends on it.

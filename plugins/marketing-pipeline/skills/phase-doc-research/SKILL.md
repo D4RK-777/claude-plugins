@@ -32,6 +32,53 @@ Trigger: `# Run Phase 2 — Research`
 4. (Optional) any research drops the operator pasted in the trigger
 5. (If `intake.json.inherited_from` is set) inherited campaign's `1-setup.md` and `3-ideation.md` for persona/positioning baseline
 
+## Research Findings Index (RT-IDs) — the lineage system
+
+Every research finding you produce gets a stable ID. Phase 4 (Creation) cites these IDs in every asset. The gate-runner verifies citation. This is the lineage: every creative decision traces back to a research finding.
+
+**ID format:** `RT-{NNN}` where NNN is a 3-digit zero-padded sequence. RT-001, RT-002, ... Assigned in this order, by category:
+
+| ID range | Category | Examples |
+|----------|----------|----------|
+| RT-001 to RT-009 | **Pain signals** (verbatim from reviews, forums, search trends) | "Setup takes 2 hours and breaks my flow" — Reddit r/xxx, 2026-05 |
+| RT-010 to RT-019 | **Desire / outcome** (what they want, not what they have) | "I want to launch in a day, not a quarter" — G2 review |
+| RT-020 to RT-029 | **Sophistication stage** (what they already know, what they believe) | "I've tried 4 tools, all overpromise" — common pattern |
+| RT-030 to RT-039 | **Awareness level** (Schwartz: unaware / problem-aware / solution-aware / product-aware / most-aware) | Most target buyers are solution-aware (know WhatsApp bot builders exist) |
+| RT-040 to RT-049 | **Buying modes** (how they actually purchase: committee, self-serve, sales-led, RFP) | "We need CTO sign-off + 60-day POC" — B2B enterprise pattern |
+| RT-050 to RT-059 | **Competitive landscape** (positioning, pricing, claim vector) | Clickatell positions on "carrier-grade reliability" — not on speed |
+| RT-060 to RT-069 | **Category noise / claim saturation** (what's been over-claimed) | "AI-powered" is over-claimed; "WhatsApp-native" is under-claimed |
+| RT-070 to RT-079 | **Trust / credibility signals** (what would make them believe) | Customer logos from recognizable brands, case study with named outcomes |
+| RT-080 to RT-089 | **Objections / friction** (what stops them from buying) | "Integration with our CRM is unclear" — G2 review |
+
+**The `## RESEARCH FINDINGS INDEX` table goes in 2-research.md (right after frontmatter, before any prose):**
+
+```markdown
+## RESEARCH FINDINGS INDEX
+
+| ID | Category | Finding (one line) | Source | Confidence |
+|----|----------|--------------------|--------|------------|
+| RT-001 | Pain | Setup takes 2+ hours and breaks user flow | Reddit r/SaaS, 2026-05, 3 upvotes | HIGH |
+| RT-002 | Pain | Manual handoff to sales is opaque (no visibility) | G2 review, Trustpilot | HIGH |
+| RT-003 | Desire | "Launch in a day, not a quarter" verbatim | G2, 4 reviews | HIGH |
+| RT-010 | Desire | One unified inbox for WhatsApp + email + IG | 3 customer interviews | MEDIUM |
+| RT-020 | Sophistication | Most know WhatsApp Business API exists | 5/5 interview subjects | HIGH |
+| RT-021 | Sophistication | Most have tried 1-2 bots and churned | Review pattern | MEDIUM |
+| RT-030 | Awareness | Solution-aware (know bot builders exist) | Phase 1 hypothesis, confirmed | HIGH |
+| RT-040 | Buying mode | Self-serve for <$1k/mo, sales-led above | Pricing page + 2 interviews | HIGH |
+| ... |
+```
+
+**Rules:**
+- Every finding gets exactly one ID. Don't duplicate.
+- Confidence is HIGH (multiple sources + verbatim) / MEDIUM (single source or paraphrase) / LOW (inference, not evidence). Be honest.
+- The table is the source of truth. Phase 4 (Creation) reads this table to know what to cite.
+- Phase 7 (Learning) re-uses these IDs to mark "validated" or "refuted" with evidence from live data.
+
+**Propagation:**
+- The state file's `## DECISION LOG` row for Phase 2 includes: "RT-IDs assigned: RT-001 through RT-NNN"
+- Phase 4 reads the ID range from the state file (or from 2-research.md)
+- Gate-runner Phase 4 checks: every asset cites at least 2 RT-IDs
+
 ## What you do (in order)
 
 1. **Fetch the brand's site fully** — homepage + /about + /pricing + /customers + /case-studies. Extract product reality, real pricing, real customer signals (logos, case studies).

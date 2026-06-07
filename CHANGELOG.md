@@ -4,6 +4,38 @@ All notable changes to the `marketing-pipeline` plugin are documented here. Read
 
 ---
 
+## v1.9.0 — Research Lineage + Auto-Correct (the quality bar + self-healing)
+
+**Released:** 2026-06-08
+
+### Highlights
+- **Every creative asset now cites research findings mechanically.** Phase 2 (Research) produces a `## RESEARCH FINDINGS INDEX` with stable IDs (RT-001, RT-002, ...). Phase 4 (Creation) requires every asset to cite ≥2 RT-IDs with a source-finding line per ID. Gate-runner verifies citation; uncited assets are KILL'd.
+- **The system now heals itself for the most common KILLs.** New `auto-correct` skill re-fires the failing wrap skill with the corrective action as guidance, updates the phase doc, re-invokes the gate. If the re-gate SHIPs, the phase advances. 4 correctable KILL types in v1.9.0: citation-fail, banned-word, CTA-clarity, hook scroll-stop. Subjective KILLs (stress-test, funnel-audit, brand voice, competitive-fit) always surface to the operator.
+- **Marketing output is now research-backed, mechanically.** The lineage system means: every creative decision traces to a verbatim finding (pain, desire, sophistication, awareness, etc.). An asset without citations = a creative decision unsupported by evidence = KILL.
+
+### What's new
+- `skills/phase-doc-research/SKILL.md` — new `## Research Findings Index (RT-IDs)` section. Defines ID format (RT-001 to RT-089+, by category), per-category table, `## RESEARCH FINDINGS INDEX` table format (in 2-research.md), confidence rules. Phase 7 (Learning) re-uses these IDs to mark validated/refuted.
+- `skills/phase-doc-creation/SKILL.md` — new `## Research Citations (mandatory per asset)` section. Per-asset metadata block with `Cites:` field + `Source findings:` lines. Per-asset-type minimum citations (1+ Pain + 1+ Desire for hooks; 1+ Pain + 1+ Desire + 1+ Trust + 1+ Competitive for LPs; etc.). `## RESEARCH CITATIONS` summary table in 4-creation.md.
+- `skills/gate-runner/SKILL.md` — new Citation KILL rule (cite-fail = KILL). Verdict table has new `cites_ok` column. New `## AUTO-CORRECT (v1.9.0)` section: correctable KILL set, auto-correct flow (re-fire wrap skill → re-gate), audit trail, limits (max 2 attempts per asset, max 1 pass per phase run, never on Phase 5 KILLs).
+- `skills/auto-correct/SKILL.md` — new skill. Process: verify auto-correct allowed → re-fire wrap skill with corrective action as guidance → capture revised asset → update phase doc with REVISED metadata → return. Sanity check (wrap skill didn't just re-emit same content). Max 2 attempts. Fail-closed loop.
+- `commands/run-phase.md` — `--auto-correct` flag now wires to `auto-correct` skill (was v1.8.0 stub). For each KILL in correctable set, auto-correct fires; orchestrator re-gates; SHIP = advance, still KILL = surface to operator.
+- `scripts/structural-test.mjs` — new category #17 (6 checks): phase-doc-research has RT-IDs; phase-doc-creation has citations; gate-runner has Citation KILL rule + AUTO-CORRECT section; auto-correct skill has full process; run-phase wires --auto-correct. 146 checks total.
+- Bump version to 1.9.0 (plugin.json + marketplace.json).
+
+### What this enables
+- **Marketing output traces to research.** Every hook, ad, LP, email cites the verbatim findings that justify it. No more "creative direction by gut."
+- **System self-heals on common KILLs.** Operator doesn't have to manually patch every banned-word or missing-citation. Auto-correct handles 4 mechanical failure types. Subjective failures still surface (the operator stays in control of the creative direction).
+- **Audit trail for every creative decision.** The state file's DECISION LOG shows: original KILL, corrective action, revised asset, re-gate verdict. Every step is recorded.
+
+### What's next
+- v2.0.0: library versioning + cross-campaign memory + `/duplicate-campaign`. Library entries get version numbers + source campaign. New campaigns auto-load the latest library versions. `/duplicate-campaign` does a full state copy for repeat campaigns.
+
+### Migration notes
+- No breaking changes. Existing phase docs and approvals are unchanged.
+- v1.9.0 is the recommended upgrade from v1.8.0.
+
+---
+
 ## v1.8.0 — Orchestrator + Gate Runner (the babysitter layer)
 
 **Released:** 2026-06-08

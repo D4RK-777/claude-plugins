@@ -17,7 +17,7 @@ Examples:
 - `/run-phase onboarding-revamp 5` — Run Phase 5 (Implementation) for onboarding-revamp
 - `/run-phase gloss-q1 4 --auto-correct` — Run Phase 4 with auto-correct on KILL
 
-`--auto-correct` enables auto-correct mode for the gate: if a KILL is recoverable (e.g. rewrite a hook), the orchestrator re-fires the failing wrap skill instead of blocking. v1.9.0 will implement auto-correct; in v1.8.0 it's a flag that's accepted but always defers to operator.
+`--auto-correct` enables auto-correct mode for the gate: if a KILL is in the auto-correctable set (citation-fail, banned-word, CTA-clarity, hook scroll-stop), the orchestrator re-fires the failing wrap skill with the corrective action as guidance. v1.9.0 implements auto-correct for the 4 correctable KILL types; subjective KILLs (stress-test, funnel-audit, brand voice, competitive-fit) always surface to the operator.
 
 ## What it does (the rigorous version)
 
@@ -47,7 +47,7 @@ Examples:
    - **SHIP** → state moves to `awaiting review`, prompt operator
    - **REVISE** → state moves to `awaiting decision`, show corrective action list
    - **KILL** → state moves to `BLOCKED`, show corrective action list, do NOT advance
-8. **If `--auto-correct` and verdict is KILL (v1.8.0 stub):** tell the operator "auto-correct is v1.9.0. For now, fix manually or override with `/approve-phase {project} {N} --override-kill`."
+8. **If `--auto-correct` and verdict is KILL (v1.9.0):** for each KILL in the auto-correctable set (citation-fail, banned-word, CTA-clarity, hook scroll-stop), invoke `auto-correct` skill. Auto-correct re-fires the failing wrap skill, updates the phase doc, and returns. Orchestrator re-invokes gate-runner on the updated phase doc. If re-gate SHIPs, phase advances. If still KILLs, surface to operator with the auto-correct audit trail.
 9. **Return the next action.** Either "ready for review at {path}" or "blocked — see corrective actions."
 
 ## Pre-conditions
