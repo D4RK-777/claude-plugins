@@ -4,6 +4,30 @@ All notable changes to the `marketing-pipeline` plugin are documented here. Read
 
 ---
 
+## v1.7.1 — seed-list consistency fixes
+
+**Released:** 2026-05-27
+
+### Highlights
+- **7 wording/seed-list consistency fixes** found during the v1.7.0 walk-through. The data flow was always working — these tighten the EXPLICIT contracts so an agent reading a phase doc knows exactly what it produces and where the next phase reads from.
+- **New structural test category #14: "Seed-list consistency."** Catches future typos like `positioningstatement` (no underscore) before they ship.
+
+### What's new
+- `phase-doc-setup/SKILL.md` — Seeds-for-Phase-2 now explicitly says what each seed IS and WHERE in 1-setup.md it lives. Plus a clarification that the items are Phase 1's HYPOTHESES, not Phase 2's outputs.
+- `phase-doc-research/SKILL.md` — `audience_signals` clarified as living INSIDE `section:customer-truth`, not a separate field.
+- `phase-doc-ideation/SKILL.md` — `positioningstatement` typo fixed to `positioning_statement` (snake_case). Added explicit Awareness × Sophistication grid seed (it was implicit in the handoff).
+- `phase-doc-creation/SKILL.md` — added `section:email-sequence` to Phase 5 seeds (was implicit). Added `cinematic-prompts`, `ad-image-prompts`, `seo-briefs` to seeds with explicit notes on which Phase 5 consumer reads them.
+- `phase-doc-implementation/SKILL.md` — Pre-emit validation #9 fixed the "5 required sections" wording (it's 5 always + 1 conditional = 6 max).
+- `phase-doc-reporting/SKILL.md` — `creative_fatigue_signals` and `audience_saturation` clarified as living INSIDE `section:scale-watch-kill`, not separate fields.
+- `scripts/structural-test.mjs` — new check #14 catches typos like `positioningstatement` and stale seed patterns. 122 checks total now.
+- Bump version to 1.7.1.
+
+### Migration notes
+- No breaking changes. The data flow was already correct; the contracts are just clearer now.
+- v1.7.1 is the recommended upgrade from v1.7.0.
+
+---
+
 ## v1.7.0 — Triple Gate aggregation rule
 
 **Released:** 2026-05-27

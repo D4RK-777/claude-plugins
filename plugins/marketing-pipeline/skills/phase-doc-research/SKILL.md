@@ -72,11 +72,14 @@ Trigger: `# Run Phase 2 — Research`
 
 ## Seeds for Phase 3 (Ideation)
 
-- `pain.themes[]` → Phase 3 theme-selector
-- `pain.verbatim_quotes[]` → Phase 3 icp-character-builder voice
-- `competitive.whitespace_summary` → Phase 3 positioning-engine
-- `positioning_hypothesis` → Phase 3 creative-strategy-selector starting frame
-- `audience_signals[]` → Phase 3 icp-persona-engine
+These are what Phase 2 produces in 2-research.md (or frontmatter), and what Phase 3 reads + builds on.
+
+Always include in the Seeds section:
+- `pain.themes[]` (from 2-research.md `section:pain-language`) → Phase 3 theme-selector. Cluster-level themes (e.g. "trust", "speed", "compliance").
+- `pain.verbatim_quotes[]` (from 2-research.md `section:pain-language`) → Phase 3 icp-character-builder. Verbatim customer language the character uses.
+- `competitive.whitespace_summary` (from 2-research.md `section:opportunities-gaps` + `section:edge-validated`) → Phase 3 positioning-engine.
+- `positioning_hypothesis` (from 2-research.md `section:positioning-hypothesis`) → Phase 3 creative-strategy-selector starting frame. Phase 3 LOCKS this into a full positioning statement.
+- **audience signals** (from 2-research.md `section:customer-truth` — embedded inside that section, not a separate field) → Phase 3 icp-persona-engine. Platform behaviour, role signals, demographic cues, etc. Phase 2 doesn't produce a separate field for this — it lives INSIDE `section:customer-truth`.
 
 ## Hypothesis-delta convention
 

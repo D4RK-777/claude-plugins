@@ -3,7 +3,7 @@
 // Catches issues the manual audit found. Run from the plugin root.
 
 import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
-import { join, basename } from 'path';
+import { join, basename, dirname } from 'path';
 
 const ROOT = process.cwd();
 const PLUGIN = join(ROOT, 'plugins', 'marketing-pipeline');
@@ -357,6 +357,35 @@ else {
   } else {
     ok('pre-emit validation includes aggregation rule check #16');
   }
+}
+
+// ---------- 14. Seed-list consistency (v1.7.1) ----------
+console.log('\n14. Seed-list consistency (v1.7.1) — every Seeds-for-next-phase block must say WHAT it produces and WHERE');
+// Common typo / consistency issues found in v1.7.0 walk-through
+const typoPatterns = [
+  { name: 'positioningstatement (no underscore, typo)', pattern: /\bpositioningstatement\b/, severity: 'HIGH' },
+  { name: 'pain.themes (Phase 1 says it produces this — false, Phase 2 does)', pattern: /pain\.themes/, file: 'phase-doc-setup', severity: 'MEDIUM' },
+  { name: 'audience_signals[] (Phase 2 says it produces this — false, lives in section:customer-truth)', pattern: /\baudience_signals\b/, file: 'phase-doc-research', severity: 'MEDIUM' },
+];
+for (const t of typoPatterns) {
+  // Default: scan all phase docs
+  const filesToScan = t.file
+    ? [join(SKILLS_DIR, t.file, 'SKILL.md')]
+    : phaseDocNames.map(b => join(SKILLS_DIR, `phase-doc-${b}`, 'SKILL.md'));
+  let found = false;
+  for (const f of filesToScan) {
+    const c = readFile(f);
+    if (c && t.pattern.test(c)) {
+      const where = basename(dirname(f));
+      if (t.severity === 'HIGH') {
+        bad(`typo "${t.name}" found in phase-doc-${where}/SKILL.md`);
+      } else {
+        bad(`stale seed "${t.name}" found in phase-doc-${where}/SKILL.md — reword to point at the actual section that produces it`);
+      }
+      found = true;
+    }
+  }
+  if (!found) ok(`no "${t.name}" typos found`);
 }
 
 // ---------- Summary ----------

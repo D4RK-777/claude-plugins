@@ -45,12 +45,16 @@ Trigger: `# Run Phase 3 — Ideation for project {slug}`
 
 ## Seeds for Phase 4 (Creation)
 
-- `theme` → all creative skills as locked rail
-- `character_profile.voice` → copywriter, hook-creative-generator, email-sequence
-- `character_profile.objection_chain` → lp-copy-generator
-- `creative_strategy` → ad-image-architect, hook-creative-generator
-- `positioning_statement` → lp-copy-generator, paid-ads-expert
-- `brand.hard_nos[]` (still in force from Phase 1) → every creative output
+These are what Phase 3 produces in 3-ideation.md (or frontmatter), and what Phase 4 reads + builds on.
+
+Always include in the Seeds section:
+- `theme` (from 3-ideation.md `section:theme-locked`) → all creative skills as locked rail.
+- `character_profile.voice` (from 3-ideation.md `section:character-profile`) → copywriter, hook-creative-generator, email-sequence-from-character.
+- `character_profile.objection_chain` (from 3-ideation.md `section:character-profile`) → lp-copy-generator.
+- **Awareness × Sophistication grid** (from 3-ideation.md `section:icp-persona`) → every creative skill. The grid position determines hook specificity, headline register, LP architecture. EXPLICIT SEED — Phase 4 must read it.
+- `creative_strategy` (from 3-ideation.md `section:creative-strategy`) → ad-image-architect, hook-creative-generator.
+- `positioning_statement` (from 3-ideation.md `section:positioning-statement`) → lp-copy-generator, paid-ads-expert.
+- `brand.hard_nos[]` (still in force from Phase 1, lives in 1-setup.md `section:campaign-context`) → every creative output.
 
 ## TL;DR template
 

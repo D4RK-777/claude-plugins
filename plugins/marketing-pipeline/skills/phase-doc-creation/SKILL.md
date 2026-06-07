@@ -96,10 +96,17 @@ Each sub-skill has a label — REQUIRED, CONDITIONAL, or OPTIONAL — and a fixe
 
 ## Seeds for Phase 5 (Implementation)
 
-- All creative assets → Phase 5 triple gate (creative-interrogator + persona-stress-test + funnel-audit)
-- `ad-copy-units` → Phase 5 audience-architect + paid-ads-expert deployment specs
-- `design-system` → Phase 5 gtm-document-builder render layer
-- `lp-copy` → Phase 5 funnel-audit handoff check
+These are what Phase 4 produces in 4-creation.md (or frontmatter), and what Phase 5 reads + gates.
+
+Always include in the Seeds section:
+- All creative assets in 4-creation.md → Phase 5 triple gate (creative-interrogator + persona-stress-test + funnel-audit)
+- `ad-copy-units` (from 4-creation.md) → Phase 5 audience-architect + paid-ads-expert deployment specs
+- `design-system` (from 4-creation.md) → Phase 5 gtm-document-builder render layer
+- `lp-copy` (from 4-creation.md, if applicable) → Phase 5 funnel-audit handoff check
+- `email-sequence` (from 4-creation.md, if Email in scope) → Phase 5 funnel-audit (each email is a touchpoint) + paid-ads-expert (for paid+email coordination). [EXPLICIT SEED — Phase 5 must read this section even though it doesn't have a specific consumer listed in the Wraps.]
+- `cinematic-prompts` (from 4-creation.md, if applicable) → Phase 5 creative-interrogator (channel-fit audit)
+- `ad-image-prompts` (from 4-creation.md, if applicable) → Phase 5 creative-interrogator (channel-fit audit)
+- `seo-briefs` (from 4-creation.md, if applicable) → not consumed by Phase 5 directly (Phase 6 reporting tracks organic performance)
 
 ## TL;DR template
 

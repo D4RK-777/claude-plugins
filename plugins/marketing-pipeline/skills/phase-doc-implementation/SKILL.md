@@ -148,7 +148,7 @@ approved_by: null
 **Common checks (every phase):** see `phase-doc-setup` for the full list. Summary: frontmatter complete, status awaiting_review, approved fields null, at least one section, every section has Title/Confidence/Source/Why/Content, OQ + Seeds sections exist, correct file path.
 
 **Phase 5 specific:**
-9. ✅ All 5 required sections present: `gate-verdicts`, `forecast`, `audience-architecture`, `deployment-specs`, `retargeting-cascade` (if paid in scope), `gtm-document`.
+9. ✅ All required sections present: `gate-verdicts` + `forecast` + `audience-architecture` + `deployment-specs` + `gtm-document` (5 always) + `retargeting-cascade` (only if `paid` in `campaign_channels`). That's 5 always + 1 conditional.
 10. ✅ Every creative asset from Phase 4 has a verdict in `section:gate-verdicts` (GREEN / AMBER / RED / KILL). No asset is left un-gated.
 11. ✅ KILL assets are documented as **blocked from approval** — Phase 5 cannot be approved while any KILL remains. The asset name, the interrogator's specific violation, and what the operator must do (re-run Phase 4 for that asset) are all spelled out in Open Questions.
 12. ✅ RED assets either have an explicit operator override note in Open Questions, OR are blocked. They cannot be silently approved.

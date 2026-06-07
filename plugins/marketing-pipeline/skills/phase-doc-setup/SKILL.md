@@ -164,16 +164,20 @@ DO NOT ask about things the site clearly says. DO NOT ask "what is your product"
 
 ## Seeds for Phase 2 (Research)
 
-Always include:
-- `product_url` (plus discovered sub-pages) → Phase 2 deep-fetch targets
-- `brand_hard_nos` → enforced rails on every research conclusion
-- `customer_hypothesis` → Phase 2 review-mining target (validate or refute)
-- `competitor_hunches` (named + URL'd) → Phase 2 competitive scan starting list
-- `edge_hypothesis` → Phase 2 will validate against competitive whitespace
-- `campaign_channels` → governs Phase 2 audience signal detection
-- `_materials/` folder path → Phase 2 should re-read operator's docs before deep-fetching
-- `{brand_slug}/_libraries/` → brand official voice + hard NOs (Phase 2 enforces them)
-- `inherited_from` (if set) → past campaign's phase docs are pre-loaded as defaults
+These are what Phase 1 produces in 1-setup.md (or frontmatter), and what Phase 2 reads + validates.
+
+Always include in the Seeds section:
+- `product_url` (plus discovered sub-pages) → Phase 2 deep-fetch targets. Lives in 1-setup.md frontmatter.
+- `brand_hard_nos` → enforced rails on every research conclusion. Lives in 1-setup.md `section:campaign-context`.
+- `customer_hypothesis` (Phase 1's HYPOTHESIS about the buyer — not validated yet) → Phase 2 review-mining target. Lives in 1-setup.md `section:customer-hypothesis`. Phase 2 validates with VERBATIM VOC.
+- `competitor_hunches` (Phase 1's HYPOTHESES about competitors — named + URL'd) → Phase 2 competitive scan starting list. Lives in 1-setup.md `section:competitor-hunches`. Phase 2 deepens with library-competitive-intelligence.
+- `edge_hypothesis` (Phase 1's HYPOTHESIS about the differentiator) → Phase 2 will validate against competitive whitespace. Lives in 1-setup.md `section:edge-hypothesis`.
+- `campaign_channels` → governs Phase 2 audience signal detection. Lives in 1-setup.md `section:campaign-context`.
+- `_materials/` folder path → Phase 2 should re-read operator's docs before deep-fetching. Lives in 1-setup.md frontmatter `sources_consumed.materials_count`.
+- `{brand_slug}/_libraries/` → brand official voice + hard NOs (Phase 2 enforces them). Re-read by Phase 2 directly.
+- `inherited_from` (if set) → past campaign's phase docs are pre-loaded as defaults. Lives in 1-setup.md frontmatter.
+
+**Important (read this before running Phase 2):** the items above are what Phase 1 PUTS in 1-setup.md. They are the deliverables of Phase 1 that Phase 2 consumes. Phase 2's own outputs (the validated customer truth, pain clusters, competitive scan, positioning hypothesis) are written by Phase 2 itself from its VOC mining — not passed from Phase 1. If you see any of those terms missing in 1-setup.md, that's expected. Phase 2 produces them itself.
 
 ## Confidence honesty
 

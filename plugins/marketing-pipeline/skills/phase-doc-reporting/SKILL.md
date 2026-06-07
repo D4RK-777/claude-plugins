@@ -49,11 +49,14 @@ description: "Emits the Phase 6 Reporting phase doc — the live performance sta
 
 ## Seeds for Phase 7 (Learning)
 
-- `weekly_kpis[]` → Phase 7 cohort + attribution analysis
-- `retention_metrics[]` (activation rate, cohort retention curve) → Phase 7 character validation + LTV trend analysis
-- `creative_fatigue_signals` → Phase 7 creative-fatigue curve fit
-- `audience_saturation` → Phase 7 audience CPL distribution
-- `decision_log_entries` → Phase 7 character validation (did our predicted character behavior hold?)
+These are what Phase 6 produces in 6-reporting.md (sections + frontmatter), and what Phase 7 reads + analyzes.
+
+Always include in the Seeds section:
+- `weekly_kpis[]` (from 6-reporting.md `section:weekly-snapshot` + `section:rolling-history`) → Phase 7 cohort + attribution analysis
+- `retention_metrics[]` (from 6-reporting.md `section:retention-pulse`: activation rate, cohort retention curve, churn signals, LTV-vs-CAC trend) → Phase 7 character validation + LTV trend analysis
+- **creative fatigue signals** (from 6-reporting.md `section:scale-watch-kill` — where any creative flagged for fatigue is documented) → Phase 7 creative-fatigue curve fit. The signal lives INSIDE `section:scale-watch-kill`, not as a separate field.
+- **audience saturation** (from 6-reporting.md `section:scale-watch-kill` — where any audience exhaustion is documented) → Phase 7 audience CPL distribution. Same — the data lives INSIDE `section:scale-watch-kill`, not as a separate field.
+- `decision_log_entries` (from 6-reporting.md `section:decision-log-delta`) → Phase 7 character validation (did our predicted character behavior hold?)
 
 ## TL;DR template
 
