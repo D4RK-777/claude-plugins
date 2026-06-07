@@ -133,6 +133,6 @@ schema_version: 1
 
 ## Wraps
 
-- `apify-pain-research-SKILL.md` (review mining)
-- `library-competitive-intelligence.md` (competitive scan)
-- `preflight-research-SKILL.md` (if preflight was run, reuse the JSON to skip redundant fetches)
+- `apify-pain-research-SKILL.md` (review mining + VOC across G2/Trustpilot/Reddit/app stores — WebSearch stub today, Apify-ready)
+- `library-competitive-intelligence.md` (semantic reference for competitive scan)
+- ~~`preflight-research`~~ — REMOVED (now in `skills/archive/`, was pre-flywheel and never invoked here)
