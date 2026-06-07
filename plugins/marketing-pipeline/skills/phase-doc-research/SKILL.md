@@ -27,8 +27,10 @@ Trigger: `# Run Phase 2 — Research`
 ## Inputs
 
 1. `1-setup.md` (frontmatter + sections — especially the hypothesis sections)
-2. Seeds from Phase 1: product_url, brand_hard_nos, customer_hypothesis, competitor_hunches, edge_hypothesis, campaign_channels
-3. (Optional) any research drops the operator pasted in the trigger
+2. **Brand libraries** from `{marketing_root}/{brand_slug}/_libraries/` — `voice.md`, `hard-nos.md`, `audiences.md` are re-read every phase and enforced as rails on every research conclusion
+3. Seeds from Phase 1: product_url, brand_hard_nos, customer_hypothesis, competitor_hunches, edge_hypothesis, campaign_channels
+4. (Optional) any research drops the operator pasted in the trigger
+5. (If `intake.json.inherited_from` is set) inherited campaign's `1-setup.md` and `3-ideation.md` for persona/positioning baseline
 
 ## What you do (in order)
 

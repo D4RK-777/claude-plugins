@@ -216,9 +216,9 @@ sources_consumed:
 
 ## Wraps
 
-- `brand-project-setup-SKILL.md` (semantic structure)
-- `preflight-research-SKILL.md` (research protocol — fetching + analysis + competitor scan)
 - `campaign-state-SKILL.md` (initializes Decision Log)
+
+> **Note:** Earlier drafts of this skill listed `brand-project-setup` and `preflight-research` as wrapped skills. Both are pre-flywheel legacy skills that did the work this skill now does inline (intake + URL fetch + competitor hunches). They remain in `skills/` for backward compatibility but are NOT invoked here. If you want a deep pre-Phase-1 research sprint, run them manually before invoking this skill.
 
 ## Companion file
 

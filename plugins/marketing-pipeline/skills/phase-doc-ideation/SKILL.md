@@ -18,6 +18,8 @@ Trigger: `# Run Phase 3 — Ideation for project {slug}`
 - Phase 1 (for brand truth + campaign context)
 - Phase 2 (for pain themes + competitive whitespace + positioning hypothesis)
 - Operator's answers to any Phase 2 open questions
+- **Brand libraries** from `{marketing_root}/{brand_slug}/_libraries/` — `voice.md`, `hard-nos.md`, `positioning.md` (if it exists), `campaign-history.md` (if it exists). Voice and hard NOs are enforced as rails on theme + persona + character.
+- **`intake.json.inherited_artifacts`** (if set) — inherited theme, persona, positioning from a past campaign. Used as the starting baseline; the operator can override, but they get a fast track.
 
 ## What you do (in order)
 

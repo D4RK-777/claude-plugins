@@ -14,6 +14,11 @@ description: "Emits the Phase 8 Updating phase doc — closes the loop. Triggers
 - `{brand_slug}/{project_slug}/7-learning.md` `status: approved`
 - `{brand_slug}/{project_slug}/learning-insights.json` exists
 
+## Inputs
+
+- `7-learning.md` + `learning-insights.json`
+- **Brand libraries** from `{marketing_root}/{brand_slug}/_libraries/` — these are the files Phase 8 proposes updates TO. Read them first so the proposals cite current state accurately.
+
 ## What you do (in order)
 
 1. Run `feedback-loop-back` semantics:

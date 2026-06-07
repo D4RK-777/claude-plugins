@@ -13,6 +13,13 @@ Trigger: `# Run Phase 5 — Implementation for project {slug}`
 
 - `{brand_slug}/{project_slug}/4-creation.md` `status: approved`
 
+## Inputs
+
+- `4-creation.md` (all creative assets to be gated)
+- `5-implementation` consumers: campaign-forecaster, audience-architect, paid-ads-expert, retargeting-cascade, gtm-document-builder
+- `intake.json` (channels in scope, budget, KPI, hard NOs)
+- **Brand libraries** from `{marketing_root}/{brand_slug}/_libraries/` — `voice.md` (gated assets must match voice), `hard-nos.md` (any hard-NO violation = automatic RED), `channel-specs` (via library), `industry-benchmarks` (via library, for forecast context)
+
 ## What you do (in order)
 
 1. **Triple Gate** — for every creative asset from Phase 4:
@@ -86,4 +93,3 @@ schema_version: 1
 - `paid-ads-expert-SKILL.md`
 - `retargeting-cascade-SKILL.md`
 - `gtm-document-builder-SKILL.md`
-- `media-buying-tactics-SKILL.md`

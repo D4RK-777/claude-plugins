@@ -21,6 +21,7 @@ The plugin is **terminal-first**. You drive it from Claude Code with slash comma
 | `/install-marketing-command-center` | One-time setup. Creates the marketing folder + drops the dashboard. |
 | `/start-campaign` | Walks you through the 9 strategic essentials in chat. Saves intake.json, then runs Phase 1. |
 | `/run-phase {project} {N}` | Runs phase N for a project (1-8). |
+| `/approve-phase {project} {N}` | Approve a phase from the terminal (no dashboard needed). Unlocks the next phase. |
 | `/list-campaigns` | Shows all campaigns + their phase progress. |
 | `/open-command-center` | Regenerates the dashboard.html snapshot + opens it in your browser. |
 

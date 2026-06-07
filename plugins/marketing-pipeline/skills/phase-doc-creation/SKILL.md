@@ -13,6 +13,13 @@ Trigger: `# Run Phase 4 — Creation for project {slug}`
 
 - `{brand_slug}/{project_slug}/3-ideation.md` `status: approved`
 
+## Inputs
+
+- `3-ideation.md` (theme + ICP + character + creative strategy + positioning)
+- `1-setup.md` (campaign context + brand intent + hard NOs)
+- `intake.json` (campaign channels in scope, hard NOs, materials)
+- **Brand libraries** from `{marketing_root}/{brand_slug}/_libraries/` — `voice.md` (anti-voice rules enforced on all copy), `hard-nos.md` (banned-word violations flagged in Open Questions), `audiences.md` (audience reference cards), `design-foundations` (via library, not direct file)
+
 ## Channel-scope gating
 
 Read `campaign.channels` from Phase 1. Only generate creative for declared channels:
@@ -31,14 +38,15 @@ Skip sections for channels NOT declared. Don't generate orphan assets.
 
 1. Run `design-system-architect` — produce locked design tokens (colors, type, spacing) that all visual creative inherits
 2. Run `hook-creative-generator` — N hooks per declared channel
-3. Run `lp-copy-generator` — full LP scaffold (only if Meta or Google ads in scope)
-4. Run `email-sequence-from-character` — sequence (only if Email in scope)
-5. Run `ad-image-architect` — image prompts per ad
-6. Run `cinematic-prompt-architect` — video prompts (only if video channels declared)
-7. Run `paid-ads-expert` — ad copy units mapped to hooks
-8. Run `copywriter` / `master-wordsmith` / `expert-communicator` / `caption-expert` as needed for specific assets
-9. Run `seo-content-engine` — content briefs (only if SEO/Content in scope)
-10. Emit `{brand_slug}/{project_slug}/4-creation.md`
+3. **Run `creative-expert`** — turn top hooks into full Creative Concept Briefs (concept, format, art direction, emotional arc, visual logic). Bridges "winning hook" → "production-ready concept." Output flows to ad-image-architect, cinematic-prompt-architect, copywriter, caption-expert.
+4. Run `lp-copy-generator` — full LP scaffold (only if Meta or Google ads in scope)
+5. Run `email-sequence-from-character` — sequence (only if Email in scope)
+6. Run `ad-image-architect` — image prompts per ad (consumes creative-expert output)
+7. Run `cinematic-prompt-architect` — video prompts (only if video channels declared; consumes creative-expert output)
+8. Run `paid-ads-expert` — ad copy units mapped to hooks
+9. Run `copywriter` / `master-wordsmith` / `expert-communicator` / `caption-expert` as needed for specific assets
+10. Run `seo-content-engine` — content briefs (only if SEO/Content in scope)
+11. Emit `{brand_slug}/{project_slug}/4-creation.md`
 
 ## Required sections (only those with channels in scope)
 
@@ -94,6 +102,7 @@ schema_version: 1
 
 - `design-system-architect-SKILL.md`
 - `hook-creative-generator-SKILL.md`
+- `creative-expert-SKILL.md` (turns winning hooks into production-ready concepts; bridges to image/copy/video execution)
 - `lp-copy-generator-SKILL.md`
 - `email-sequence-from-character-SKILL.md`
 - `ad-image-architect-SKILL.md`

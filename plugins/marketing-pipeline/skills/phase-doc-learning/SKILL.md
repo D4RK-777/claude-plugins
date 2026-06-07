@@ -14,6 +14,13 @@ description: "Emits the Phase 7 Learning phase doc — deep analysis after campa
 - `{brand_slug}/{project_slug}/6-reporting.md` has at least 4 weeks of data OR campaign is over
 - Raw data exports available
 
+## Inputs
+
+- `6-reporting.md` (rolling weekly, including retention-pulse section)
+- `5-implementation.md` (forecast + gate verdicts)
+- `campaign-persona.md` + `character-profile.md` from Phase 3 (for character validation)
+- **Brand libraries** from `{marketing_root}/{brand_slug}/_libraries/` — `audiences.md` is the source of truth for which audience segments were actually used (vs. hypothesised). Cross-check Phase 1's audience architecture against actuals.
+
 ## What you do (in order)
 
 1. Run `data-analyst` semantics:
