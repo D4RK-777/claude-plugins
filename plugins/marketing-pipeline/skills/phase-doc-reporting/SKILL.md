@@ -61,7 +61,7 @@ description: "Emits the Phase 6 Reporting phase doc — the live performance sta
 - What it means: {scale|watch|kill}-trigger fired on {asset/audience}. LTV/CAC trending {up|down|flat}.
 - What's next: {one specific action for the week}.
 
-## Frontmatter
+## Frontmatter (canonical v1.5.0 template)
 
 ```yaml
 phase: 6
@@ -71,10 +71,34 @@ brand_display_name: {brand_display_name}
 project_slug: {project_slug}
 project_display_name: {project_display_name}
 status: awaiting_review   # stays awaiting_review while campaign is live
-upstream_phases_consumed: [5-implementation]
+confidence_overall: HIGH | MEDIUM | LOW
+human_attention_required: true if any KPI off-forecast >30% or audience exhaustion
 schema_version: 1
-brand_libraries_loaded: [voice.md, hard-nos.md, audiences.md]
+upstream_phases_consumed: [5-implementation]
+brand_libraries_loaded:
+  - voice.md
+  - hard-nos.md
+  - audiences.md
+sources_consumed:
+  materials_count: 0
+  urls_fetched: []
+  inherited_from: {campaign_slug_or_null}
+created_at: {ISO 8601 timestamp}   # first week of reporting
+last_updated: {ISO 8601 timestamp} # updated each weekly run
+approved_at: null
+approved_by: null
 ```
+
+## Pre-emit validation (run ALL before writing the file)
+
+**Common checks (every phase):** see `phase-doc-setup` for the full list. Summary: frontmatter complete, status awaiting_review, approved fields null, at least one section, every section has Title/Confidence/Source/Why/Content, OQ + Seeds sections exist, correct file path.
+
+**Phase 6 specific:**
+9. ✅ All 6 required sections present: `weekly-snapshot`, `rolling-history`, `scale-watch-kill`, `retention-pulse`, `decision-log-delta`, `next-actions`.
+10. ✅ `section:retention-pulse` is NEVER skipped — even in week 1 with zero conversions, log `0 activated, 0 churn` as the baseline. The time series matters for Phase 7's analysis.
+11. ✅ `section:rolling-history` is APPEND-ONLY — never delete prior weeks. The first emission creates a new week-N row, subsequent emissions add week N+1, N+2, etc.
+12. ✅ `section:scale-watch-kill` cites the specific forecast thresholds from Phase 5 that triggered each action. Don't trigger an action without showing the math.
+13. ✅ `status: awaiting_review` is preserved across weekly runs. This phase never moves to `approved` while the campaign is live.
 
 ## Hard rules
 

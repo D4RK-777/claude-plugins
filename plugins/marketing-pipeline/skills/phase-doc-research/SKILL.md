@@ -106,7 +106,7 @@ When REFUTED, set `human_attention_required: true` and add an open question aski
 - What it means: Real whitespace is {whitespace_summary}. Sophistication stage {stage}.
 - What's next: Run Phase 3 Ideation — proposed positioning hypothesis is "{hypothesis}".
 
-## Frontmatter
+## Frontmatter (canonical v1.5.0 template)
 
 ```yaml
 phase: 2
@@ -118,9 +118,33 @@ project_display_name: {project_display_name}
 status: awaiting_review
 confidence_overall: HIGH | MEDIUM | LOW
 human_attention_required: true if any refuted hypothesis or contradiction
-upstream_phases_consumed: [1-setup]
 schema_version: 1
+upstream_phases_consumed: [1-setup]
+brand_libraries_loaded:
+  - voice.md
+  - hard-nos.md
+  - audiences.md
+sources_consumed:
+  materials_count: {N_materials_from_intake}
+  urls_fetched:
+    - {url1}
+  inherited_from: {campaign_slug_or_null}
+created_at: {ISO 8601 timestamp}
+last_updated: {ISO 8601 timestamp}
+approved_at: null
+approved_by: null
 ```
+
+## Pre-emit validation (run ALL before writing the file)
+
+**Common checks (every phase):** see `phase-doc-setup` for the full list. Summary: frontmatter complete, status awaiting_review, approved fields null, at least one section, every section has Title/Confidence/Source/Why/Content, OQ + Seeds sections exist, correct file path.
+
+**Phase 2 specific:**
+9. ✅ All 7 required sections present: `customer-truth`, `pain-language`, `competitive-truth`, `opportunities-gaps`, `edge-validated`, `category-noise`, `positioning-hypothesis`.
+10. ✅ Every section that corresponds to a Phase 1 hypothesis (`customer-truth` ← `customer-hypothesis`, `competitive-truth` ← `competitor-hunches`, `edge-validated` ← `edge-hypothesis`) ends with a Delta callout (VALIDATED / REFINED / REFUTED) with the reasoning + the evidence.
+11. ✅ Every `[VERBATIM: "..." — url, date]` tag in `pain-language` has a real, fetchable source URL + a date. No `source-unattributed` quotes as primary evidence.
+12. ✅ `section:positioning-hypothesis` is explicitly labeled as a HYPOTHESIS, not a final positioning statement. Phase 3 locks it.
+13. ✅ `human_attention_required: true` if any hypothesis was REFUTED or any open question is unresolved.
 
 ## Hard rules
 

@@ -58,7 +58,7 @@ Trigger: `# Run Phase 3 — Ideation for project {slug}`
 - What it means: Strategy is {strategy}; positioning is "{positioning_statement}".
 - What's next: Run Phase 4 Creation — all rails locked.
 
-## Frontmatter
+## Frontmatter (canonical v1.5.0 template)
 
 ```yaml
 phase: 3
@@ -66,10 +66,37 @@ block_id: ideation
 brand_slug: {brand_slug}
 brand_display_name: {brand_display_name}
 project_slug: {project_slug}
+project_display_name: {project_display_name}
 status: awaiting_review
-upstream_phases_consumed: [1-setup, 2-research]
+confidence_overall: HIGH | MEDIUM | LOW
+human_attention_required: true if any LOW-confidence sections
 schema_version: 1
+upstream_phases_consumed: [1-setup, 2-research]
+brand_libraries_loaded:
+  - voice.md
+  - hard-nos.md
+  - audiences.md
+  - positioning.md
+sources_consumed:
+  materials_count: {N_materials_from_intake}
+  urls_fetched: []
+  inherited_from: {campaign_slug_or_null}
+created_at: {ISO 8601 timestamp}
+last_updated: {ISO 8601 timestamp}
+approved_at: null
+approved_by: null
 ```
+
+## Pre-emit validation (run ALL before writing the file)
+
+**Common checks (every phase):** see `phase-doc-setup` for the full list. Summary: frontmatter complete, status awaiting_review, approved fields null, at least one section, every section has Title/Confidence/Source/Why/Content, OQ + Seeds sections exist, correct file path.
+
+**Phase 3 specific:**
+9. ✅ All 5 required sections present: `theme-locked`, `icp-persona`, `character-profile`, `creative-strategy`, `positioning-statement`.
+10. ✅ `section:icp-persona` includes the **Awareness × Sophistication grid** (not optional).
+11. ✅ `section:character-profile` uses ONLY verbatim pain language from Phase 2's `section:pain-language`. No invented voice. If a needed phrase isn't in Phase 2, flag it as an open question rather than invent it.
+12. ✅ `section:theme-locked`, `section:creative-strategy`, `section:positioning-statement` are explicitly labeled as LOCKS — Phase 4-8 treat them as rails and will refuse changes without re-running Phase 3.
+13. ✅ If `intake.json.inherited_artifacts` is set, the inherited theme/persona/positioning are referenced explicitly in the relevant sections (with an "inherited from {campaign}" marker).
 
 ## Hard rules
 

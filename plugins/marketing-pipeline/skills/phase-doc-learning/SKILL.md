@@ -65,7 +65,7 @@ description: "Emits the Phase 7 Learning phase doc — deep analysis after campa
 - What it means: Character profile was {accurate|off by X%}; top-driver audience was {audience}.
 - What's next: Run Phase 8 Updating — {N} library updates proposed for review.
 
-## Frontmatter
+## Frontmatter (canonical v1.5.0 template)
 
 ```yaml
 phase: 7
@@ -73,10 +73,82 @@ block_id: learning
 brand_slug: {brand_slug}
 brand_display_name: {brand_display_name}
 project_slug: {project_slug}
+project_display_name: {project_display_name}
 status: awaiting_review
-upstream_phases_consumed: [5-implementation, 6-reporting]
+confidence_overall: HIGH | MEDIUM | LOW
+human_attention_required: true if any insight below statistical threshold or major character delta
 schema_version: 1
+upstream_phases_consumed: [5-implementation, 6-reporting]
+brand_libraries_loaded:
+  - voice.md
+  - hard-nos.md
+  - audiences.md
+sources_consumed:
+  materials_count: 0
+  urls_fetched: []
+  inherited_from: {campaign_slug_or_null}
+created_at: {ISO 8601 timestamp}
+last_updated: {ISO 8601 timestamp}
+approved_at: null
+approved_by: null
 ```
+
+## Pre-emit validation (run ALL before writing the file)
+
+**Common checks (every phase):** see `phase-doc-setup` for the full list. Summary: frontmatter complete, status awaiting_review, approved fields null, at least one section, every section has Title/Confidence/Source/Why/Content, OQ + Seeds sections exist, correct file path.
+
+**Phase 7 specific:**
+9. ✅ All 7 required sections present: `cohort-analysis`, `attribution-decomposition`, `audience-cpl-distribution`, `creative-fatigue-curves`, `character-validation`, `lp-friction`, `campaign-verdict`.
+10. ✅ `learning-insights.json` was written to `{project_root}/learning-insights.json` AND validates against the schema below.
+11. ✅ Every statistical claim includes `sample_size: N` + `confidence: 0.X` in the insights JSON. No false precision.
+12. ✅ `section:character-validation` has at least one delta (predicted vs actual) for the primary character — even if the delta is "no significant divergence," surface that explicitly.
+13. ✅ `section:campaign-verdict` is one of WIN / BREAK_EVEN / LOSS with specific reasoning tied to the original KPI target.
+
+## `learning-insights.json` schema (read by Phase 8)
+
+```json
+{
+  "campaign_slug": "{slug}",
+  "brand_slug": "{brand_slug}",
+  "generated_at": "{ISO 8601}",
+  "insights": [
+    {
+      "id": "INS-001",
+      "library_target": "library-conversion-framework.md",
+      "section_anchor": "Part 4 - Friction patterns",
+      "current_value": "Current state of the library entry (or null if new)",
+      "proposed_value": "What it should be after this insight",
+      "evidence_campaign": "{this campaign slug}",
+      "confidence": "HIGH | MEDIUM | LOW",
+      "rationale": "Why this change is being proposed",
+      "linked_phase_section": "section:lp-friction",
+      "sample_size": 1234,
+      "statistical_confidence": 0.95
+    }
+  ],
+  "character_refinements": [
+    {
+      "character_name": "Sarah",
+      "current_profile_path": "{path to character-profile-sarah.md}",
+      "predicted_vs_actual": "summary of the gap",
+      "proposed_update": "what should change in the profile",
+      "confidence": "MEDIUM"
+    }
+  ],
+  "watch_list_entries": [
+    {
+      "id": "WL-001",
+      "claim": "the low-confidence finding",
+      "supporting_evidence": "what data supported it",
+      "next_campaign_action": "what to check next time",
+      "campaigns_observed": ["{this-campaign}"]
+    }
+  ],
+  "library_watch_list_path": "{marketing_root}/{brand_slug}/_libraries/library-watch-list.md"
+}
+```
+
+This is the contract Phase 8 reads. Don't write a different shape.
 
 ## Hard rules
 

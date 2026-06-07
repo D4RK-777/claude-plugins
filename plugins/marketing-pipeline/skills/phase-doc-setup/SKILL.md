@@ -182,7 +182,7 @@ If the operator dropped high-fidelity materials (briefs, past campaigns, brand v
 
 If `inherited_from` is set, add: `Built on {inherited_from}'s theme "{theme}" and persona "{persona}".`
 
-## Frontmatter
+## Frontmatter (canonical v1.5.0 template)
 
 ```yaml
 phase: 1
@@ -196,14 +196,37 @@ confidence_overall: HIGH | MEDIUM | LOW
 human_attention_required: true if any LOW-confidence sections or open questions
 schema_version: 1
 upstream_phases_consumed: []
+brand_libraries_loaded:
+  - {library1.md}
 sources_consumed:
   materials_count: {N_materials}
   urls_fetched:
     - {url1}
-  brand_libraries_loaded:
-    - {library1.md}
   inherited_from: {campaign_slug_or_null}
+created_at: {ISO 8601 timestamp}
+last_updated: {ISO 8601 timestamp}
+approved_at: null
+approved_by: null
 ```
+
+## Pre-emit validation (run ALL before writing the file)
+
+**Common checks (every phase):**
+1. ✅ Frontmatter contains ALL of: `phase`, `block_id`, `brand_slug`, `brand_display_name`, `project_slug`, `project_display_name`, `status`, `confidence_overall`, `human_attention_required`, `schema_version`, `upstream_phases_consumed`, `brand_libraries_loaded`, `sources_consumed`, `created_at`, `last_updated`. None null except `approved_at` / `approved_by`.
+2. ✅ `status: awaiting_review` (never `approved` in a fresh emit — that's the operator's job).
+3. ✅ `approved_at: null` and `approved_by: null` (untouched).
+4. ✅ At least one `### section:[id]` exists.
+5. ✅ Every `section:` has `**Title:**`, `**Confidence:** HIGH|MEDIUM|LOW`, `**Source:**`, `**Why this matters:**`, and a non-empty content block.
+6. ✅ `## Open questions for human` section exists (write `(none)` if empty — never omit the section).
+7. ✅ `## Seeds for next phase` section exists.
+8. ✅ File path is `{project_root}/{N}-{block_id}.md`.
+
+**Phase 1 specific:**
+9. ✅ All 7 required sections present: `campaign-context`, `product-truth`, `brand-intent`, `existing-assets`, `customer-hypothesis`, `competitor-hunches`, `edge-hypothesis`.
+10. ✅ The 3 hypothesis sections (`customer-hypothesis`, `competitor-hunches`, `edge-hypothesis`) have titles prefixed with "Phase 2 will validate/deepen" so the operator knows they're unverified.
+11. ✅ `human_attention_required: true` if any section is LOW confidence OR open questions non-empty.
+
+If any check fails, FIX IT before writing the file. Do not emit a malformed phase doc.
 
 ## Hard rules
 

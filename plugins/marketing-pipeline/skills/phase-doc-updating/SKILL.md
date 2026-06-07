@@ -60,7 +60,7 @@ Per proposal: tick to approve / reject / defer. Each rejection should ideally ha
 - What it means: Pipeline now {N_compounding} ChatInc-specific data points smarter.
 - What's next: Approve / reject proposals. Next campaign starts smarter.
 
-## Frontmatter
+## Frontmatter (canonical v1.5.0 template)
 
 ```yaml
 phase: 8
@@ -68,10 +68,65 @@ block_id: updating
 brand_slug: {brand_slug}
 brand_display_name: {brand_display_name}
 project_slug: {project_slug}
+project_display_name: {project_display_name}
 status: awaiting_review
-upstream_phases_consumed: [7-learning]
+confidence_overall: HIGH | MEDIUM | LOW
+human_attention_required: true if any proposal pending operator decision
 schema_version: 1
+upstream_phases_consumed: [7-learning]
+brand_libraries_loaded:
+  - voice.md
+  - hard-nos.md
+  - audiences.md
+sources_consumed:
+  materials_count: 0
+  urls_fetched: []
+  inherited_from: {campaign_slug_or_null}
+created_at: {ISO 8601 timestamp}
+last_updated: {ISO 8601 timestamp}
+approved_at: null
+approved_by: null
 ```
+
+## Pre-emit validation (run ALL before writing the file)
+
+**Common checks (every phase):** see `phase-doc-setup` for the full list. Summary: frontmatter complete, status awaiting_review, approved fields null, at least one section, every section has Title/Confidence/Source/Why/Content, OQ + Seeds sections exist, correct file path.
+
+**Phase 8 specific:**
+9. ✅ All 5 required sections present: `proposed-library-updates`, `character-refinements`, `benchmark-updates`, `watch-list-additions`, `closure-summary`.
+10. ✅ Every proposal in `section:proposed-library-updates` has all 7 fields: `library`, `section_anchor`, `current_value`, `proposed_value`, `evidence` (linked to Phase 7 insight ID), tick-box for `[ ] Approve`, tick-box for `[ ] Reject`, tick-box for `[ ] Defer to watch list`.
+11. ✅ NO library file has been written to disk yet. Phase 8 emits the proposals and waits for operator tick-boxes. After the operator approves (via dashboard or `/approve-phase {project} 8`), the changes are written — NOT before.
+12. ✅ `learning-insights.json` was read end-to-end. Every insight that maps to a library target is in the proposals table. Insights with no library target (purely campaign-specific learnings) go in `section:closure-summary` instead.
+
+## Footnote anchor-point rules (where the footnote goes when written)
+
+When an operator approves a proposal, the change is written to the library with a footnote. The footnote's location is library-format-specific:
+
+| Library | Format | Footnote location |
+|---|---|---|
+| `library-campaign-themes.md` | Table (Theme × Awareness) | Append to the row being changed |
+| `library-creative-strategies.md` | Table (Strategy × compatibility) | Append to the row being changed |
+| `library-channel-specs.md` | Table (Channel × spec) | Append to the row being changed |
+| `library-industry-benchmarks.md` | Table (Metric × tier) | Append to the row being changed |
+| `library-conversion-framework.md` | Sections (Part 1, 2, 3...) | Append to the section being changed |
+| `library-creative-types.md` | Sections (Format × Style) | Append to the section being changed |
+| `library-design-foundations.md` | Sections (8 Foundations) | Append to the section being changed |
+| `library-art-direction.md` | Sections (8 Principles) | Append to the section being changed |
+| `library-hook-structures.md` | Sections (Hook patterns) | Append to the section being changed |
+| `library-paid-acquisition-playbooks.md` | Sections (Channels) | Append to the section being changed |
+| `library-competitive-intelligence.md` | Sections (per competitor) | Append to the entry being changed |
+
+**Footnote format (use exactly):**
+```html
+<!-- Updated YYYY-MM-DD via feedback-loop-back from {slug} — reason: {short} -->
+```
+
+The `{short}` is the one-line rationale. Max 100 characters. Truncate the Phase 7 insight's rationale if needed.
+
+**Hard rules for writing approved changes:**
+- **NEVER** apply a library change before the operator ticks `[ ] Approve`. Every change is gated.
+- **NEVER** write a change without a footnote. The footnote is the audit trail.
+- **ALWAYS** preserve the rest of the file. Read it first, edit minimally, write back atomically.
 
 ## Hard rules
 

@@ -63,7 +63,7 @@ Trigger: `# Run Phase 5 — Implementation for project {slug}`
 - What it means: Forecast Likely is {likely_cpl} CPL / {likely_volume} on {budget}.
 - What's next: Ship — companion GTM doc at {gtm_path}. Then Phase 6 Reporting.
 
-## Frontmatter
+## Frontmatter (canonical v1.5.0 template)
 
 ```yaml
 phase: 5
@@ -71,10 +71,38 @@ block_id: implementation
 brand_slug: {brand_slug}
 brand_display_name: {brand_display_name}
 project_slug: {project_slug}
+project_display_name: {project_display_name}
 status: awaiting_review
-upstream_phases_consumed: [1-setup, 2-research, 3-ideation, 4-creation]
+confidence_overall: HIGH | MEDIUM | LOW
+human_attention_required: true if any KILL assets, RED without override, or tracking gaps
 schema_version: 1
+upstream_phases_consumed: [1-setup, 2-research, 3-ideation, 4-creation]
+brand_libraries_loaded:
+  - voice.md
+  - hard-nos.md
+  - audiences.md
+sources_consumed:
+  materials_count: {N_materials_from_intake}
+  urls_fetched: []
+  inherited_from: {campaign_slug_or_null}
+created_at: {ISO 8601 timestamp}
+last_updated: {ISO 8601 timestamp}
+approved_at: null
+approved_by: null
 ```
+
+## Pre-emit validation (run ALL before writing the file)
+
+**Common checks (every phase):** see `phase-doc-setup` for the full list. Summary: frontmatter complete, status awaiting_review, approved fields null, at least one section, every section has Title/Confidence/Source/Why/Content, OQ + Seeds sections exist, correct file path.
+
+**Phase 5 specific:**
+9. ✅ All 5 required sections present: `gate-verdicts`, `forecast`, `audience-architecture`, `deployment-specs`, `retargeting-cascade` (if paid in scope), `gtm-document`.
+10. ✅ Every creative asset from Phase 4 has a verdict in `section:gate-verdicts` (GREEN / AMBER / RED / KILL). No asset is left un-gated.
+11. ✅ KILL assets are documented as **blocked from approval** — Phase 5 cannot be approved while any KILL remains. The asset name, the interrogator's specific violation, and what the operator must do (re-run Phase 4 for that asset) are all spelled out in Open Questions.
+12. ✅ RED assets either have an explicit operator override note in Open Questions, OR are blocked. They cannot be silently approved.
+13. ✅ `section:forecast` has Best / Likely / Worst columns with specific numbers, not handwaves. Confidence is set from sample-size and benchmark-fidelity, not vibes.
+14. ✅ `section:deployment-specs` covers pixel / CAPI / EMQ / attribution window / learning-phase guard. Any tracking gap is a launch blocker surfaced in Open Questions.
+15. ✅ Companion `go-to-market-{slug}.html` was written alongside the phase doc. The path is captured in the phase doc's "What's next" line.
 
 ## Hard rules
 
