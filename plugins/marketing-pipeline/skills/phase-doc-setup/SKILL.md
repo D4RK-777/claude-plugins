@@ -78,6 +78,7 @@ Before fetching any URLs, read everything in the operator's materials. These are
 - For each folder, recurse into `{project_root}/{path}` and read the key files (`.md`, `.txt`, `.pdf`).
 - Read every brand library listed in `brand_libraries_loaded` from `{marketing_root}/{brand_slug}/_libraries/`.
 - If `inherited_from` is set, read the inherited campaign's `1-setup.md` and `3-ideation.md`. These give you theme + persona + positioning to build on.
+- **Library version auto-load (v2.0.0):** for each plugin-level library relevant to Phase 1 (library-icp, library-campaign-themes, library-channel-specs), call `library-versioning.load_libraries` to read the LATEST version of every entry. The state file's DECISION LOG records which versions were loaded. Old versions are kept for audit but not used by default. Operator can override with `--use-library-version {library}={vN}` if they want an older version.
 
 Sources of truth, ranked by authority (use this order when facts conflict):
 1. `intake.json` (operator's explicit decisions — never override)

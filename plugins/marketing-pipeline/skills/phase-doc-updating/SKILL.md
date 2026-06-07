@@ -148,6 +148,29 @@ When an operator approves a proposal, the change is written to the library with 
 
 The `{short}` is the one-line rationale. Max 100 characters. Truncate the Phase 7 insight's rationale if needed.
 
+## Library version writes (v2.0.0)
+
+When an operator approves a proposal, the change is written via the `library-versioning` skill (not directly as a footnote). The versioning skill creates v{N+1} of the entry, marks v{N} as deprecated, updates the VERSION LOG, and records the change in the state file's DECISION LOG.
+
+**For each approved proposal, call `library-versioning.propose_version`:**
+
+```yaml
+propose_version:
+  library: {library filename, e.g. "library-hook-structures.md"}
+  entry: {entry name being updated, e.g. "Hook: FOMO countdown"}
+  new_content: {the full new entry content}
+  rationale: {the Phase 7 insight that drove the update}
+  source_campaign: {the current campaign slug}
+  confidence: {HIGH | MEDIUM | LOW — from the Phase 7 insight}
+  deprecates_v: {the version being replaced, e.g. v1}
+```
+
+The library-versioning skill returns a confirmation: `{status: 'written', library, entry, old_v, new_v, source_campaign, confidence}`.
+
+**Important:** the FOOTNOTE format above (the `<!-- Updated ... -->` comment) is the legacy v1.7.0+ format. v2.0.0 deprecates footnotes IN FAVOR OF full version entries. New versions go to the top of the file with the v{N+1} format from `library-versioning/SKILL.md`. Old versions get the `[DEPRECATED — see v{N+1}]` banner. The `## VERSION LOG` at the bottom of the file is the index.
+
+**The rule:** every approved proposal becomes a new version, not a footnote. The library file's structure changes from "single-version with footnotes" to "versioned entries with VERSION LOG." This is how cross-campaign memory works.
+
 **Hard rules for writing approved changes:**
 - **NEVER** apply a library change before the operator ticks `[ ] Approve`. Every change is gated.
 - **NEVER** write a change without a footnote. The footnote is the audit trail.

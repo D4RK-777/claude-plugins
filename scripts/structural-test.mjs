@@ -556,6 +556,55 @@ if (runPhaseContent.match(/v1\.8\.0 stub/)) {
   ok('commands/run-phase.md wires --auto-correct via auto-correct skill');
 }
 
+// ---------- 18. Library versioning + /duplicate-campaign (v2.0.0) ----------
+console.log('\n18. Library versioning + /duplicate-campaign (v2.0.0) — cross-campaign memory + repeat campaigns');
+
+// library-versioning skill must exist with version format
+const libVerContent = readFile(join(SKILLS_DIR, 'library-versioning', 'SKILL.md'));
+if (!libVerContent) {
+  bad('library-versioning/SKILL.md not found');
+} else if (!libVerContent.match(/## VERSION LOG|VERSION LOG format/)) {
+  bad('library-versioning/SKILL.md missing VERSION LOG format');
+} else if (!libVerContent.match(/propose_version|load_libraries/)) {
+  bad('library-versioning/SKILL.md missing the read/write operations');
+} else if (!libVerContent.match(/Never delete an old version|deprecate, don.t delete/)) {
+  bad('library-versioning/SKILL.md missing the "deprecate, don\'t delete" rule');
+} else {
+  ok('library-versioning/SKILL.md has version format + read/write + deprecation rules');
+}
+
+// phase-doc-setup must auto-load latest library versions
+const phaseDocSetupContent = readFile(join(SKILLS_DIR, 'phase-doc-setup', 'SKILL.md'));
+if (!phaseDocSetupContent.match(/Library version auto-load|library-versioning\.load_libraries|load the LATEST version/)) {
+  bad('phase-doc-setup/SKILL.md missing library version auto-load (v2.0.0)');
+} else {
+  ok('phase-doc-setup/SKILL.md auto-loads latest library versions');
+}
+
+// phase-doc-updating must write new versions (not just footnotes)
+const phaseDocUpdatingContent = readFile(join(SKILLS_DIR, 'phase-doc-updating', 'SKILL.md'));
+if (!phaseDocUpdatingContent.match(/library-versioning\.propose_version|propose_version/)) {
+  bad('phase-doc-updating/SKILL.md missing library-versioning.propose_version call');
+} else if (!phaseDocUpdatingContent.match(/v2\.0\.0.*version|new version, not a footnote/)) {
+  bad('phase-doc-updating/SKILL.md missing the "new version, not a footnote" rule');
+} else {
+  ok('phase-doc-updating/SKILL.md writes new library versions via library-versioning');
+}
+
+// /duplicate-campaign command must exist
+const dupCampaignContent = readFile(join(COMMANDS_DIR, 'duplicate-campaign.md'));
+if (!dupCampaignContent) {
+  bad('commands/duplicate-campaign.md not found');
+} else if (!dupCampaignContent.match(/--from-campaign|--use-library-versions|--reset-decisions/)) {
+  bad('commands/duplicate-campaign.md missing flags');
+} else if (!dupCampaignContent.match(/Never overwrite|NEVER overwrite/)) {
+  bad('commands/duplicate-campaign.md missing the "never overwrite" rule');
+} else if (!dupCampaignContent.match(/8 phase docs|phase docs.*copied/)) {
+  bad('commands/duplicate-campaign.md missing the copy-process');
+} else {
+  ok('commands/duplicate-campaign.md has full copy process with flags');
+}
+
 // ---------- Summary ----------
 console.log('\n=== Summary ===');
 console.log(`  \u2713 Passed:   ${pass}`);

@@ -23,6 +23,7 @@ The plugin is **terminal-first**. You drive it from Claude Code with slash comma
 | `/next` | "What should I do right now?" Reads state, returns the single next action. Read-only. |
 | `/run-phase {project} {N}` | Runs phase N (1-8). Invokes phase-doc skill, then gate-runner, then updates state. Blocks on KILL. |
 | `/run-campaign {project}` | The autopilot. Loops all 8 phases, stopping at every gate for your approval. `--from {N}` to resume, `--pause-at {N}` to stop early. |
+| `/duplicate-campaign {source} {target}` | Copy a past campaign's full state into a new project. `--use-library-versions` to pin to the source's library versions. `--reset-decisions` to clear all gate verdicts. |
 | `/approve-phase {project} {N}` | Approve a phase from the terminal (no dashboard needed). Unlocks the next phase. |
 | `/list-campaigns` | Shows all campaigns + their phase progress. |
 | `/open-command-center` | Regenerates the dashboard.html snapshot + opens it in your browser. |

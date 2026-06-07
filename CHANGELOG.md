@@ -4,6 +4,40 @@ All notable changes to the `marketing-pipeline` plugin are documented here. Read
 
 ---
 
+## v2.0.0 — Library Versioning + Cross-Campaign Memory (the compounding layer)
+
+**Released:** 2026-06-08
+
+### Highlights
+- **Libraries are now cross-campaign memory.** Every library entry gets a version (v1, v2, v3) tagged with source campaign + date + confidence. New campaigns auto-load the latest version; old versions are deprecated (not deleted) for the audit trail.
+- **`/duplicate-campaign` is the repeat-campaign workflow.** Copy a past campaign's full state (8 phase docs + state file + intake essentials) into a new project. Decisions preserved as history. Library versions pinned or refreshed per flag. The new campaign is a 5-minute setup, not a fresh 8-phase run.
+- **The system compounds.** Every campaign's Phase 8 (Updating) writes new library versions. The next campaign starts with those versions. Each campaign makes the next one better. Marketing gets smarter over time.
+
+### What's new
+- `skills/library-versioning/SKILL.md` — new skill. Defines the version format (v{N} per entry, with `## VERSION LOG` table at file bottom), deprecation banner for old versions, 3 operations: `load_libraries` (read latest), `propose_version` (write new), `rollback` (operator-only). Library-specific rules table (which version unit per library).
+- `skills/phase-doc-setup/SKILL.md` — adds `library-versioning.load_libraries` call to auto-load the latest version of every relevant library entry. Operator can override with `--use-library-version {library}={vN}` for older versions. State file's DECISION LOG records which versions were loaded.
+- `skills/phase-doc-updating/SKILL.md` — adds `library-versioning.propose_version` call. Approved proposals become new versions, NOT footnotes. The library file's structure changes from "single-version with footnotes" to "versioned entries with VERSION LOG." Cross-campaign memory starts working.
+- `commands/duplicate-campaign.md` — new. `/duplicate-campaign {source} {target}` copies the source's 8 phase docs + state file + intake essentials into a new project. Flags: `--use-library-versions` (pin to source's versions, not latest), `--reset-decisions` (clear all gate verdicts, re-decide everything). The new campaign inherits theme/persona/positioning as a starting point.
+- `plugins/marketing-pipeline/README.md` — documents the new `/duplicate-campaign` command.
+- `scripts/structural-test.mjs` — new category #18 (4 checks): library-versioning skill has version format + read/write + deprecation; phase-doc-setup auto-loads latest versions; phase-doc-updating writes new versions; /duplicate-campaign has full process. 152 checks total.
+- Bump version to 2.0.0 (plugin.json + marketplace.json) — major version bump because the library file format changes (footnotes → versions + VERSION LOG).
+
+### What this enables
+- **Cross-campaign memory.** A campaign's validated insights (Phase 7) become library versions (Phase 8) that the next campaign uses as defaults (Phase 1). The system gets smarter with every campaign.
+- **Repeat campaigns.** Common flow "do a campaign like X but for Y" goes from a 3-hour setup to a 5-minute duplicate.
+- **Audit trail across campaigns.** Every library version knows where it came from (source campaign) and how confident we are. The libraries' evolution is a record of the team's marketing learning.
+- **A/B testing of library versions.** `--use-library-versions` flag pins a campaign to specific library versions, enabling controlled comparisons.
+
+### What's next
+- v2.1.0: `--diff-campaigns {source} {target}` — show what differs between two campaigns' decisions (useful for A/B testing two campaign strategies)
+- v2.1.0: `--evolve-campaign {source} {target}` — copy + apply a specific library version delta (only the changes from v1 to v2, not the full state)
+
+### Migration notes
+- **Library file format change.** The legacy footnote format (`<!-- Updated ... -->`) is deprecated in favor of versioned entries with a VERSION LOG. Existing library files are still readable. New updates will use the v2.0.0 format.
+- v2.0.0 is the recommended upgrade from v1.9.0.
+
+---
+
 ## v1.9.0 — Research Lineage + Auto-Correct (the quality bar + self-healing)
 
 **Released:** 2026-06-08
