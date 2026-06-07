@@ -4,6 +4,35 @@ All notable changes to the `marketing-pipeline` plugin are documented here. Read
 
 ---
 
+## v1.6.2 — structural test + skill bug fixes
+
+**Released:** 2026-05-27
+
+### Highlights
+- **New `scripts/structural-test.mjs`** — Node.js test that validates every skill, command, and contract in the plugin. Catches stale references, missing frontmatter, broken paths, inconsistent schemas. Run from the plugin root with `node scripts/structural-test.mjs`. Exits 0 on pass, 1 on failure.
+- **`setup-marketing-command-center` frontmatter fixed** — was missing the `name:` field (Claude Code plugins require it).
+- **`phase-doc-setup` Pre-conditions section added** — was the only phase-doc missing this section.
+
+### What's new
+- `scripts/structural-test.mjs` — 112 checks across 12 categories: plugin manifest, CHANGELOG, skill frontmatter, command frontmatter, phase-doc structure, Wraps cross-reference, output contracts, frontmatter schemas, command path discovery, install behavior, dashboard surfaces, archived skills.
+- `scripts/README.md` — explains how to run the test.
+- `setup-marketing-command-center/SKILL.md` — frontmatter now has `name: setup-marketing-command-center`.
+- `phase-doc-setup/SKILL.md` — new `## Pre-conditions` section (intake.json exists, slug is kebab-case, _materials/ exists if materials were passed, inherited_from campaign exists if set).
+- Bump version to 1.6.2.
+
+### Migration notes
+- No breaking changes. Pure bug fixes + new test infrastructure.
+- The structural test is now part of the plugin. Operators can run it after any update to verify the install is intact.
+
+### How to use the test
+```bash
+cd chatinc-plugins/
+node scripts/structural-test.mjs
+# Should output: "All structural checks passed."
+```
+
+---
+
 ## v1.6.1 — v1.6.0 gap fixes
 
 **Released:** 2026-05-27

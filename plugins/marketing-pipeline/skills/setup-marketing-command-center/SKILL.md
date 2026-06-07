@@ -1,4 +1,5 @@
 ---
+name: setup-marketing-command-center
 description: Install (or update) the Marketing Command Center for Claude Code
 ---
 

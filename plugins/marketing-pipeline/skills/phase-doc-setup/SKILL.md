@@ -20,6 +20,16 @@ If you can't find an answer after thorough research, mark the section LOW confid
 Triggers:
 - `# Run Phase 1 — Setup` from the dashboard
 - `# Intake submission` from the dashboard's intake form
+- `/start-campaign` invocation completes (after operator confirms 9 essentials)
+
+## Pre-conditions
+
+- `{marketing_root}/{brand_slug}/{project_slug}/intake.json` exists with all 9 essentials populated.
+- Brand slug + project slug are kebab-case (no spaces, no caps).
+- `_materials/` folder exists at `{marketing_root}/{brand_slug}/{project_slug}/_materials/` IF the operator passed any file/folder materials.
+- If `inherited_from` is set, the inherited campaign's `1-setup.md` + `3-ideation.md` exist at `{marketing_root}/{any-brand}/{inherited_campaign}/`.
+
+If any pre-condition fails, refuse and tell the operator which condition wasn't met. Don't try to recover or invent.
 
 ## Inputs you receive
 
