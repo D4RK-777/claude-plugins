@@ -68,8 +68,17 @@ When you click "Run Phase" or "Approve" in the dashboard, it **copies a prompt t
 
 ## How a campaign flows
 
-1. **`/start-campaign {brand}`** — Walk through 9 essentials in chat: brand, project name, URL, goal, channels, budget, KPI, timeline, hard NOs. Saved to `intake.json`.
-2. **Phase 1 — Setup** (auto-runs after intake) — Claude fetches your site, extracts product truth + brand intent, generates customer / competitor / edge hypotheses with confidence pills. Review in the dashboard.
+1. **`/start-campaign <materials...>`** — Drop in a URL, a brief PDF, a brand voice doc, a past campaign folder. Claude reads them, auto-loads the brand's library files (`_libraries/voice.md`, `hard-nos.md`, `audiences.md`), and **proposes the 9 essentials in one block**. You confirm or correct — that's it. One confirmation replaces 9 manual questions.
+
+   Examples:
+   ```
+   /start-campaign https://chatinc.com/flex
+   /start-campaign https://chatinc.com/flex ./briefs/chatinc-q3.pdf
+   /start-campaign https://chatinc.com/flex ./briefs/ ./past-campaigns/gloss-q1-2026/ --from-campaign gloss-q1-2026 --brand chatinc
+   ```
+
+2. **Phase 1 — Setup** (auto-runs after intake) — Claude reads the materials bundle first, then fetches the URL only for gaps. Fills every section with HIGH/MEDIUM/LOW confidence + source citation. Review in the dashboard.
+
 3. **`/run-phase {project} 2`** — Research. Claude validates Setup's hypotheses with real VOC + competitor scans. Mines verbatim customer pain language. You review, override what needs changing, approve.
 4. **`/run-phase {project} 3`** — Ideation. Theme + ICP + character + creative strategy + positioning all locked in one doc.
 5. **`/run-phase {project} 4`** — Creation. Hooks + LP copy + email sequence + ad image prompts + cinematic prompts + design system, channel-scoped by your declared channels.
@@ -79,6 +88,17 @@ When you click "Run Phase" or "Approve" in the dashboard, it **copies a prompt t
 9. **`/run-phase {project} 8`** — Updating. Library update proposals with tick-box approvals → next campaign starts smarter.
 
 Each phase produces ONE doc. Each doc has tick-box approval gates. Operator never sees skill names.
+
+## Materials-first intake
+
+The intake assumes you have **materials** to give it, not just an answer to every question. Sources of truth, ranked by authority:
+
+1. `intake.json` (operator's explicit decisions — never override)
+2. Brand libraries (`{brand}/_libraries/*.md` — brand official position)
+3. Operator's uploaded materials (briefs, docs, past campaign data, voice files)
+4. URL scrape (last resort, lower confidence than the operator's own docs)
+
+Drop a URL, a brief PDF, a brand voice doc, a past campaign folder — Claude extracts the 9 essentials. The dashboard's drag-and-drop form does the same thing in the browser; the "Copy /start-campaign command" button bridges to Claude Code.
 
 ## Hard rules baked in
 

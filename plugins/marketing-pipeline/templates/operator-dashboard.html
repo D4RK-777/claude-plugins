@@ -1259,11 +1259,47 @@ function renderIntakeInline() {
     html += `</div>`;
   });
 
-  html += `<div style="display:flex;gap:8px;margin-top:24px;">
+  html += `<div style="display:flex;gap:8px;margin-top:24px;flex-wrap:wrap;">
     <button class="btn" onclick="clearIntake()">Discard draft</button>
-    <button class="btn btn-success" onclick="submitIntake()">▶ Start Phase 1 — Setup</button>
-  </div>`;
+    <button class="btn" onclick="copyStartCampaignCommand()" title="Copies a /start-campaign command with all your materials, ready to paste into Claude Code. Faster than the in-browser flow.">📋 Copy /start-campaign command</button>
+    <button class="btn btn-success" onclick="submitIntake()">▶ Start Phase 1 — Setup (in-browser)</button>
+  </div>
+  <p class="help" style="margin-top:8px;">"Copy command" hands off to Claude Code, which reads your materials via Read/Bash/WebFetch and proposes the 9 essentials. "Start in-browser" runs Phase 1 directly here.</p>`;
   return html;
+}
+
+async function copyStartCampaignCommand() {
+  // Collect what we have in the intake draft and the staged materials
+  const parts = ['/start-campaign'];
+  // URL
+  if (intakeData.product_url) parts.push(intakeData.product_url);
+  // Brand flag
+  if (intakeData.brand_name) parts.push(`--brand ${slugify(intakeData.brand_name)}`);
+  // Uploaded files (saved to staging area by submitIntake after first save)
+  if (intakeData.uploaded_files && intakeData.uploaded_files.length > 0) {
+    for (const f of intakeData.uploaded_files) {
+      // The files get staged to {marketing_root}/_intake/{slug}/ by the first
+      // submitIntake save. If the user clicks Copy before saving, the file
+      // contents are in intakeData but not yet on disk — instruct them to save first.
+      if (f._staged_path) {
+        parts.push(f._staged_path);
+      } else {
+        flashToast('Save the in-browser draft first, then "Copy command" — files need to be on disk for Claude Code to read them.');
+        return;
+      }
+    }
+  }
+  // Past campaign inheritance (if operator typed one)
+  if (intakeData._inherit_from) {
+    parts.push(`--from-campaign ${intakeData._inherit_from}`);
+  }
+  const cmd = parts.join(' ');
+  const ok = await copyToClipboard(cmd);
+  if (ok) {
+    flashToast('✓ /start-campaign command copied. Paste into Claude Code.');
+  } else {
+    promptForManualCopy(cmd);
+  }
 }
 
 
@@ -1376,6 +1412,43 @@ async function submitIntake() {
   const brand = intakeData.brand_name || 'general';
   const brandSlug = slugify(brand);
   const compositeKey = `${brandSlug}/${slug}`;
+
+  // Stage uploaded files to {root}/{brand}/{project}/_materials/ so /start-campaign
+  // (and phase-doc-setup) can read them from disk later.
+  if (intakeData.uploaded_files && intakeData.uploaded_files.length > 0) {
+    if (!window.fsHandle) {
+      const granted = await ensureFsHandle();
+      if (!granted) { alert('Folder access required to save files. Click "Grant access" first.'); return; }
+    }
+    const matDir = `${state.marketing_root}/${brandSlug}/${slug}/_materials`;
+    await ensureDir(matDir);
+    for (const f of intakeData.uploaded_files) {
+      if (f._staged_path) continue;  // already staged
+      const safeName = f.name.replace(/[<>|:"\\?*]/g, '_');
+      const stagedPath = `${matDir}/${safeName}`;
+      try {
+        // content is a data URL (readFile() base64-encodes binary) or text
+        let bytes;
+        if (f.content && f.content.startsWith('data:')) {
+          // data URL — fetch as blob to get bytes
+          const resp = await fetch(f.content);
+          bytes = new Uint8Array(await resp.arrayBuffer());
+        } else {
+          bytes = new TextEncoder().encode(f.content || '');
+        }
+        const segments = stagedPath.split('/').filter(Boolean);
+        const fileName = segments.pop();
+        const dir = await resolveDir(segments.join('/'), true);
+        const fh = await dir.getFileHandle(fileName, { create: true });
+        const w = await fh.createWritable();
+        await w.write(bytes);
+        await w.close();
+        f._staged_path = stagedPath;
+      } catch (e) {
+        console.warn('Failed to stage file:', f.name, e);
+      }
+    }
+  }
 
   // Save intake.json to disk under {root}/{brand}/{project}/
   const intakeJson = JSON.stringify({
