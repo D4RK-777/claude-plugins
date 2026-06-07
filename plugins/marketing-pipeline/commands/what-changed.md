@@ -2,7 +2,7 @@
 description: Show what changed between the operator's last installed version and the current plugin version
 ---
 
-Show what's new in the plugin since the operator last installed or updated. Reads from a CHANGELOG.md file in the plugin root + a per-operator "last seen version" stored in the marketing folder.
+Show what's new in the plugin since the operator last installed or updated. Reads from `CHANGELOG.md` and `.plugin-version` in the marketing folder (both written by `/install-marketing-command-center` at install time).
 
 ## Why this exists
 
@@ -10,12 +10,13 @@ Operators install the plugin, then forget what changed. They keep using old patt
 
 ## What it does
 
-1. Read the current plugin version from `plugins/marketing-pipeline/.claude-plugin/plugin.json` (`version` field).
-2. Read the per-operator "last seen version" from `{marketing_root}/.last-seen-version` (a tiny file we write when /what-changed is run).
-3. If the file doesn't exist (first run), treat last-seen-version as `0.0.0` and show ALL versions in CHANGELOG.md.
-4. Read `CHANGELOG.md` from the plugin root (we'll create it in this fix).
-5. Find the version range: from `last_seen_version + 1` to `current_version`.
+1. Read the **current plugin version** from `{marketing_root}/.plugin-version`. (Written at install time by `/install-marketing-command-center`.)
+2. Read the **per-operator "last seen version"** from `{marketing_root}/.last-seen-version`. (Written by previous runs of this command.)
+3. If `.last-seen-version` doesn't exist (first run), treat as `0.0.0` and show ALL versions in CHANGELOG.md.
+4. Read `{marketing_root}/CHANGELOG.md` for the full changelog.
+5. Find the version range: from `last_seen_version` to `current_version` (inclusive of current).
 6. Show the operator the changelog entries for that range, in plain language.
+7. After showing, write `{marketing_root}/.last-seen-version` with the current version so the next run only shows NEW changes.
 
 ## Output format
 
@@ -43,7 +44,7 @@ v1.6.0 — sub-skill contracts + operator UX
 Then:
 
 ```
-Run `/approve-phase` to advance the next waiting phase.
+Run `/pending-review` to see what needs your attention.
 Run `/list-campaigns` to see current state.
 ```
 
@@ -58,13 +59,17 @@ If `{marketing_root}/.last-seen-version` doesn't exist:
 
 ## Edge cases
 
+- **No `.plugin-version` file:** show "Plugin version unknown. Run `/install-marketing-command-center` to refresh the version file. If you've never installed, the plugin is at v1.6.0 (see CHANGELOG)."
 - **No CHANGELOG.md yet:** show "No changelog available. See README for what's in this version."
+- **No marketing folder at all:** tell the operator to run `/install-marketing-command-center` first.
 - **Version older than 0.0.0:** show "Last seen version [X] is older than v0.0.0. Showing full changelog."
 - **CHANGELOG.md is malformed:** show the raw content + a warning.
+- **`.last-seen-version` exists but doesn't match any version in CHANGELOG.md:** show all entries from the lowest version in CHANGELOG.md up to current. The operator is probably running a fresh install on a system that previously had a different version.
 
 ## Hard rules
 
 - **Read-only by default.** Don't modify any phase docs, intake files, or campaign artifacts. The only file written is `.last-seen-version` (operator consent is implicit — they're asking what changed).
 - **If the marketing folder doesn't exist yet, error.** Tell the operator to run `/install-marketing-command-center` first.
-- **Don't try to fetch from GitHub.** The CHANGELOG.md is bundled with the plugin. The operator installed the plugin, they have the changelog.
+- **Don't try to fetch from GitHub.** The CHANGELOG.md is bundled with the install. The operator has it.
 - **Show the version range, not just the latest version.** If they're 2 versions behind, show both.
+- **Don't try to find the plugin install path.** The CHANGELOG and version are at the marketing folder, by design. If they're not there, the install is stale.

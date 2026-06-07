@@ -37,12 +37,19 @@ Or fires automatically on first invocation of any command/skill in the plugin if
 
 4. **Copy `dashboard.html`** from the plugin's `templates/operator-dashboard.html` to `{marketing_root}/dashboard.html`. This is the file the operator opens in their browser to see campaign state.
 
-5. **Show the operator the path** to the dashboard and offer to open it. The dashboard opens with the operator's first campaign being a guided intake form (the same 9 fields, collected in the browser if they prefer that to the terminal `/start-campaign` flow).
+5. **Copy `CHANGELOG.md` + write `.plugin-version`** into the marketing folder. This is what `/what-changed` reads to show the operator what's new since their last install. Without this, the operator has to read the full README every time the plugin updates.
+   - Read the current plugin version from `{plugin_install_path}/.claude-plugin/plugin.json` (or `plugins/marketing-pipeline/.claude-plugin/plugin.json`).
+   - Write `{marketing_root}/.plugin-version` with that version.
+   - Copy `{plugin_install_path}/CHANGELOG.md` → `{marketing_root}/CHANGELOG.md`.
+   - (Both files are tiny and get refreshed on every install.)
 
-6. **One-line confirmation** to the operator:
+6. **Show the operator the path** to the dashboard and offer to open it. The dashboard opens with the operator's first campaign being a guided intake form (the same 9 fields, collected in the browser if they prefer that to the terminal `/start-campaign` flow).
+
+7. **One-line confirmation** to the operator:
    > ✓ Marketing Command Center installed.
    > Folder: ~/Documents/ChatInc-Marketing/
    > Dashboard: ~/Documents/ChatInc-Marketing/dashboard.html
+   > Changelog: ~/Documents/ChatInc-Marketing/CHANGELOG.md
    > [Open in browser]
    > Next: run `/start-campaign` to begin, or open the dashboard to use the intake form.
 
@@ -53,12 +60,13 @@ You: /install-marketing-command-center
 Claude: ✓ Marketing Command Center installed.
         Folder: ~/Documents/ChatInc-Marketing/
         Dashboard: ~/Documents/ChatInc-Marketing/dashboard.html
+        Changelog: ~/Documents/ChatInc-Marketing/CHANGELOG.md
         Operator name: Chris (detected from $USERNAME)
-        
+
         Open dashboard in browser? (Y/n)
         [If Y] ✓ Opened. You can also reopen it any time with /open-command-center.
-        
-        Next: run /start-campaign to begin, or open the dashboard to use the intake form.
+
+        Next: /start-campaign to begin, or open the dashboard to use the intake form.
 ```
 
 That's it. Total operator effort: one command + a yes/no.
@@ -89,6 +97,7 @@ If the operator runs `/install-marketing-command-center` again:
 - If it does, ask: "Replace dashboard.html with the latest version? (Preserves your browser-side state in localStorage.)"
 - Default to yes if no response.
 - The plugin's `templates/operator-dashboard.html` is the source of truth — always copied fresh from there.
+- **CHANGELOG.md and `.plugin-version` are always overwritten on reinstall.** The operator's last-seen-version is preserved (don't touch it).
 
 ## Hard rules
 

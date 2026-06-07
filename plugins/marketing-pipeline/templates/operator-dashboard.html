@@ -1510,6 +1510,48 @@ function renderSettings() {
       <button class="btn btn-primary" onclick="saveSettings()">Save</button>
       <button class="btn" onclick="goView('projects')">← Back</button>
     </div>
+
+    <h2 style="margin-top:32px;">Terminal commands (Claude Code)</h2>
+    <p class="h-sub" style="background:var(--action-bg);padding:10px 14px;border-radius:6px;border-left:3px solid var(--action);">
+      The dashboard is one surface. Most of the time you'll do the work in <strong>Claude Code's terminal</strong> — these commands drive the pipeline. Open Claude Code and type any of these.
+    </p>
+    <div class="settings-row">
+      <div class="settings-key"><code>/install-marketing-command-center</code></div>
+      <div class="settings-val">One-time setup. Already done? Skip.</div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-key"><code>/start-campaign [materials...]</code></div>
+      <div class="settings-val">Walk through 9 essentials in chat. Drop URLs/files/folders as args.</div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-key"><code>/run-phase {project} {N}</code></div>
+      <div class="settings-val">Runs phase N (1-8) for a project.</div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-key"><code>/approve-phase {project} {N}</code></div>
+      <div class="settings-val">Approve a phase from the terminal. Unlocks the next phase.</div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-key"><code>/list-campaigns</code></div>
+      <div class="settings-val">All campaigns + their phase progress.</div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-key"><code>/pending-review</code></div>
+      <div class="settings-val" style="color:var(--action);font-weight:600;">Top 10 phase docs awaiting your review, sorted by urgency.</div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-key"><code>/phase-status {project}</code></div>
+      <div class="settings-val" style="color:var(--action);font-weight:600;">8-block status of one project.</div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-key"><code>/open-command-center</code></div>
+      <div class="settings-val">Regenerate the dashboard.html snapshot + open it in your browser.</div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-key"><code>/what-changed</code></div>
+      <div class="settings-val" style="color:var(--action);font-weight:600;">See what's new since your last installed version.</div>
+    </div>
+
     <h2>Danger zone</h2>
     <button class="btn" style="border-color:var(--red);color:var(--red);" onclick="resetState()">Reset all local state</button>`;
 }

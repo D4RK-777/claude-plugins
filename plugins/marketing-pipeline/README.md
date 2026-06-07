@@ -19,11 +19,14 @@ The plugin is **terminal-first**. You drive it from Claude Code with slash comma
 | Command | What it does |
 |---|---|
 | `/install-marketing-command-center` | One-time setup. Creates the marketing folder + drops the dashboard. |
-| `/start-campaign` | Walks you through the 9 strategic essentials in chat. Saves intake.json, then runs Phase 1. |
+| `/start-campaign [materials...]` | Walk through the 9 essentials in chat. Saves intake.json, then runs Phase 1. Drop URLs/files/folders as args. |
 | `/run-phase {project} {N}` | Runs phase N for a project (1-8). |
 | `/approve-phase {project} {N}` | Approve a phase from the terminal (no dashboard needed). Unlocks the next phase. |
 | `/list-campaigns` | Shows all campaigns + their phase progress. |
 | `/open-command-center` | Regenerates the dashboard.html snapshot + opens it in your browser. |
+| `/pending-review` | Top 10 phase docs awaiting your review, sorted by urgency. |
+| `/phase-status {project}` | 8-block status of one project (Setup → ... → Updating). |
+| `/what-changed` | See what's new since your last installed version. |
 
 The **dashboard** is a self-contained HTML file that lives at `{marketing_root}/dashboard.html`. It uses the File System Access API (Chrome 86+ / Edge 86+) to read and write your phase docs directly. In Firefox / Safari it runs in read-only snapshot mode.
 

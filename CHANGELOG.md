@@ -4,6 +4,30 @@ All notable changes to the `marketing-pipeline` plugin are documented here. Read
 
 ---
 
+## v1.6.1 — v1.6.0 gap fixes
+
+**Released:** 2026-05-27
+
+### Highlights
+- **README updated** to list the 3 v1.6.0 commands (`/pending-review`, `/phase-status`, `/what-changed`) — operators who read the README now know they exist.
+- **Dashboard surfaces the terminal commands** in a dedicated "Terminal commands" section on the Settings page.
+- **`/install-marketing-command-center` now copies `CHANGELOG.md` + writes `.plugin-version`** into the marketing folder. This is what `/what-changed` reads to show what's new since the last install. No more hunting the plugin install path.
+- **`/what-changed` reads from the marketing folder** (`.plugin-version`, `.last-seen-version`, `CHANGELOG.md`) instead of trying to find the plugin's install path.
+
+### What's new
+- `plugins/marketing-pipeline/README.md` — command table now has 9 rows (was 6).
+- `plugins/marketing-pipeline/templates/operator-dashboard.html` — Settings view has a "Terminal commands (Claude Code)" section listing all 9 commands.
+- `plugins/marketing-pipeline/skills/setup-marketing-command-center/SKILL.md` — install process now copies CHANGELOG.md + writes `.plugin-version` to the marketing folder.
+- `plugins/marketing-pipeline/commands/what-changed.md` — reads from marketing folder, with graceful fallbacks for missing files.
+- Bump version to 1.6.1.
+
+### Migration notes
+- No breaking changes.
+- Operators who already installed v1.6.0: run `/install-marketing-command-center` to refresh the marketing folder with CHANGELOG.md + .plugin-version. Existing campaign data is preserved.
+- `/what-changed` will then work for subsequent runs.
+
+---
+
 ## v1.6.0 — sub-skill contracts + operator UX
 
 **Released:** 2026-05-27
