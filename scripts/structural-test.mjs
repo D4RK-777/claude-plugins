@@ -408,6 +408,96 @@ for (const b of phaseDocNames) {
   }
 }
 
+// ---------- 16. Orchestrator + gate-runner components (v1.8.0) ----------
+console.log('\n16. Orchestrator + gate-runner components (v1.8.0) — commands + skill exist with the right contracts');
+
+// gate-runner skill must exist with phase-specific gates + Triple Gate aggregation rule
+const gateRunnerPath = join(SKILLS_DIR, 'gate-runner', 'SKILL.md');
+const gateRunnerContent = readFile(gateRunnerPath);
+if (!gateRunnerContent) {
+  bad('gate-runner/SKILL.md not found');
+} else {
+  if (!gateRunnerContent.match(/Triple Gate aggregation rule/i)) {
+    bad('gate-runner/SKILL.md missing "Triple Gate aggregation rule" section');
+  } else if (!gateRunnerContent.match(/any KILL.*KILL.*overrides|Any gate = KILL/)) {
+    bad('gate-runner/SKILL.md missing the "any KILL = KILL" rule explicitly');
+  } else if (!gateRunnerContent.match(/3\/3 different.*KILL|3\/3 different verdicts/)) {
+    bad('gate-runner/SKILL.md missing the "3/3 different = KILL" rule');
+  } else if (!gateRunnerContent.match(/lowest wins|lowest-wins|worst case is the verdict/)) {
+    bad('gate-runner/SKILL.md missing the "lowest wins" rule');
+  } else if (!gateRunnerContent.match(/## PHASE-SPECIFIC GATES|### Phase 1.*Setup|Phase 1 — Setup/)) {
+    bad('gate-runner/SKILL.md missing per-phase gate definitions');
+  } else {
+    ok('gate-runner/SKILL.md has Triple Gate rule + per-phase gates');
+  }
+}
+
+// /next command must exist with the decision tree
+const nextCmdPath = join(COMMANDS_DIR, 'next.md');
+const nextCmdContent = readFile(nextCmdPath);
+if (!nextCmdContent) {
+  bad('commands/next.md not found');
+} else {
+  if (!nextCmdContent.match(/Decision tree/)) {
+    bad('commands/next.md missing "Decision tree" section');
+  } else if (!nextCmdContent.match(/No state file|START NEW CAMPAIGN/)) {
+    bad('commands/next.md missing the "no state file" branch in the decision tree');
+  } else if (!nextCmdContent.match(/BLOCKED|FIX KILL/)) {
+    bad('commands/next.md missing the "KILL/BLOCKED" branch in the decision tree');
+  } else if (!nextCmdContent.match(/CLOSED|CAMPAIGN CLOSED/)) {
+    bad('commands/next.md missing the "campaign closed" branch in the decision tree');
+  } else {
+    ok('commands/next.md has the orchestrator decision tree');
+  }
+}
+
+// /run-phase command must enforce gate-runner invocation + KILL blocking
+const runPhaseCmdPath = join(COMMANDS_DIR, 'run-phase.md');
+const runPhaseCmdContent = readFile(runPhaseCmdPath);
+if (!runPhaseCmdContent) {
+  bad('commands/run-phase.md not found');
+} else {
+  if (!runPhaseCmdContent.match(/gate-runner/)) {
+    bad('commands/run-phase.md does not reference gate-runner');
+  } else if (!runPhaseCmdContent.match(/NEVER advance past a KILL|never advance past a KILL/)) {
+    bad('commands/run-phase.md missing the "never advance past a KILL" hard rule');
+  } else if (!runPhaseCmdContent.match(/NEVER skip the gate-runner|never skip the gate/)) {
+    bad('commands/run-phase.md missing the "never skip the gate" hard rule');
+  } else {
+    ok('commands/run-phase.md enforces gate-runner + KILL blocking');
+  }
+}
+
+// /run-campaign command must loop + pause at every gate
+const runCampaignCmdPath = join(COMMANDS_DIR, 'run-campaign.md');
+const runCampaignCmdContent = readFile(runCampaignCmdPath);
+if (!runCampaignCmdContent) {
+  bad('commands/run-campaign.md not found');
+} else {
+  if (!runCampaignCmdContent.match(/Loop from the current phase|loop from/i)) {
+    bad('commands/run-campaign.md missing the loop logic');
+  } else if (!runCampaignCmdContent.match(/PAUSED|WAIT for operator/)) {
+    bad('commands/run-campaign.md missing the "pause at every gate" logic');
+  } else if (!runCampaignCmdContent.match(/Never bypass a KILL|NEVER bypass a KILL/)) {
+    bad('commands/run-campaign.md missing the "never bypass KILL" rule');
+  } else {
+    ok('commands/run-campaign.md has the autopilot loop with mandatory pauses');
+  }
+}
+
+// campaign-state skill must define NEXT ACTION + GATE-RUNNER WRITES
+const campaignStateContent = readFile(join(SKILLS_DIR, 'campaign-state', 'SKILL.md'));
+if (!campaignStateContent.match(/## NEXT ACTION|NEXT ACTION \(computed/)) {
+  bad('campaign-state/SKILL.md missing "## NEXT ACTION" section');
+} else {
+  ok('campaign-state/SKILL.md has NEXT ACTION section');
+}
+if (!campaignStateContent.match(/## GATE-RUNNER WRITES|GATE-RUNNER WRITES/)) {
+  bad('campaign-state/SKILL.md missing "## GATE-RUNNER WRITES" section');
+} else {
+  ok('campaign-state/SKILL.md has GATE-RUNNER WRITES section');
+}
+
 // ---------- Summary ----------
 console.log('\n=== Summary ===');
 console.log(`  \u2713 Passed:   ${pass}`);

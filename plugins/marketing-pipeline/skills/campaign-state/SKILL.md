@@ -86,6 +86,72 @@ health_rationale: "one-line reason for the color"
 
 ---
 
+## NEXT ACTION (computed by state, drives the orchestrator)
+
+The state file is the orchestrator's only API. It reads the state and computes what's next. Add this section to the state file template (after the template, before PROCESS RULES):
+
+```markdown
+## NEXT ACTION
+*Computed mechanically from the state. The orchestrator reads this to know what to do.*
+
+| State observation | Next action |
+|-------------------|-------------|
+| No state file exists | **Bootstrap.** Tell operator: "Run `/start-campaign` to begin." |
+| State exists, current phase is `1 (Setup)`, intake complete | **Run Phase 2.** Invoke `phase-doc-research`. |
+| State exists, current phase is `N`, status `awaiting review` | **Prompt operator.** "Phase N ready. Review `{N}-{slug}.md` and approve, or request changes." |
+| State exists, current phase is `N`, status `blocked` (KILL in gate) | **Show corrective action list.** Tell operator what failed. Do NOT advance. |
+| State exists, current phase is `N`, status `awaiting decision` (REVISE in gate) | **Show corrective action list.** Operator decides ship anyway / fix first. |
+| State exists, current phase is `N` approved, next is `N+1` | **Run Phase N+1.** Invoke the next phase-doc skill. |
+| State exists, current phase is `8 (CLOSED)` | **Campaign closed.** Tell operator: "Run `/start-campaign` to begin a new one." |
+| State exists, current phase missing a phase doc (gap) | **Alert operator.** State is broken. Run `/pending-review` to see what's there. |
+| Last gate verdict in state has unaddressed dissents | **Surface dissents.** Operator must explicitly resolve before advancing. |
+```
+
+**The orchestrator (`/next`, `/run-phase`, `/run-campaign`) reads this section + the gate-runner's last verdict to decide what to do.** The state file is the brain; the orchestrator is the hands.
+
+**Computing the next action is mechanical:**
+1. Read `Current phase:` line
+2. Read last entry in `## DECISION LOG` to find gate verdict
+3. Read `## BLOCKERS` to find blocking items
+4. Look up the matching row in the NEXT ACTION table
+5. Return the action
+
+No inference, no opinion. The state IS the answer.
+
+---
+
+## GATE-RUNNER WRITES (state-side contract)
+
+When `gate-runner` runs, it updates the state file with:
+
+1. **Append a row to `## DECISION LOG`** (the gate verdict):
+   ```
+   | {date} | gate-runner phase {N} = [{N} SHIP / M REVISE / K KILL] | gate-runner | [{one-line reason}] | [{verdicts table summary}] |
+   ```
+
+2. **Append a row to `## CHANGE LOG`**:
+   ```
+   - {date} — gate-runner phase {N} = {verdict} — {one-line what was gated}
+   ```
+
+3. **Update `Current phase:`** based on verdict:
+   - SHIP → `Current phase: {N} (awaiting review)`
+   - REVISE → `Current phase: {N} (awaiting decision — see corrective action list)`
+   - KILL → `Current phase: {N} (BLOCKED — see corrective action list)`
+
+4. **Append a row to `## BLOCKERS`** (if KILL or REVISE):
+   ```
+   | {date} | Phase {N} gate = {verdict} | Phase {N} advancement | {date} | open | {corrective action} |
+   ```
+
+5. **Update `## HEALTH SUMMARY`** with the gate verdict's effect on the relevant dimension (e.g. `gate_integrity` for Phase 5, `creative_quality` for Phase 4).
+
+6. **Update `## NEXT ACTION`** with the new computed action.
+
+The orchestrator reads the state file after gate-runner writes and acts on the NEXT ACTION.
+
+---
+
 ## THE STATE FILE TEMPLATE
 
 ```markdown

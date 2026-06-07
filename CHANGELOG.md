@@ -4,6 +4,39 @@ All notable changes to the `marketing-pipeline` plugin are documented here. Read
 
 ---
 
+## v1.8.0 — Orchestrator + Gate Runner (the babysitter layer)
+
+**Released:** 2026-06-08
+
+### Highlights
+- **The system now drives itself.** New orchestrator commands (`/next`, `/run-phase`, `/run-campaign`) read the campaign state file and decide what to do next. The operator's only job is to review each phase doc and approve — they never have to remember what comes next, which skills to fire, or whether the gate ran.
+- **Mechanical gate enforcement.** New `gate-runner` skill runs the Triple Gate on every phase mechanically — lowest-wins, any KILL = KILL, 3/3 different = KILL, dissents logged. KILL'd assets BLOCK the phase from advancing. REVISE surfaces a corrective action list for operator decision.
+- **State file is the API.** New `## NEXT ACTION` section in the state file (computed mechanically from state) drives the orchestrator. New `## GATE-RUNNER WRITES` contract defines exactly what gate-runner writes back to the state.
+
+### What's new
+- `skills/gate-runner/SKILL.md` — new skill. Per-phase gate definitions (1-8), Triple Gate aggregation rule (binding, never override), per-asset verdict table format, corrective action list format. Reads phase doc → runs gates → writes `section:gate-verdicts` → updates state → returns SHIP/REVISE/KILL.
+- `commands/next.md` — new. "What should I do right now?" Reads state, computes next action, returns one concrete step with path + reason. Read-only.
+- `commands/run-phase.md` — rewritten. Now: verifies prior phase approved → invokes phase-doc skill → invokes gate-runner → updates state → blocks on KILL. `--auto-correct` flag (v1.9.0 stub).
+- `commands/run-campaign.md` — new. The autopilot. Loops through all 8 phases, stopping at every gate for operator approval. `--from {N}` and `--pause-at {N}` flags.
+- `skills/campaign-state/SKILL.md` — new `## NEXT ACTION` section (decision tree: no state / awaiting review / BLOCKED / CLOSED / etc.) + new `## GATE-RUNNER WRITES` section (5 mechanical state updates when gate-runner fires).
+- `scripts/structural-test.mjs` — new category #16 (6 checks): gate-runner has Triple Gate rule + per-phase gates; /next has decision tree; /run-phase enforces gate-runner + KILL blocking; /run-campaign has loop with mandatory pauses; campaign-state has NEXT ACTION + GATE-RUNNER WRITES. 139 checks total.
+- Bump version to 1.8.0 (plugin.json + marketplace.json).
+
+### What this enables
+- Operator workflow: `You: /run-campaign {project}` → orchestrator drives every phase → pauses at every gate for your review → you approve or fix → loop continues → campaign CLOSED.
+- No remembering. No "what phase is next?" The state file is the truth; the orchestrator reads it.
+- Quality bar: every asset that survives a phase is gated. KILL'd assets block. REVISE surfaces. Dissents flagged.
+
+### What's next
+- v1.9.0: research lineage (every creative asset cites research IDs) + auto-correct mode (re-fire failing wrap skill for KILL'd assets)
+- v2.0.0: library versioning + cross-campaign memory + `/duplicate-campaign`
+
+### Migration notes
+- No breaking changes. Existing phase docs, state files, and approvals are unchanged.
+- v1.8.0 is the recommended upgrade from v1.7.2.
+
+---
+
 ## v1.7.2 — campaign-state.md auto-update (mandatory final step of every phase)
 
 **Released:** 2026-06-08
